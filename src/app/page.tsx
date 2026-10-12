@@ -2,11 +2,11 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Applications, Ignored, People, Runs } from "@/components/tracker/tables";
 import { Today } from "@/components/tracker/today";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from "next/link";
 import { loadSettings } from "@/settings";
 import { counts, loadTracker } from "@/tracker";
 
-export default function Page() {
+export default function Page({ searchParams }: PageProps<"/">) {
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
       <header className="mb-8 space-y-1">
@@ -16,7 +16,7 @@ export default function Page() {
         </p>
       </header>
       <Suspense fallback={<DeskSkeleton />}>
-        <Desk />
+        <Desk searchParams={searchParams} />
       </Suspense>
     </main>
   );
@@ -31,8 +31,13 @@ function Stat({ label, value }: { label: string; value: number }) {
   );
 }
 
-async function Desk() {
+const TABS = ["today", "applications", "people", "ignored", "runs"] as const;
+type Tab = (typeof TABS)[number];
+
+async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
   await connection();
+  const raw = (await searchParams).tab;
+  const tab: Tab = TABS.includes(raw as Tab) ? (raw as Tab) : "today";
   const data = loadTracker();
   const settings = loadSettings();
   const c = counts(data);
@@ -59,30 +64,33 @@ async function Desk() {
         <Stat label="Invites sent" value={c.invitesSent} />
         <Stat label="Ignored" value={c.ignored} />
       </div>
-      <Tabs defaultValue="today">
-        <TabsList className="w-full justify-start overflow-x-auto sm:w-fit">
-          <TabsTrigger value="today">Today</TabsTrigger>
-          <TabsTrigger value="applications">Applications</TabsTrigger>
-          <TabsTrigger value="people">People ({c.people})</TabsTrigger>
-          <TabsTrigger value="ignored">Ignored ({c.ignored})</TabsTrigger>
-          <TabsTrigger value="runs">Runs</TabsTrigger>
-        </TabsList>
-        <TabsContent value="today" className="pt-4">
-          <Today jobs={data.jobs} settings={settings} />
-        </TabsContent>
-        <TabsContent value="applications" className="pt-4">
-          <Applications jobs={data.jobs} />
-        </TabsContent>
-        <TabsContent value="people" className="pt-4">
-          <People jobs={data.jobs} />
-        </TabsContent>
-        <TabsContent value="ignored" className="pt-4">
-          <Ignored jobs={data.jobs} />
-        </TabsContent>
-        <TabsContent value="runs" className="pt-4">
-          <Runs runs={data.runs} />
-        </TabsContent>
-      </Tabs>
+      <nav aria-label="Tracker sections" className="flex w-full gap-1 overflow-x-auto rounded-lg bg-muted p-[3px] sm:w-fit">
+        {(
+          [
+            ["today", "Today"],
+            ["applications", "Applications"],
+            ["people", `People (${c.people})`],
+            ["ignored", `Ignored (${c.ignored})`],
+            ["runs", "Runs"],
+          ] as const
+        ).map(([key, label]) => (
+          <Link
+            key={key}
+            href={key === "today" ? "/" : `/?tab=${key}`}
+            aria-current={tab === key ? "page" : undefined}
+            className={`whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition-colors ${tab === key ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {label}
+          </Link>
+        ))}
+      </nav>
+      <div>
+        {tab === "today" && <Today jobs={data.jobs} settings={settings} />}
+        {tab === "applications" && <Applications jobs={data.jobs} />}
+        {tab === "people" && <People jobs={data.jobs} />}
+        {tab === "ignored" && <Ignored jobs={data.jobs} />}
+        {tab === "runs" && <Runs runs={data.runs} />}
+      </div>
     </div>
   );
 }
