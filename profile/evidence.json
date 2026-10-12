@@ -1,0 +1,23 @@
+{
+  "LLM Evaluation": {
+    "snippet": "Sample: built a nightly replay harness that scored the support bot against labeled questions.",
+    "bullet": "Created an \\textbf{LLM evaluation} harness in Python that replayed 1,200 labeled support questions every night, flagging answer regressions before each release and raising grounded accuracy from 81 to 92 percent."
+  },
+  "MLflow": {
+    "snippet": "Sample: logged every training run and compared experiments before release.",
+    "bullet": "Logged every PyTorch training run in \\textbf{MLflow} with parameters, metrics, and artifacts, letting three teammates reproduce a ranking model in minutes and compare 40 experiments before each weekly release."
+  },
+  "Redis": {
+    "snippet": "Sample: cached frequent retrieval results in front of the question answering endpoint.",
+    "bullet": "Cached frequent retrieval results in \\textbf{Redis} behind a FastAPI gateway, trimming p95 latency of the question answering endpoint from 2.4 seconds to 0.9 seconds at a peak of 300 requests per minute during weekday hours."
+  },
+  "Embeddings": {
+    "snippet": "Sample: generated document embeddings for the RAG index and tuned chunk size."
+  },
+  "Transformers": {
+    "snippet": "Sample: fine tuned Hugging Face transformer models for clinical text classification."
+  },
+  "CI/CD": {
+    "snippet": "Sample: ran tests and image builds on every merge for the inference gateway."
+  }
+}

@@ -1,0 +1,109 @@
+import fs from "node:fs";
+import path from "node:path";
+import { extractOtp, type MailMessage } from "./apply";
+import {
+  answerQuestion,
+  approve,
+  confirmKeyword,
+  markBlocked,
+  markReady,
+  markSent,
+  markSubmitted,
+  recordGmailDraft,
+  runApproved,
+  runMorning,
+  skip,
+} from "./orchestrator";
+import { loadBaseResume, loadConfirmations, loadEvidence } from "./profile";
+import { seedDemo } from "./seed";
+import { root } from "./settings";
+import { allowedTermsFor, bulletsOf, checkBullet } from "./tailor";
+import { findJob, loadTracker, writeTrackerMarkdown } from "./tracker";
+
+const [cmd, ...args] = process.argv.slice(2);
+const print = (v: unknown) => console.log(typeof v === "string" ? v : JSON.stringify(v, null, 2));
+
+function need(n: number, usage: string) {
+  if (args.length < n) {
+    console.error(`usage: npm run ${cmd} -- ${usage}`);
+    process.exit(2);
+  }
+}
+
+switch (cmd) {
+  case "morning":
+    print(runMorning());
+    break;
+  case "approved":
+    print(runApproved());
+    break;
+  case "approve":
+    need(1, "<jobId>");
+    print({ id: approve(args[0]).id, stage: "approved" });
+    break;
+  case "skip":
+    need(1, "<jobId>");
+    print({ id: skip(args[0]).id, stage: "skipped_by_you" });
+    break;
+  case "confirm": {
+    need(2, '"<keyword>" yes|no ["evidence note"]');
+    const answer = args[1].toLowerCase();
+    if (answer !== "yes" && answer !== "no") throw new Error("answer must be yes or no");
+    print(confirmKeyword(args[0], answer, args[2] ?? ""));
+    break;
+  }
+  case "answer": {
+    need(2, '<jobId> "<question text>"');
+    const r = answerQuestion(args[0], args[1]);
+    print(r.ok ? r.answer! : `BLOCKED: ${r.reason}`);
+    break;
+  }
+  case "otp": {
+    need(2, "<jobId> <messages.json>");
+    const job = findJob(loadTracker(), args[0]);
+    const messages = JSON.parse(fs.readFileSync(args[1], "utf8")) as MailMessage[];
+    const since = new Date(Date.now() - 30 * 60_000);
+    print(extractOtp(messages, job.company, since) ?? "NO_CODE");
+    break;
+  }
+  case "ready":
+    need(1, "<jobId>");
+    print({ id: markReady(args[0]).id, stage: "ready_to_submit" });
+    break;
+  case "blocked":
+    need(2, '<jobId> "<reason>"');
+    print({ id: markBlocked(args[0], args[1]).id, stage: "apply_blocked" });
+    break;
+  case "submitted":
+    need(1, "<jobId>");
+    print({ id: args[0], resume: markSubmitted(args[0]).submittedResumePath });
+    break;
+  case "sent":
+    need(1, "<jobId> [personId ...]");
+    print(markSent(args[0], args.slice(1)));
+    break;
+  case "gmail-draft":
+    need(3, "<jobId> <personId> <draftId>");
+    recordGmailDraft(args[0], args[1], args[2]);
+    print("recorded");
+    break;
+  case "check-bullet": {
+    need(2, '"<bullet>" <jobId>');
+    const job = findJob(loadTracker(), args[1]);
+    if (!job.analysis || !job.resumePath) throw new Error(`${job.id} has not been tailored`);
+    const tex = fs.readFileSync(path.join(root(), job.resumePath), "utf8");
+    const allowed = allowedTermsFor(loadBaseResume(), job.analysis, loadEvidence(), loadConfirmations());
+    print(checkBullet(args[0], bulletsOf(tex), allowed));
+    break;
+  }
+  case "seed-demo":
+    print(seedDemo({ reset: args.includes("--reset") }));
+    break;
+  case "export":
+    writeTrackerMarkdown(loadTracker());
+    print("tracker/TRACKER.md written");
+    break;
+  default:
+    console.error(`unknown command: ${cmd ?? "(none)"}`);
+    process.exit(2);
+}

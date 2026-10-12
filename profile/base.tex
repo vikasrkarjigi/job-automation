@@ -1,0 +1,44 @@
+%% SAMPLE RESUME. Replace this file with your own LaTeX resume.
+%% Keep the two tailor markers: "%% tailor:bullets" on its own line inside the itemize where new bullets go,
+%% and "%% tailor:skills" at the end of the skills line that new keywords are appended to.
+\documentclass[letterpaper,11pt]{article}
+\usepackage[empty]{fullpage}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\resumeItem}[1]{\item\small{#1}}
+
+\begin{document}
+
+\begin{center}
+  {\Large \textbf{Your Name}} \\
+  City, ST \quad your.email@example.com \quad linkedin.com/in/yourname \quad github.com/yourname
+\end{center}
+
+\section*{Experience}
+\textbf{AI Engineer} \hfill Example Analytics \hfill 2024 to Present
+\begin{itemize}[leftmargin=0.15in]
+  %% tailor:bullets
+  \resumeItem{Built a \textbf{RAG} service in Python with LangChain and Pinecone that answered 4,000 weekly support questions from internal docs, cutting median ticket handling time by 38 percent for a team of 22 agents.}
+  \resumeItem{Designed prompt templates and guardrails for an \textbf{LLM} triage assistant, routing 70 percent of inbound tickets to the right queue without human review and saving the support team about 30 hours each week.}
+  \resumeItem{Shipped a FastAPI inference gateway in \textbf{Docker} on AWS that served three internal models behind one authenticated endpoint, holding 99.9 percent uptime across six months of daily production traffic.}
+\end{itemize}
+
+\textbf{Machine Learning Intern} \hfill Example Health \hfill 2023
+\begin{itemize}[leftmargin=0.15in]
+  \resumeItem{Trained a PyTorch text classifier with \textbf{Hugging Face} models on 180,000 labeled clinical notes, lifting F1 from 0.71 to 0.84 and replacing a rules engine that clinicians had been maintaining by hand for years.}
+  \resumeItem{Automated weekly cohort reports with \textbf{SQL} and Pandas over PostgreSQL, replacing a manual spreadsheet process and giving four analysts their Monday mornings back while keeping every number traceable.}
+\end{itemize}
+
+\section*{Projects}
+\begin{itemize}[leftmargin=0.15in]
+  \resumeItem{Developed a churn model with \textbf{scikit-learn} on 50,000 subscription records, ranking accounts by risk so a retention team could prioritize outreach, and documented the full pipeline in a public Git repository.}
+\end{itemize}
+
+\section*{Skills}
+\begin{itemize}[leftmargin=0.15in, label={}]
+  \item \textbf{Languages}{: Python, SQL, TypeScript}
+  \item \textbf{AI and ML}{: PyTorch, scikit-learn, Hugging Face, LLM, RAG, LangChain, Prompt Engineering} %% tailor:skills
+  \item \textbf{Data and Infrastructure}{: Pinecone, FastAPI, Docker, AWS, PostgreSQL, Pandas, Git}
+\end{itemize}
+
+\end{document}

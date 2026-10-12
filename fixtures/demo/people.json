@@ -1,0 +1,16 @@
+{
+  "Northwind Labs": [
+    { "firstName": "Priya", "lastName": "Raman", "role": "Senior Technical Recruiter", "company": "Northwind Labs", "source": "apollo", "linkedinUrl": "https://www.linkedin.com/in/priya-raman-sample", "email": "priya@northwindlabs.example" },
+    { "firstName": "Marcus", "lastName": "Okafor", "role": "Engineering Manager, AI Platform", "company": "Northwind Labs", "source": "apollo", "linkedinUrl": "https://www.linkedin.com/in/marcus-okafor-sample", "email": "marcus@northwindlabs.example" },
+    { "firstName": "Lena", "lastName": "Hoffmann", "role": "Talent Acquisition Partner", "company": "Northwind Labs", "source": "vibe", "linkedinUrl": "https://www.linkedin.com/in/lena-hoffmann-sample", "email": null },
+    { "firstName": "Diego", "lastName": "Santos", "role": "Machine Learning Engineer", "company": "Northwind Labs", "source": "apollo", "linkedinUrl": "https://www.linkedin.com/in/diego-santos-sample", "email": "diego@northwindlabs.example" },
+    { "firstName": "Aiko", "lastName": "Tanaka", "role": "Staff AI Engineer", "company": "Northwind Labs", "source": "vibe", "linkedinUrl": "https://www.linkedin.com/in/aiko-tanaka-sample", "email": null },
+    { "firstName": "Sam", "lastName": "Reed", "role": "Software Engineer", "company": "Northwind Labs", "source": "apollo", "linkedinUrl": "https://www.linkedin.com/in/sam-reed-sample", "email": "sam@northwindlabs.example" },
+    { "firstName": "Jordan", "lastName": "Blake", "role": "Recruiter", "company": "Northwind Labs", "source": "linkedin_search", "linkedinUrl": "https://www.linkedin.com/in/jordan-blake-sample", "email": null }
+  ],
+  "Orbital Finance": [
+    { "firstName": "Hannah", "lastName": "Cole", "role": "Technical Recruiter", "company": "Orbital Finance", "source": "apollo", "linkedinUrl": "https://www.linkedin.com/in/hannah-cole-sample", "email": "hannah@orbitalfinance.example" },
+    { "firstName": "Ravi", "lastName": "Menon", "role": "Head of Applied AI", "company": "Orbital Finance", "source": "apollo", "linkedinUrl": "https://www.linkedin.com/in/ravi-menon-sample", "email": "ravi@orbitalfinance.example" },
+    { "firstName": "Mary-Kate", "lastName": "Doyle", "role": "Talent Partner", "company": "Orbital Finance", "source": "vibe", "linkedinUrl": "https://www.linkedin.com/in/marykate-doyle-sample", "email": null }
+  ]
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "page": 1, "board": "indeed", "hoursAgo": 3,
+    "url": "https://boards.greenhouse.io/northwindlabs/jobs/4410021",
+    "company": "Northwind Labs", "title": "AI Engineer", "location": "San Francisco, CA",
+    "description": "About the role\nNorthwind Labs builds document intelligence for insurance carriers.\n\nRequirements:\n- 1+ years of experience building LLM applications in Python\n- Retrieval augmented generation with LangChain\n- Vector search with FAISS\n- Serving models behind FastAPI\n\nNice to have:\n- MLflow for experiment tracking\n- Docker\n\nWe sponsor H-1B visas for this role."
+  },
+  {
+    "page": 1, "board": "indeed", "hoursAgo": 5,
+    "url": "https://www.indeed.com/viewjob?jk=apex001",
+    "company": "Apex Systems", "title": "AI/ML Engineer", "location": "Remote",
+    "description": "Our client, a Fortune 500 retailer, is hiring an AI/ML Engineer.\n\nRequirements:\n- 2+ years of experience with Python and PyTorch\n- W2 contract, 12 months"
+  },
+  {
+    "page": 1, "board": "indeed", "hoursAgo": 30,
+    "url": "https://www.indeed.com/viewjob?jk=helio001",
+    "company": "Helio Health", "title": "Machine Learning Engineer", "location": "Boston, MA",
+    "description": "Requirements:\n- 1+ years of experience with Python, PyTorch, and SQL"
+  },
+  {
+    "page": 1, "board": "indeed", "hoursAgo": 2,
+    "url": "https://www.indeed.com/viewjob?jk=bright001",
+    "company": "Brightpath", "title": "Senior AI Engineer", "location": "New York, NY",
+    "description": "Requirements:\n- 6+ years of experience with Python and LLM systems"
+  },
+  {
+    "page": 1, "board": "indeed", "hoursAgo": 8,
+    "url": "https://www.indeed.com/viewjob?jk=quanta001",
+    "company": "Quanta Retail", "title": "LLM Engineer", "location": "Seattle, WA",
+    "description": "Requirements:\n- 5+ years of experience shipping machine learning systems\n- Python, LLM, RAG"
+  },
+  {
+    "page": 1, "board": "indeed", "hoursAgo": 6,
+    "url": "https://www.indeed.com/viewjob?jk=civic001",
+    "company": "Civic Data Co", "title": "AI Engineer", "location": "Washington, DC",
+    "description": "Requirements:\n- 1+ years of experience with Python and LLM tooling\n\nMust be a U.S. citizen. We are unable to sponsor visas for this position."
+  },
+  {
+    "page": 1, "board": "indeed", "hoursAgo": 4,
+    "url": "https://lumenrobotics.wd1.myworkdayjobs.com/careers/job/Pittsburgh/Software-Engineer--AI-ML-_R1180",
+    "company": "Lumen Robotics", "title": "Software Engineer (AI/ML)", "location": "Pittsburgh, PA",
+    "description": "Lumen Robotics is hiring a Software Engineer (AI/ML) to put language models on warehouse robots. You will write Python and PyTorch, package services with Docker, deploy to AWS on Kubernetes, and wire LLM planning into our fleet software. We review everything in Git. 0 to 2 years of experience is a great fit. Must be legally authorized to work in the United States."
+  },
+  {
+    "page": 1, "board": "linkedin", "hoursAgo": 2,
+    "url": "https://www.linkedin.com/jobs/view/3901112233",
+    "company": "Northwind Labs", "title": "AI Engineer", "location": "San Francisco, California",
+    "description": "Northwind Labs is hiring an AI Engineer. Python, LLM, RAG, FAISS."
+  },
+  {
+    "page": 1, "board": "linkedin", "hoursAgo": 10,
+    "url": "https://jobs.lever.co/orbitalfinance/7d1c",
+    "company": "Orbital Finance", "title": "Generative AI Engineer", "location": "New York, NY",
+    "description": "What you'll do\nBuild assistants that answer questions over financial filings.\n\nWhat you bring:\n- 0 to 2 years of experience with Python and large language models\n- RAG pipelines and embeddings\n- Prompt engineering\n- PostgreSQL\n\nBonus:\n- LLM evaluation\n- Redis"
+  },
+  {
+    "page": 1, "board": "linkedin", "hoursAgo": 7,
+    "url": "https://www.linkedin.com/jobs/view/3901114455",
+    "company": "Kestrel AI", "title": "Applied AI Engineer", "location": "Denver, CO",
+    "description": "Requirements:\n- 1+ years of experience\n- Python, Java, and C++\n- Spark and Kubernetes\n- Computer vision on Azure"
+  },
+  {
+    "page": 1, "board": "linkedin", "hoursAgo": 9,
+    "url": "https://www.linkedin.com/jobs/view/3901116677",
+    "company": "Talent Bridge Partners", "title": "AI Engineer", "location": "Austin, TX",
+    "description": "Requirements:\n- 2+ years of experience with Python and LLM applications"
+  },
+  {
+    "page": 1, "board": "linkedin", "hoursAgo": null,
+    "url": "https://www.linkedin.com/jobs/view/3901118899",
+    "company": "Ferrous Logistics", "title": "AI Engineer", "location": "Chicago, IL",
+    "description": "Requirements:\n- 1+ years of experience with Python"
+  },
+  {
+    "page": 2, "board": "linkedin", "hoursAgo": 12,
+    "url": "https://boards.greenhouse.io/meridianhealthai/jobs/5520031",
+    "company": "Meridian Health AI", "title": "Machine Learning Engineer", "location": "Boston, MA",
+    "description": "Minimum qualifications:\n- 3+ years of experience in machine learning\n- Python, PyTorch, and scikit-learn\n- SQL\n- AWS and Docker\n\nPreferred qualifications:\n- MLflow\n- Airflow\n- Spark\n- Computer vision\n\nVisa sponsorship available."
+  },
+  {
+    "page": 2, "board": "linkedin", "hoursAgo": 14,
+    "url": "https://www.linkedin.com/jobs/view/3901120011",
+    "company": "Northstar Insights", "title": "Product Manager, AI", "location": "Remote",
+    "description": "Requirements:\n- 2+ years of experience as a product manager for LLM products"
+  },
+  {
+    "page": 2, "board": "linkedin", "hoursAgo": 16,
+    "url": "https://jobs.lever.co/sablesystems/a2f9",
+    "company": "Sable Systems", "title": "AI Engineer", "location": "Austin, TX",
+    "description": "Requirements:\n- 2+ years of professional experience with Python\n- LLM applications with LlamaIndex\n- Retrieval augmented generation backed by Weaviate\n- Docker"
+  },
+  {
+    "page": 1, "board": "jobright", "hoursAgo": 20,
+    "url": "https://jobright.ai/jobs/info/piper-ai-ml-engineer",
+    "company": "Piper Analytics", "title": "AI/ML Engineer", "location": "Seattle, WA",
+    "description": "Requirements:\n- 1+ years of experience with Python, SQL, and Pandas\n- scikit-learn models in production\n- LLM features on AWS\n\nPreferred:\n- Spark"
+  }
+]

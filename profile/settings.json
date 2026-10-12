@@ -1,0 +1,12 @@
+{
+  "batchSize": 10,
+  "maxAgeHours": 24,
+  "maxYears": 3,
+  "gateCeiling": 80,
+  "maxAsksPerJob": 3,
+  "targetScore": 88,
+  "preferredWeight": 0.4,
+  "peoplePerJob": 5,
+  "inviteCapPerDay": 15,
+  "draftTries": 2
+}

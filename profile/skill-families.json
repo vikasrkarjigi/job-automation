@@ -1,0 +1,19 @@
+{
+  "links": [
+    {
+      "from": "Pinecone",
+      "to": "FAISS",
+      "firstJobId": "northwind-labs-ai-engineer-4e8c4a"
+    },
+    {
+      "from": "LangChain",
+      "to": "LlamaIndex",
+      "firstJobId": "sable-systems-ai-engineer-5e83d9"
+    },
+    {
+      "from": "Pinecone",
+      "to": "Weaviate",
+      "firstJobId": "sable-systems-ai-engineer-5e83d9"
+    }
+  ]
+}
