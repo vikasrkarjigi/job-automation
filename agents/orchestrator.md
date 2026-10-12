@@ -17,6 +17,10 @@ A second morning tick the same day finds the run lock or the rows already waitin
 - Approve: `npm run approve -- <jobId>`. Skip: `npm run skip -- <jobId>`.
 - For each approved job, run `npm run approved`, then follow `agents/apply.md` and `agents/outreach.md` for that job.
 
+## Saving state
+
+Each scheduled run starts in a fresh cloud VM. The tracker, the frozen resumes, the remembered keyword answers, and the apply answers only survive if they are in the repository. After every step, commit and push `data/`, `resumes/`, `tracker/`, `profile/`, and `agents/apply.md`.
+
 ## Stops that always wait for the human
 
 - A new required keyword with no evidence and no family match.
