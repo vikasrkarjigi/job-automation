@@ -1,8 +1,10 @@
-# Morning automation
+# Cursor Automation (fallback)
+
+The Slack bot in `bot/` is the main way to run Shortlist. It runs on a schedule at 4 am, 12 pm, and 8 pm Chicago time, and whenever you post in #scout. Use this Automation only if you want the pipeline without Slack.
 
 Paste the prompt below into a Cursor Automation at cursor.com/automations.
 
-- Trigger: schedule, every day at 7:00 in your time zone (for example cron `0 7 * * *`).
+- Trigger: manual, plus a schedule at 4:00, 12:00, and 20:00 in your time zone (cron `0 4,12,20 * * *`). Nothing else.
 - Repository: this repository, branch `main`.
 - Connectors the automation needs: Indeed, Apify, Apollo, Gmail, Tsenta. Board passwords go in Cloud Agents secrets as `BOARD_PASSWORD`.
 - The run happens in a Cursor cloud VM, so your laptop can be off.

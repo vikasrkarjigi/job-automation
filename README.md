@@ -1,5 +1,7 @@
 # Shortlist
 
+Shortlist runs in Slack. Each channel is one agent you can talk to, and the whole flow keeps running on Cursor hosting with your laptop closed. A web tracker shows the same pipeline with readable tailored resumes.
+
 A job pipeline for entry level AI engineer roles. Every morning it fetches postings from the last 24 hours, drops anything that fails a hard filter, scores the rest against your resume in code, tailors only the jobs that can honestly clear the bar, and waits for you. Applications stop on the Submit page and outreach stops at drafts until you say yes. A tracker records every job, the exact resume each one received, and every person contacted.
 
 ## How a day runs
@@ -14,9 +16,36 @@ A job pipeline for entry level AI engineer roles. Every morning it fetches posti
 
 `agents/orchestrator.md` chains these steps. Your answers to keyword questions are saved in `profile/confirmed-keywords.md` and reused on later jobs.
 
+## Slack: one agent per channel
+
+| Channel | What you can ask | What it posts |
+| --- | --- | --- |
+| #scout | "run now", "what did today's run find" | Scheduled runs at 4 am, 12 pm, 8 pm, and the shortlist |
+| #ats | "why was Kestrel ignored", "yes, I used Kubernetes on the gateway" | Keyword questions, asked once and remembered |
+| #tailor | "resume northwind-labs-ai-engineer-4e8c4a", "approve <id>", "check this bullet" | The .tex and a readable copy with every change marked |
+| #apply | "salary is 120000", "I submitted <id>" | Blanks it needs, and the link to press Submit yourself |
+| #outreach | "show drafts for <id>", "yes send" | Drafts, then what went out and what the daily cap held |
+| #tracker | "status", "what did I apply to this week", "resume for Sable" | Digests after each run |
+
+How it is built (`bot/`, using `@cursor/bdk`):
+
+- `bot/channels/slack.ts` watches the six channels. The channel a message arrives in picks the role, which loads that role's skill (`bot/skills/*.md`) and brief (`agents/*.md`). Mentions and DMs work too.
+- `bot/tools/*.ts` are thin wrappers over the same pipeline code in `src/`, so scores, filters, gates, and stage changes are deterministic. `bot/lib/state.ts` runs that code against hosted durable storage, so nothing depends on your machine.
+- Browser work (Indeed, Jobright, Apollo, Vibe, Gmail, application forms) is handed to a Cursor cloud agent, and the thread wakes when that agent finishes. LinkedIn goes through Apify directly when `APIFY_TOKEN` is set.
+- `bot/schedules/pipeline-run.ts` checks hourly and runs only at 4, 12, and 20 local time (`SHORTLIST_TZ`, default `America/Chicago`; `SHORTLIST_RUN_HOURS` to change). Post in #scout to run it by hand.
+- Every tailored resume is kept in storage and as a `tailored-resume` artifact. When you submit, the exact file is locked to that job.
+
+### Connect it (one time)
+
+1. Create channels `#scout`, `#ats`, `#tailor`, `#apply`, `#outreach`, `#tracker` in your Slack workspace.
+2. `npx bdk login`, then `npx bdk slack create --dir . --channel-posts` and approve the app in the browser. Invite the bot to all six channels.
+3. Put the channel ids in `.env.local` (and in the deployment env): `SHORTLIST_CHANNEL_SCOUT=C...` and so on for `ATS`, `TAILOR`, `APPLY`, `OUTREACH`, `TRACKER`. Optional: `SHORTLIST_OWNER_SLACK_ID` so only you can drive it, `SHORTLIST_WEB_URL` for resume links, `APIFY_TOKEN` and `APIFY_LINKEDIN_ACTOR` for LinkedIn.
+4. `npx bdk slack doctor --prefix SHORTLIST`, then `npx bdk serve --dir . --dev` to try it locally.
+5. Push, then `npx bdk deploy` (needs `CURSOR_SERVICE_ACCOUNT_KEY`) so it runs on Cursor hosting. Add `BOARD_PASSWORD` as a Cloud Agents secret for account creation.
+
 ## Run the demo locally
 
-Requires Node 20 or newer.
+Requires Node 22.13 or newer.
 
 ```bash
 npm install
@@ -28,13 +57,13 @@ The demo works on a sample resume and sample jobs in `.demo/`, so it never touch
 
 ## Use it for real
 
-1. Replace `profile/base.tex` with your LaTeX resume. Keep the `%% tailor:bullets` line inside the itemize where new bullets go, and put `%% tailor:skills` at the end of the skills line that new keywords are appended to.
+1. `profile/base.tex` is converted from your PDF resume. Replace it with your own LaTeX source when you have it. Keep the `%% tailor:bullets` line inside the itemize where new bullets go, and put `%% tailor:skills` at the end of the skills line that new keywords are appended to.
 2. Fill `profile/evidence.json` with the skills you can back up. Add a `bullet` when you have one that is 200 to 230 characters, starts with a unique verb, has no hyphens, and has exactly one `\textbf{}`.
 3. Fill the blanks in `agents/apply.md`, including authorization, sponsorship, relocation, salary, and start date. A blank is never guessed.
 4. Adjust `profile/settings.json` if you want to change the batch size, the gate, the target, or the LinkedIn invite cap.
-5. Create the morning automation from `automation/morning.md`. It runs in a Cursor cloud VM on a schedule, so your laptop can be off. It messages you the shortlist, and you approve by replying to that agent.
+5. Connect Slack (above). Without Slack, `automation/morning.md` is a Cursor Automation fallback.
 
-Run `npm run dev` to see the real tracker at http://localhost:4317. The same data is written to `tracker/TRACKER.md` after every change.
+Run `npm run dev` to see the real tracker at http://localhost:4317. Open any job's resume to see it formatted, with added bullets in green, reworded bullets in amber, and a Save as PDF button. The Resumes tab lists every tailored resume, and submitted ones are marked. The same data is written to `tracker/TRACKER.md` after every change.
 
 ## Commands
 
