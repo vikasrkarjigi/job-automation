@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { paths } from "./settings";
+import { paths } from "./settings.ts";
 
 export interface EvidenceEntry {
   snippet: string;

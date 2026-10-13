@@ -1,5 +1,5 @@
-import { stripLatex } from "./keywords";
-import { visibleText } from "./tailor";
+import { stripLatex } from "./keywords.ts";
+import { visibleText } from "./tailor.ts";
 
 export type Change = "same" | "new" | "edited";
 export type Run = { text: string; bold: boolean };
@@ -41,9 +41,13 @@ function runsOf(latex: string): Run[] {
     last = m.index! + m[0].length;
   }
   if (last < latex.length) runs.push({ text: visibleText(latex.slice(last)), bold: false });
-  return runs
-    .filter((r) => r.text)
-    .map((r, i, all) => ({ ...r, text: (i > 0 && !/^[,.;:)]/.test(r.text) ? " " : "") + r.text.replace(/^ /, "") }));
+  const out = runs.filter((r) => r.text);
+  for (let i = 1; i < out.length; i++) {
+    if (/^[,.;:)]/.test(out[i].text)) continue;
+    if (!out[i - 1].bold) out[i - 1].text += " ";
+    else out[i].text = " " + out[i].text;
+  }
+  return out;
 }
 
 const words = (s: string) => new Set(s.toLowerCase().match(/[a-z0-9+#]+/g) ?? []);
@@ -69,7 +73,7 @@ function baseIndex(baseTex: string | null) {
   for (const raw of body(baseTex).split("\n")) {
     const line = uncomment(raw);
     const item = line.match(ITEM);
-    if (item) bullets.push(visibleText(item[1]));
+    if (item) bullets.push(runsOf(item[1]).map((r) => r.text).join(""));
     const skill = line.match(SKILL);
     if (skill && !item) for (const s of splitList(skill[2])) skills.add(s.toLowerCase());
   }
@@ -110,14 +114,15 @@ export function parseResume(tex: string, baseTex: string | null = null): ResumeD
 
     const item = line.match(ITEM);
     if (item) {
-      const text = visibleText(item[1]);
+      const runs = runsOf(item[1]);
+      const text = runs.map((r) => r.text).join("");
       let change: Change = "same";
       if (baseTex && !base.bullets.includes(text)) {
         change = base.bullets.some((b) => similarity(b, text) >= 0.6) ? "edited" : "new";
         if (change === "new") doc.changes.newBullets++;
         else doc.changes.editedBullets++;
       }
-      current.blocks.push({ kind: "bullet", runs: runsOf(item[1]), text, change });
+      current.blocks.push({ kind: "bullet", runs, text, change });
       continue;
     }
     const skill = line.match(SKILL);
@@ -131,7 +136,7 @@ export function parseResume(tex: string, baseTex: string | null = null): ResumeD
       continue;
     }
     if (line.includes("\\hfill")) {
-      current.blocks.push({ kind: "entry", parts: line.split("\\hfill").map((p) => visibleText(p)).filter(Boolean) });
+      current.blocks.push({ kind: "entry", parts: line.replace(/\\\\\s*$/, "").split("\\hfill").map((p) => visibleText(p)).filter(Boolean) });
       continue;
     }
     const text = visibleText(line);

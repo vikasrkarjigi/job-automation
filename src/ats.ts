@@ -1,8 +1,8 @@
-import { countTerms, stripLatex } from "./keywords";
-import type { Confirmation, EvidenceBank } from "./profile";
-import { splitSections } from "./sections";
-import { loadFamilies } from "./skill-families";
-import type { JobKeyword, Rename, ScoreResult, Settings } from "./types";
+import { countTerms, stripLatex } from "./keywords.ts";
+import type { Confirmation, EvidenceBank } from "./profile.ts";
+import { splitSections } from "./sections.ts";
+import { loadFamilies } from "./skill-families.ts";
+import type { JobKeyword, Rename, ScoreResult, Settings } from "./types.ts";
 
 export interface ScoreContext {
   evidence: EvidenceBank;

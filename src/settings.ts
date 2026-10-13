@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Settings } from "./types";
+import type { Settings } from "./types.ts";
 
 export const root = () => process.env.SHORTLIST_ROOT ?? process.cwd();
 

@@ -1,8 +1,8 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { paths } from "./settings";
-import type { JobRow, Person } from "./types";
+import { paths } from "./settings.ts";
+import type { JobRow, Person } from "./types.ts";
 
 export interface PersonInput {
   firstName: string;

@@ -1,16 +1,16 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { answerFor, appendQuestion, buildPacket, loadAnswers } from "./apply";
-import { gate, scoreJob } from "./ats";
-import { buildPeople, loadPeopleInput } from "./outreach";
-import { loadBaseResume, loadConfirmations, loadEvidence, recordConfirmation } from "./profile";
-import { boardCursors, dedupe, hardFilter, industryFor, isFresh, loadCompanies, pagesToFetch, readInbox } from "./scout";
-import { loadSettings, paths } from "./settings";
-import { rememberLink } from "./skill-families";
-import { tailorResume } from "./tailor";
-import { addHistory, dayKey, findJob, jobId, jobKey, loadTracker, saveTracker, setStage } from "./tracker";
-import type { Board, JobRow, RunRecord, Settings, TrackerData } from "./types";
+import { answerFor, appendQuestion, buildPacket, loadAnswers } from "./apply.ts";
+import { gate, scoreJob } from "./ats.ts";
+import { buildPeople, loadPeopleInput } from "./outreach.ts";
+import { loadBaseResume, loadConfirmations, loadEvidence, recordConfirmation } from "./profile.ts";
+import { boardCursors, dedupe, hardFilter, industryFor, isFresh, loadCompanies, pagesToFetch, readInbox } from "./scout.ts";
+import { loadSettings, paths } from "./settings.ts";
+import { rememberLink } from "./skill-families.ts";
+import { tailorResume } from "./tailor.ts";
+import { addHistory, dayKey, findJob, jobId, jobKey, loadTracker, saveTracker, setStage } from "./tracker.ts";
+import type { Board, JobRow, RunRecord, Settings, TrackerData } from "./types.ts";
 
 const LOCK_TTL_MS = 2 * 3_600_000;
 

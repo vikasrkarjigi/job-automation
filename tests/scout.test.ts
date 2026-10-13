@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { runMorning } from "../src/orchestrator";
-import { checkAgency, checkExperience, checkSponsorship, checkTitle, dedupe, isFresh } from "../src/scout";
-import { dayKey, loadTracker } from "../src/tracker";
-import type { RawPosting } from "../src/types";
-import { posting, tempRoot, writeInbox } from "./helpers";
+import { runMorning } from "../src/orchestrator.ts";
+import { checkAgency, checkExperience, checkSponsorship, checkTitle, dedupe, isFresh } from "../src/scout.ts";
+import { dayKey, loadTracker } from "../src/tracker.ts";
+import type { RawPosting } from "../src/types.ts";
+import { posting, tempRoot, writeInbox } from "./helpers.ts";
 
 describe("fetch filters", () => {
   it("keeps only posts under 24 hours old and drops posts with no timestamp", () => {

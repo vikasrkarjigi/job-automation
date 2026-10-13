@@ -1,8 +1,8 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
-import { paths } from "./settings";
-import { normalize } from "./tracker";
-import type { ApplyPacket, JobRow } from "./types";
+import { paths } from "./settings.ts";
+import { normalize } from "./tracker.ts";
+import type { ApplyPacket, JobRow } from "./types.ts";
 
 export interface SavedAnswer {
   key: string;
@@ -103,6 +103,18 @@ export function appendQuestion(question: string): string {
   const clean = question.replace(/[()\n]/g, " ").replace(/\s+/g, " ").trim();
   fs.writeFileSync(paths.applyMd(), md.replace(/\n*$/, "\n") + `- ${key} (${clean}):\n`);
   return key;
+}
+
+export function saveAnswer(key: string, answer: string, question?: string): SavedAnswer {
+  const md = fs.readFileSync(paths.applyMd(), "utf8");
+  const clean = answer.replace(/\n+/g, " ").trim();
+  const existing = parseAnswers(md).find((a) => a.key === key);
+  if (!existing && !question) throw new Error(`No saved question with key ${key}. Pass the question text to add it.`);
+  const q = existing?.question ?? question!.replace(/[()\n]/g, " ").replace(/\s+/g, " ").trim();
+  const line = `- ${key} (${q}): ${clean}`;
+  const re = new RegExp(`^-\\s*${key}\\s*\\(.*$`, "m");
+  fs.writeFileSync(paths.applyMd(), existing ? md.replace(re, () => line) : md.replace(/\n*$/, "\n") + line + "\n");
+  return { key, question: q, answer: clean };
 }
 
 export function detectAts(url: string): ApplyPacket["ats"] {

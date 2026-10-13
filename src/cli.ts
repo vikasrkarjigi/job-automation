@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { extractOtp, type MailMessage } from "./apply";
+import { extractOtp, type MailMessage } from "./apply.ts";
 import {
   answerQuestion,
   approve,
@@ -13,12 +13,12 @@ import {
   runApproved,
   runMorning,
   skip,
-} from "./orchestrator";
-import { loadBaseResume, loadConfirmations, loadEvidence } from "./profile";
-import { seedDemo } from "./seed";
-import { root } from "./settings";
-import { allowedTermsFor, bulletsOf, checkBullet } from "./tailor";
-import { findJob, loadTracker, writeTrackerMarkdown } from "./tracker";
+} from "./orchestrator.ts";
+import { loadBaseResume, loadConfirmations, loadEvidence } from "./profile.ts";
+import { seedDemo } from "./seed.ts";
+import { root } from "./settings.ts";
+import { allowedTermsFor, bulletsOf, checkBullet } from "./tailor.ts";
+import { findJob, loadTracker, writeTrackerMarkdown } from "./tracker.ts";
 
 const [cmd, ...args] = process.argv.slice(2);
 const print = (v: unknown) => console.log(typeof v === "string" ? v : JSON.stringify(v, null, 2));

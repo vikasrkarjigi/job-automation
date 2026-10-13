@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
-import { extractKeywords, gate, scoreJob } from "../src/ats";
-import { approve, confirmKeyword, markReady, markSubmitted, runMorning } from "../src/orchestrator";
-import { loadBaseResume, loadConfirmations, loadEvidence } from "../src/profile";
-import { DEFAULT_SETTINGS } from "../src/settings";
-import { checkBullet, tailorResume } from "../src/tailor";
-import { dayKey, loadTracker } from "../src/tracker";
-import { posting, tempRoot, writeInbox } from "./helpers";
+import { extractKeywords, gate, scoreJob } from "../src/ats.ts";
+import { approve, confirmKeyword, markReady, markSubmitted, runMorning } from "../src/orchestrator.ts";
+import { loadBaseResume, loadConfirmations, loadEvidence } from "../src/profile.ts";
+import { DEFAULT_SETTINGS } from "../src/settings.ts";
+import { checkBullet, tailorResume } from "../src/tailor.ts";
+import { dayKey, loadTracker } from "../src/tracker.ts";
+import { posting, tempRoot, writeInbox } from "./helpers.ts";
 
 const ctx = () => ({ evidence: loadEvidence(), confirmations: loadConfirmations(), preferredWeight: 0.4 });
 

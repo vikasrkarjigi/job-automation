@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
-import { answerFor, extractOtp, loadAnswers, parseAnswers } from "../src/apply";
-import { answerQuestion, approve, markSent, runApproved, runMorning } from "../src/orchestrator";
-import { checkMessage, draftNote, NOTE_LIMIT, pickPeople } from "../src/outreach";
-import { dayKey, loadTracker } from "../src/tracker";
-import type { JobRow } from "../src/types";
-import { posting, tempRoot, writeInbox } from "./helpers";
+import { answerFor, extractOtp, loadAnswers, parseAnswers } from "../src/apply.ts";
+import { answerQuestion, approve, markSent, runApproved, runMorning } from "../src/orchestrator.ts";
+import { checkMessage, draftNote, NOTE_LIMIT, pickPeople } from "../src/outreach.ts";
+import { dayKey, loadTracker } from "../src/tracker.ts";
+import type { JobRow } from "../src/types.ts";
+import { posting, tempRoot, writeInbox } from "./helpers.ts";
 
 function fillAnswers(root: string, values: Record<string, string>) {
   const file = path.join(root, "agents", "apply.md");

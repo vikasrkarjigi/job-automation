@@ -1,6 +1,6 @@
-import { aliasesFor, countTerms, stripLatex } from "./keywords";
-import type { Confirmation, EvidenceBank } from "./profile";
-import type { ScoreResult } from "./types";
+import { aliasesFor, countTerms, stripLatex } from "./keywords.ts";
+import type { Confirmation, EvidenceBank } from "./profile.ts";
+import type { ScoreResult } from "./types.ts";
 
 export const SKILLS_MARKER = "%% tailor:skills";
 export const BULLETS_MARKER = "%% tailor:bullets";

@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { splitSections } from "./sections";
-import { paths } from "./settings";
-import { cityOf, jobKey, normalize } from "./tracker";
-import type { Board, RawPosting, Settings } from "./types";
+import { splitSections } from "./sections.ts";
+import { paths } from "./settings.ts";
+import { cityOf, jobKey, normalize } from "./tracker.ts";
+import type { Board, RawPosting, Settings } from "./types.ts";
 
 export const BOARDS: Board[] = ["indeed", "linkedin", "jobright"];
 
