@@ -35,7 +35,16 @@ How it is built (`bot/`, using `@cursor/bdk`):
 - `bot/schedules/pipeline-run.ts` checks hourly and runs only at 4, 12, and 20 local time (`SHORTLIST_TZ`, default `America/Chicago`; `SHORTLIST_RUN_HOURS` to change). Post in #scout to run it by hand.
 - Every tailored resume is kept in storage and as a `tailored-resume` artifact. When you submit, the exact file is locked to that job.
 
-### Connect it (one time)
+### Connect it with the Cursor Slack app (works on a personal plan)
+
+1. In the Cursor Dashboard, connect GitHub under Integrations and give it access to `vikasrkarjigi/job-automation`.
+2. In Slack, link the Cursor app, then set this repository and branch `main` as the default with `@Cursor settings`. Invite @Cursor to the six channels.
+3. Mention @Cursor in a channel to run that agent, for example `@Cursor run now` in #scout. `.cursor/rules/slack-channels.mdc` picks the role from the channel and pushes the pipeline state back to `main` after every step.
+4. Create a Cursor Automation from `automation/morning.md` for the 4 am, 12 pm, and 8 pm runs.
+
+### Connect it as a dedicated bot (needs a Cursor team)
+
+`bdk slack create` and `bdk deploy` are scoped to a Cursor team.
 
 1. Create channels `#scout`, `#ats`, `#tailor`, `#apply`, `#outreach`, `#tracker` in your Slack workspace.
 2. `npx bdk login`, then `npx bdk slack create --dir . --name Shortlist --prefix SHORTLIST --channel-posts` and approve the app in the browser. Invite the bot to all six channels.

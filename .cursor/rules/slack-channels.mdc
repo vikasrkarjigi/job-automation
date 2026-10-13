@@ -1,0 +1,51 @@
+---
+description: How to act when this repository is driven from Slack through the Cursor app
+alwaysApply: true
+---
+
+# Shortlist from Slack
+
+People reach this repository by mentioning @Cursor in Slack, and the 4 am, 12 pm, and 8 pm runs come from a Cursor Automation (`automation/morning.md`). Every request starts in a fresh cloud VM, so the repository is the only memory.
+
+## Pick the role from the channel
+
+Use the Slack channel the request came from. If it is not one of these, act as the tracker and say which channel handles the request.
+
+| Channel | Role | Read first |
+|---|---|---|
+| #scout | Find jobs from the last 24 hours, run the hard filters, then hand off to scoring and tailoring | `agents/orchestrator.md`, `agents/scout.md` |
+| #ats | Explain scores, gates, and keyword questions; record keyword answers | `agents/ats-score.md` |
+| #tailor | Show or explain a tailored resume, check a bullet | `agents/resume-tailor.md` |
+| #apply | Approve or skip jobs, fill applications up to Submit, record submissions | `agents/apply.md` |
+| #outreach | Draft recruiter and manager messages, record sends after a yes | `agents/outreach.md` |
+| #tracker | Status, history, which resume went to which job | `agents/orchestrator.md` |
+
+## Commands
+
+- Start every request with `npm ci`.
+- Find jobs: follow `agents/orchestrator.md` (Morning run), which loops `npm run morning`.
+- Keyword answer: `npm run confirm -- "<keyword>" yes "<where you used it>"` or `npm run confirm -- "<keyword>" no`, then `npm run morning`.
+- Approve or skip: `npm run approve -- <jobId>`, `npm run skip -- <jobId>`, then `npm run approved` for approved jobs.
+- Apply states: `npm run ready -- <jobId>`, `npm run blocked -- <jobId> "<reason>"`, and `npm run submitted -- <jobId>` only after the person says they pressed Submit.
+- Application questions: `npm run answer -- <jobId> "<question>"`. A `BLOCKED` result is asked in the thread, never guessed.
+- Outreach: `npm run sent -- <jobId> [personId ...]` only after an explicit yes, `npm run gmail-draft -- <jobId> <personId> <draftId>` for drafts.
+- Bullet check: `npm run check-bullet -- "<bullet>" <jobId>`.
+- Status: read `data/tracker.json` through `npm run export`, then summarize `tracker/TRACKER.md`.
+
+## Saving
+
+After any command that changes state, run `npm run export`, then commit `data/`, `resumes/`, `tracker/`, `profile/`, and `agents/apply.md` and push straight to `main` (`git pull --rebase origin main` first). Do not create a branch or open a pull request for pipeline state. Code changes are the only exception, and only when the person asks for them.
+
+## Replying in Slack
+
+- Lead with the answer. For each job give title, company, score before and after, and the job id.
+- End with the exact replies the person can send next, such as `approve <id>`, `skip <id>`, `yes <keyword> <where you used it>`, `no <keyword>`.
+- Link a resume as `resumes/<jobId>.tex` on GitHub (https://github.com/vikasrkarjigi/job-automation/blob/main/resumes/<jobId>.tex).
+
+## Never
+
+- Never press Submit on an application.
+- Never send an email or LinkedIn invite without a yes in the thread.
+- Never search for people on LinkedIn. People come from Apollo or Vibe only.
+- Never change a score by hand, loosen a filter, or claim a skill that is not in `profile/evidence.json` or `profile/confirmed-keywords.md`.
+- Never paste passwords, tokens, or one-time codes into Slack.

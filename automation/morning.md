@@ -1,6 +1,6 @@
 # Cursor Automation (fallback)
 
-The Slack bot in `bot/` is the main way to run Shortlist. It runs on a schedule at 4 am, 12 pm, and 8 pm Chicago time, and whenever you post in #scout. Use this Automation only if you want the pipeline without Slack.
+This Automation runs the pipeline at 4 am, 12 pm, and 8 pm when Shortlist is driven through the Cursor Slack app instead of the dedicated bot in `bot/`. If the Automation offers a Slack destination, send it to #scout so the shortlist lands there, then answer in Slack with @Cursor.
 
 Paste the prompt below into a Cursor Automation at cursor.com/automations.
 
