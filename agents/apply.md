@@ -19,16 +19,16 @@ Never press Submit. The human does.
 
 Fill the blanks. A blank question is never guessed. Format: `- key (question): answer`.
 
-- legal_name (Legal full name):
-- preferred_name (Preferred first name):
-- email (Email):
-- phone (Phone):
-- city (Current city):
-- state (State):
+- legal_name (Legal full name): Vikas Ravikumar Karjigi
+- preferred_name (Preferred first name): Vikas
+- email (Email): vikasravikarjigi26@gmail.com
+- phone (Phone): (312) 273 8331
+- city (Current city): Chicago
+- state (State): IL
 - country (Country): United States
-- linkedin (LinkedIn profile URL):
-- github (GitHub URL):
-- website (Website or portfolio URL):
+- linkedin (LinkedIn profile URL): https://linkedin.com/in/vikasrkarjigi
+- github (GitHub URL): https://github.com/vikasrkarjigi
+- website (Website or portfolio URL): https://vkarjigi-portfolio.vercel.app
 - authorized_us (Are you legally authorized to work in the United States?):
 - sponsorship_now (Will you now require visa sponsorship?):
 - sponsorship_future (Will you in the future require visa sponsorship?):
@@ -41,8 +41,8 @@ Fill the blanks. A blank question is never guessed. Format: `- key (question): a
 - notice_period (Notice period):
 - salary (Desired annual base salary):
 - years_experience (Years of relevant experience):
-- degree (Highest degree):
-- field_of_study (Field of study):
+- degree (Highest degree): Master's degree (Master of Applied Science)
+- field_of_study (Field of study): Data Science
 - previously_employed (Have you previously worked for this company?): No
 - non_compete (Are you bound by a non compete agreement?):
 - heard_about (How did you hear about this role?): Job board

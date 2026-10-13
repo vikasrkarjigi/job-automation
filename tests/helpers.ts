@@ -9,6 +9,7 @@ export function tempRoot(): string {
   for (const sub of ["profile", "agents", "fixtures"]) {
     fs.cpSync(path.join(REPO, sub), path.join(dir, sub), { recursive: true });
   }
+  fs.cpSync(path.join(REPO, "fixtures", "demo", "profile"), path.join(dir, "profile"), { recursive: true });
   process.env.SHORTLIST_ROOT = dir;
   return dir;
 }

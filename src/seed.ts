@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { BOARDS, inboxDir } from "./scout";
-import { paths, root } from "./settings";
-import { dayKey, emptyTracker, jobId, saveTracker } from "./tracker";
-import type { Board, RawPosting } from "./types";
+import { BOARDS, inboxDir } from "./scout.ts";
+import { paths, root } from "./settings.ts";
+import { dayKey, emptyTracker, jobId, saveTracker } from "./tracker.ts";
+import type { Board, RawPosting } from "./types.ts";
 
 interface FixturePosting extends Omit<RawPosting, "postedAt"> {
   page: number;
@@ -22,6 +22,7 @@ export function seedDemo(opts: { reset?: boolean; now?: Date } = {}) {
       if (opts.reset || !fs.existsSync(dest)) {
         fs.rmSync(dest, { recursive: true, force: true });
         fs.cpSync(path.join(repo, sub), dest, { recursive: true });
+        if (sub === "profile") fs.cpSync(path.join(repo, "fixtures", "demo", "profile"), dest, { recursive: true });
       }
     }
   }
