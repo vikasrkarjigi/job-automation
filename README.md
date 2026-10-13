@@ -38,10 +38,10 @@ How it is built (`bot/`, using `@cursor/bdk`):
 ### Connect it (one time)
 
 1. Create channels `#scout`, `#ats`, `#tailor`, `#apply`, `#outreach`, `#tracker` in your Slack workspace.
-2. `npx bdk login`, then `npx bdk slack create --dir . --channel-posts` and approve the app in the browser. Invite the bot to all six channels.
-3. Put the channel ids in `.env.local` (and in the deployment env): `SHORTLIST_CHANNEL_SCOUT=C...` and so on for `ATS`, `TAILOR`, `APPLY`, `OUTREACH`, `TRACKER`. Optional: `SHORTLIST_OWNER_SLACK_ID` so only you can drive it, `SHORTLIST_WEB_URL` for resume links, `APIFY_TOKEN` and `APIFY_LINKEDIN_ACTOR` for LinkedIn.
+2. `npx bdk login`, then `npx bdk slack create --dir . --name Shortlist --prefix SHORTLIST --channel-posts` and approve the app in the browser. Invite the bot to all six channels.
+3. Put the channel ids in `.env.local` and in the deployment env before deploying, because the watched-channel list is published with the app: `SHORTLIST_CHANNEL_SCOUT=C...` and so on for `ATS`, `TAILOR`, `APPLY`, `OUTREACH`, `TRACKER`. Optional: `SHORTLIST_OWNER_SLACK_ID` so only you can drive it, `SHORTLIST_WEB_URL` for resume links, `APIFY_TOKEN` and `APIFY_LINKEDIN_ACTOR` for LinkedIn.
 4. `npx bdk slack doctor --prefix SHORTLIST`, then `npx bdk serve --dir . --dev` to try it locally.
-5. Push, then `npx bdk deploy` (needs `CURSOR_SERVICE_ACCOUNT_KEY`) so it runs on Cursor hosting. Add `BOARD_PASSWORD` as a Cloud Agents secret for account creation.
+5. Push, then `npx bdk deploy --dir . --slug shortlist` (needs `CURSOR_SERVICE_ACCOUNT_KEY`) so it runs on Cursor hosting. Add `BOARD_PASSWORD` as a Cloud Agents secret for account creation.
 
 ## Run the demo locally
 
