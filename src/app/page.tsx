@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Applications, Ignored, People, Runs } from "@/components/tracker/tables";
+import { Applications, Ignored, People, Resumes, Runs } from "@/components/tracker/tables";
 import { Today } from "@/components/tracker/today";
 import Link from "next/link";
 import { loadSettings } from "@/settings";
@@ -31,7 +31,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   );
 }
 
-const TABS = ["today", "applications", "people", "ignored", "runs"] as const;
+const TABS = ["today", "applications", "resumes", "people", "ignored", "runs"] as const;
 type Tab = (typeof TABS)[number];
 
 async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
@@ -69,6 +69,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
           [
             ["today", "Today"],
             ["applications", "Applications"],
+            ["resumes", `Resumes (${data.jobs.filter((j) => j.resumePath).length})`],
             ["people", `People (${c.people})`],
             ["ignored", `Ignored (${c.ignored})`],
             ["runs", "Runs"],
@@ -87,6 +88,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
       <div>
         {tab === "today" && <Today jobs={data.jobs} settings={settings} />}
         {tab === "applications" && <Applications jobs={data.jobs} />}
+        {tab === "resumes" && <Resumes jobs={data.jobs} />}
         {tab === "people" && <People jobs={data.jobs} />}
         {tab === "ignored" && <Ignored jobs={data.jobs} />}
         {tab === "runs" && <Runs runs={data.runs} />}

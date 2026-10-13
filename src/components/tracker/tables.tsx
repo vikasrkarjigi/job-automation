@@ -9,6 +9,38 @@ function Empty({ children }: { children: React.ReactNode }) {
   return <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">{children}</div>;
 }
 
+export function Resumes({ jobs }: { jobs: JobRow[] }) {
+  const rows = jobs.filter((j) => j.resumePath).sort((a, b) => (b.submittedAt ?? b.createdAt).localeCompare(a.submittedAt ?? a.createdAt));
+  if (!rows.length) return <Empty>No tailored resumes yet. One is written for every job that clears the basic checks.</Empty>;
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      {rows.map((j) => (
+        <a key={j.id} href={`/resume/${j.id}`} className="group rounded-xl border p-4 transition-colors hover:bg-muted/50">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="font-medium group-hover:underline">{j.title}</div>
+              <div className="text-xs text-muted-foreground">{j.company}</div>
+            </div>
+            <StageBadge stage={j.stage} />
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="tabular-nums">
+              ATS {j.scoreBefore ?? "?"} → {j.scoreAfter ?? "?"}
+            </span>
+            {(j.analysis?.renames ?? []).map((r) => (
+              <Badge key={r.from} variant="outline">
+                {r.from} → {r.to}
+              </Badge>
+            ))}
+            {j.submittedResumePath && <Badge>Submitted {when(j.submittedAt)}</Badge>}
+          </div>
+          <div className="mt-2 font-mono text-[11px] text-muted-foreground">{j.submittedResumePath ?? j.resumePath}</div>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 export function Applications({ jobs }: { jobs: JobRow[] }) {
   const rows = jobs.filter((j) => j.stage !== "ignored");
   if (!rows.length) return <Empty>No jobs have passed the filters yet.</Empty>;
