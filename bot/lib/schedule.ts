@@ -1,4 +1,4 @@
-export const DEFAULT_TZ = "America/Chicago";
+export const DEFAULT_TZ = "America/Los_Angeles";
 export const DEFAULT_HOURS = [4, 12, 20];
 
 export function runHours(): number[] {

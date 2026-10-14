@@ -23,8 +23,8 @@ Fill the blanks. A blank question is never guessed. Format: `- key (question): a
 - preferred_name (Preferred first name): Vikas
 - email (Email): vikasravikarjigi26@gmail.com
 - phone (Phone): (312) 273 8331
-- city (Current city): Chicago
-- state (State): IL
+- city (Current city): San Francisco
+- state (State): CA
 - country (Country): United States
 - linkedin (LinkedIn profile URL): https://linkedin.com/in/vikasrkarjigi
 - github (GitHub URL): https://github.com/vikasrkarjigi

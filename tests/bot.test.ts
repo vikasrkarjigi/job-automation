@@ -81,11 +81,11 @@ describe("posting times", () => {
 });
 
 describe("schedule slots", () => {
-  it("runs at 4 am, 12 pm, and 8 pm Chicago time by default, across daylight saving", () => {
-    expect(dueSlot(new Date("2026-10-13T09:00:00Z"))).toMatchObject({ label: "4 am", key: "2026-10-13@4" });
-    expect(dueSlot(new Date("2026-10-13T17:00:00Z"))).toMatchObject({ label: "12 pm" });
-    expect(dueSlot(new Date("2026-10-14T01:00:00Z"))).toMatchObject({ label: "8 pm", key: "2026-10-13@20" });
-    expect(dueSlot(new Date("2026-12-01T10:00:00Z"))).toMatchObject({ label: "4 am" });
+  it("runs at 4 am, 12 pm, and 8 pm San Francisco time by default, across daylight saving", () => {
+    expect(dueSlot(new Date("2026-10-13T11:00:00Z"))).toMatchObject({ label: "4 am", key: "2026-10-13@4" });
+    expect(dueSlot(new Date("2026-10-13T19:00:00Z"))).toMatchObject({ label: "12 pm" });
+    expect(dueSlot(new Date("2026-10-14T03:00:00Z"))).toMatchObject({ label: "8 pm", key: "2026-10-13@20" });
+    expect(dueSlot(new Date("2026-12-01T12:00:00Z"))).toMatchObject({ label: "4 am" });
     expect(dueSlot(new Date("2026-10-13T10:00:00Z"))).toBeNull();
   });
 

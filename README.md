@@ -32,7 +32,7 @@ How it is built (`bot/`, using `@cursor/bdk`):
 - `bot/channels/slack.ts` watches the six channels. The channel a message arrives in picks the role, which loads that role's skill (`bot/skills/*.md`) and brief (`agents/*.md`). Mentions and DMs work too.
 - `bot/tools/*.ts` are thin wrappers over the same pipeline code in `src/`, so scores, filters, gates, and stage changes are deterministic. `bot/lib/state.ts` runs that code against hosted durable storage, so nothing depends on your machine.
 - Browser work (Indeed, Jobright, Apollo, Vibe, Gmail, application forms) is handed to a Cursor cloud agent, and the thread wakes when that agent finishes. LinkedIn goes through Apify directly when `APIFY_TOKEN` is set.
-- `bot/schedules/pipeline-run.ts` checks hourly and runs only at 4, 12, and 20 local time (`SHORTLIST_TZ`, default `America/Chicago`; `SHORTLIST_RUN_HOURS` to change). Post in #scout to run it by hand.
+- `bot/schedules/pipeline-run.ts` checks hourly and runs only at 4, 12, and 20 local time (`SHORTLIST_TZ`, default `America/Los_Angeles`; `SHORTLIST_RUN_HOURS` to change). Post in #scout to run it by hand.
 - Every tailored resume is kept in storage and as a `tailored-resume` artifact. When you submit, the exact file is locked to that job.
 
 ### Connect it with the Cursor Slack app (works on a personal plan)
