@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import type { JobRow, Settings } from "@/types";
 import { ago, KeywordChips, Score, Sources } from "./bits";
+import { SubmitButton } from "./client";
 
 function JobMeta({ job }: { job: JobRow }) {
   return (
@@ -43,13 +44,13 @@ function ShortlistCard({ job, settings }: { job: JobRow; settings: Settings }) {
         <div className="flex flex-wrap items-center gap-2">
           <form action={approveJob}>
             <input type="hidden" name="jobId" value={job.id} />
-            <Button type="submit">Approve resume</Button>
+            <SubmitButton pendingLabel="Approving...">Approve resume</SubmitButton>
           </form>
           <form action={skipJob}>
             <input type="hidden" name="jobId" value={job.id} />
-            <Button type="submit" variant="outline">
+            <SubmitButton variant="outline" pendingLabel="Skipping...">
               Skip
-            </Button>
+            </SubmitButton>
           </form>
           <Button variant="ghost" render={<a href={`/resume/${job.id}`} target="_blank" rel="noreferrer" />} nativeButton={false}>
             View tailored resume
@@ -76,16 +77,16 @@ function KeywordQuestion({ job }: { job: JobRow }) {
             </div>
             <Input name="note" placeholder="Where you used it, for the evidence note" className="flex-1" />
             <div className="flex gap-2">
-              <Button type="submit" name="answer" value="yes" size="sm">
+              <SubmitButton name="answer" value="yes" size="sm">
                 Yes
-              </Button>
-              <Button type="submit" name="answer" value="no" size="sm" variant="outline">
+              </SubmitButton>
+              <SubmitButton name="answer" value="no" size="sm" variant="outline">
                 No
-              </Button>
+              </SubmitButton>
             </div>
           </form>
         ))}
-        <p className="text-xs text-muted-foreground">Asked once. The answer is saved to profile/confirmed-keywords.md and reused on every later job.</p>
+        <p className="text-xs text-muted-foreground">Asked once. Your answer is remembered and reused on every later job.</p>
       </CardContent>
     </Card>
   );
@@ -139,7 +140,7 @@ export function Today({ jobs, settings }: { jobs: JobRow[]; settings: Settings }
                   )}
                   <form action={confirmSubmitted}>
                     <input type="hidden" name="jobId" value={j.id} />
-                    <Button type="submit">I pressed Submit</Button>
+                    <SubmitButton>I pressed Submit</SubmitButton>
                   </form>
                 </div>
               </div>

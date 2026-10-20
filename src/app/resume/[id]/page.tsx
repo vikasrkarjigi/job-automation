@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -8,10 +6,8 @@ import { StageBadge } from "@/components/tracker/bits";
 import { PrintButton } from "@/components/tracker/print-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { loadBaseResume } from "@/profile";
+import { loadResume } from "@/resume-data";
 import { parseResume, type ResumeBlock } from "@/resume-view";
-import { root } from "@/settings";
-import { loadTracker } from "@/tracker";
 
 export default function ResumePage({ params }: PageProps<"/resume/[id]">) {
   return (
@@ -26,11 +22,9 @@ export default function ResumePage({ params }: PageProps<"/resume/[id]">) {
 async function Resume({ params }: { params: PageProps<"/resume/[id]">["params"] }) {
   await connection();
   const { id } = await params;
-  const job = loadTracker().jobs.find((j) => j.id === id);
+  const { job, rel, tex, base } = await loadResume(id);
   if (!job) notFound();
-  const rel = job.submittedResumePath ?? job.resumePath;
-  const file = rel ? path.join(root(), rel) : null;
-  if (!file || !file.startsWith(path.join(root(), "resumes") + path.sep) || !fs.existsSync(file)) {
+  if (!tex) {
     return (
       <div className="rounded-xl border border-dashed p-10 text-center">
         <p className="font-medium">No tailored resume for {job.company} yet.</p>
@@ -38,12 +32,12 @@ async function Resume({ params }: { params: PageProps<"/resume/[id]">["params"] 
           This job is {job.stage.replace(/_/g, " ")}. The tailor only writes a resume after every basic check passes{job.reason ? `, and it stopped here: ${job.reason}` : "."}
         </p>
         <Button className="mt-4" variant="outline" render={<Link href="/" />} nativeButton={false}>
-          Back to the tracker
+          Back to the dashboard
         </Button>
       </div>
     );
   }
-  const doc = parseResume(fs.readFileSync(file, "utf8"), loadBaseResume());
+  const doc = parseResume(tex, base);
   const renames = job.analysis?.renames ?? [];
   const renamedTo = new Map(renames.map((r) => [r.to.toLowerCase(), r.from]));
 
@@ -52,7 +46,7 @@ async function Resume({ params }: { params: PageProps<"/resume/[id]">["params"] 
       <div className="flex flex-col gap-4 print:hidden sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-            ← Tracker
+            ← Dashboard
           </Link>
           <h1 className="text-xl font-semibold tracking-tight">
             {job.title} at {job.company}
@@ -67,6 +61,9 @@ async function Resume({ params }: { params: PageProps<"/resume/[id]">["params"] 
           </div>
         </div>
         <div className="flex gap-2">
+          <Button render={<a href={`/resume/${job.id}/pdf`} />} nativeButton={false}>
+            Download PDF
+          </Button>
           <PrintButton />
           <Button variant="outline" render={<a href={`/resume/${job.id}/tex`} download={`${job.id}.tex`} />} nativeButton={false}>
             Download .tex

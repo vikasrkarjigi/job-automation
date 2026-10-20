@@ -7,7 +7,7 @@ Runs only for jobs the human approved. `npm run approved` builds an apply packet
 1. Open the posting URL from the packet. Use Tsenta apply-with-custom-resume when the board supports it. Use the cloud browser for Workday, Greenhouse, Lever, and anything else.
 2. If the board has no account for the email below, create one. If it has one, log in. The password is the secret named in the packet (`passwordSecret`). Never write it into this file.
 3. If the board emails a one-time code, read the newest message from that company in Gmail and pass the text to `npm run otp -- <jobId> <file>` or `extractOtp` in `src/apply.ts`. Wait up to `otp_wait_minutes`, resend once, then stop and record the block.
-4. Upload the frozen resume from the packet. Do not regenerate it.
+4. Run `npm run pdf -- <jobId>` and upload the PDF path it prints. It is drawn from the frozen resume in the packet, so never edit the resume to make a form fit.
 5. Fill every page. For each question, call `npm run answer -- <jobId> "<question text>"`. Use the returned answer. If it returns `BLOCKED`, stop and record the block. The question is appended below as a blank for the human.
 6. Next and Save are fine. Stop when the button says Submit, Submit application, or Send application. Record `npm run ready -- <jobId>` and send the human the link to that page.
 

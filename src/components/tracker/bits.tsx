@@ -1,6 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import type { JobRow, Stage } from "@/types";
 
+export { statusLine } from "@/status";
+
 const STAGE_LABEL: Record<Stage, string> = {
   ignored: "Ignored",
   scoring: "Scoring",

@@ -21,6 +21,20 @@ export function parseAnswers(md: string): SavedAnswer[] {
   return out;
 }
 
+export function answerSections(md: string): { title: string; answers: SavedAnswer[] }[] {
+  const out: { title: string; answers: SavedAnswer[] }[] = [];
+  for (const line of md.split("\n")) {
+    const heading = line.match(/^##\s+(.+)$/);
+    if (heading) {
+      out.push({ title: heading[1].trim(), answers: [] });
+      continue;
+    }
+    const answer = parseAnswers(line)[0];
+    if (answer && out.length) out[out.length - 1].answers.push(answer);
+  }
+  return out.filter((s) => s.answers.length);
+}
+
 export function loadAnswers(): Map<string, SavedAnswer> {
   const md = fs.readFileSync(paths.applyMd(), "utf8");
   return new Map(parseAnswers(md).map((a) => [a.key, a]));

@@ -1,6 +1,8 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { extractOtp, type MailMessage } from "./apply.ts";
+import { trackerWorkbook } from "./export-xlsx.ts";
 import {
   answerQuestion,
   approve,
@@ -15,10 +17,13 @@ import {
   skip,
 } from "./orchestrator.ts";
 import { loadBaseResume, loadConfirmations, loadEvidence } from "./profile.ts";
+import { readResume } from "./resume-data.ts";
+import { renderResumePdf } from "./resume-pdf.ts";
+import { parseResume } from "./resume-view.ts";
 import { seedDemo } from "./seed.ts";
 import { root } from "./settings.ts";
 import { allowedTermsFor, bulletsOf, checkBullet } from "./tailor.ts";
-import { findJob, loadTracker, writeTrackerMarkdown } from "./tracker.ts";
+import { dayKey, findJob, loadTracker, writeTrackerMarkdown } from "./tracker.ts";
 
 const [cmd, ...args] = process.argv.slice(2);
 const print = (v: unknown) => console.log(typeof v === "string" ? v : JSON.stringify(v, null, 2));
@@ -94,6 +99,21 @@ switch (cmd) {
     const tex = fs.readFileSync(path.join(root(), job.resumePath), "utf8");
     const allowed = allowedTermsFor(loadBaseResume(), job.analysis, loadEvidence(), loadConfirmations());
     print(checkBullet(args[0], bulletsOf(tex), allowed));
+    break;
+  }
+  case "pdf": {
+    need(1, "<jobId> [output.pdf]");
+    const { job, tex, base } = readResume(args[0]);
+    if (!job || !tex) throw new Error(`${args[0]} has no tailored resume`);
+    const out = path.resolve(args[1] ?? path.join(os.tmpdir(), `${job.id}.pdf`));
+    fs.writeFileSync(out, await renderResumePdf(parseResume(tex, base), `${job.title} at ${job.company}`));
+    print(out);
+    break;
+  }
+  case "xlsx": {
+    const out = path.resolve(args[0] ?? path.join(os.tmpdir(), `shortlist-${dayKey()}.xlsx`));
+    fs.writeFileSync(out, await trackerWorkbook(loadTracker(), process.env.SHORTLIST_WEB_URL ?? ""));
+    print(out);
     break;
   }
   case "seed-demo":

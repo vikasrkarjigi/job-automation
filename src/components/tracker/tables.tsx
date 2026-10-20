@@ -1,9 +1,10 @@
-import { sayYesToSend } from "@/app/actions";
+import { markPersonSent, sayYesToSend } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { JobRow, RunRecord } from "@/types";
-import { ago, StageBadge, when } from "./bits";
+import { ago, StageBadge, statusLine, when } from "./bits";
+import { CopyButton, SubmitButton } from "./client";
 
 function Empty({ children }: { children: React.ReactNode }) {
   return <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">{children}</div>;
@@ -34,7 +35,7 @@ export function Resumes({ jobs }: { jobs: JobRow[] }) {
             ))}
             {j.submittedResumePath && <Badge>Submitted {when(j.submittedAt)}</Badge>}
           </div>
-          <div className="mt-2 font-mono text-[11px] text-muted-foreground">{j.submittedResumePath ?? j.resumePath}</div>
+
         </a>
       ))}
     </div>
@@ -42,8 +43,8 @@ export function Resumes({ jobs }: { jobs: JobRow[] }) {
 }
 
 export function Applications({ jobs }: { jobs: JobRow[] }) {
-  const rows = jobs.filter((j) => j.stage !== "ignored");
-  if (!rows.length) return <Empty>No jobs have passed the filters yet.</Empty>;
+  const rows = jobs.filter((j) => j.stage !== "ignored").sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  if (!rows.length) return <Empty>No jobs have passed the filters yet. Jobs that failed a check are on the Ignored tab with the reason.</Empty>;
   return (
     <div className="rounded-xl border">
       <Table>
@@ -51,9 +52,9 @@ export function Applications({ jobs }: { jobs: JobRow[] }) {
           <TableRow>
             <TableHead>Job</TableHead>
             <TableHead>Stage</TableHead>
+            <TableHead>Status and reason</TableHead>
             <TableHead className="text-right">Score</TableHead>
-            <TableHead>Resume the recruiter sees</TableHead>
-            <TableHead>Submitted</TableHead>
+            <TableHead>Resume</TableHead>
             <TableHead className="text-right">People</TableHead>
           </TableRow>
         </TableHeader>
@@ -69,19 +70,24 @@ export function Applications({ jobs }: { jobs: JobRow[] }) {
               <TableCell>
                 <StageBadge stage={j.stage} />
               </TableCell>
+              <TableCell className="max-w-72 whitespace-normal text-sm">{statusLine(j)}</TableCell>
               <TableCell className="text-right tabular-nums">
                 {j.scoreBefore ?? "?"} <span className="text-muted-foreground">to</span> {j.scoreAfter ?? "?"}
               </TableCell>
               <TableCell>
                 {j.resumePath ? (
-                  <a className="font-mono text-xs underline-offset-2 hover:underline" href={`/resume/${j.id}`} target="_blank" rel="noreferrer">
-                    {j.submittedResumePath ?? j.resumePath}
-                  </a>
+                  <span className="flex gap-2 text-xs">
+                    <a className="underline-offset-2 hover:underline" href={`/resume/${j.id}`}>
+                      View
+                    </a>
+                    <a className="underline-offset-2 hover:underline" href={`/resume/${j.id}/pdf`}>
+                      PDF
+                    </a>
+                  </span>
                 ) : (
                   <span className="text-xs text-muted-foreground">not tailored</span>
                 )}
               </TableCell>
-              <TableCell className="text-sm">{when(j.submittedAt) || <span className="text-muted-foreground">no</span>}</TableCell>
               <TableCell className="text-right tabular-nums">{j.people.length}</TableCell>
             </TableRow>
           ))}
@@ -91,15 +97,17 @@ export function Applications({ jobs }: { jobs: JobRow[] }) {
   );
 }
 
-export function People({ jobs }: { jobs: JobRow[] }) {
+export function Outreach({ jobs, back }: { jobs: JobRow[]; back: string }) {
   const withPeople = jobs.filter((j) => j.people.length);
-  if (!withPeople.length) return <Empty>No outreach yet. People are drafted after you approve a job.</Empty>;
+  if (!withPeople.length) {
+    return <Empty>No outreach yet. After you approve a job, the outreach agent finds up to five recruiters and managers from Apollo or Vibe and drafts a note for each.</Empty>;
+  }
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {withPeople.map((j) => {
         const unsent = j.people.some((p) => (p.linkedinUrl && p.invite !== "sent") || p.emailStatus === "draft");
         return (
-          <section key={j.id} className="space-y-2">
+          <section key={j.id} className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <span className="font-medium">{j.title}</span> <span className="text-muted-foreground">at {j.company}</span>
@@ -107,62 +115,74 @@ export function People({ jobs }: { jobs: JobRow[] }) {
               {unsent && (
                 <form action={sayYesToSend}>
                   <input type="hidden" name="jobId" value={j.id} />
-                  <Button type="submit" size="sm">
-                    Yes, send these
-                  </Button>
+                  <input type="hidden" name="back" value={back} />
+                  <SubmitButton size="sm" variant="outline">
+                    Mark all as sent
+                  </SubmitButton>
                 </form>
               )}
             </div>
-            <div className="rounded-xl border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Source</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>LinkedIn invite</TableHead>
-                    <TableHead>Email</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {j.people.map((p) => (
-                    <TableRow key={p.id} className="align-top">
-                      <TableCell>
-                        <div className="font-medium">{p.firstName}</div>
-                        <details className="mt-1 max-w-xs text-xs text-muted-foreground">
-                          <summary className="cursor-pointer select-none">Drafts</summary>
-                          <p className="mt-1 whitespace-pre-wrap">{p.note}</p>
-                          <p className="mt-2 font-medium text-foreground">{p.emailSubject}</p>
-                          <p className="whitespace-pre-wrap">{p.emailBody}</p>
-                        </details>
-                      </TableCell>
-                      <TableCell className="max-w-48 whitespace-normal text-sm">{p.role}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{p.source === "apollo" ? "Apollo" : "Vibe"}</Badge>
-                      </TableCell>
-                      <TableCell className="space-y-0.5 text-xs">
-                        {p.linkedinUrl && (
-                          <a className="block underline-offset-2 hover:underline" href={p.linkedinUrl} target="_blank" rel="noreferrer">
-                            LinkedIn
-                          </a>
-                        )}
-                        {p.email && <div className="text-muted-foreground">{p.email}</div>}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={p.invite === "sent" ? "default" : "secondary"}>
-                          {p.invite === "sent" ? "Sent" : p.invite === "held_by_cap" ? "Held by daily cap" : "Draft"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={p.emailStatus === "sent" ? "default" : p.emailStatus === "none" ? "outline" : "secondary"}>
-                          {p.emailStatus === "sent" ? "Sent" : p.emailStatus === "none" ? "No email" : p.gmailDraftId ? "Gmail draft" : "Draft"}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="grid gap-3 md:grid-cols-2">
+              {j.people.map((p) => {
+                const done = (!p.linkedinUrl || p.invite === "sent") && p.emailStatus !== "draft";
+                return (
+                  <div key={p.id} className="space-y-3 rounded-xl border p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="font-medium">
+                          {p.firstName} {p.lastName}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {p.role} · from {p.source === "apollo" ? "Apollo" : "Vibe"}
+                        </div>
+                      </div>
+                      <Badge variant={p.invite === "sent" ? "default" : p.invite === "held_by_cap" ? "outline" : "secondary"}>
+                        {p.invite === "sent" ? "Contacted" : p.invite === "held_by_cap" ? "Held by daily cap" : "Not sent"}
+                      </Badge>
+                    </div>
+                    {p.linkedinUrl && (
+                      <div className="space-y-2 rounded-lg bg-muted/50 p-3">
+                        <div className="text-xs font-medium text-muted-foreground">LinkedIn note ({p.note.length}/300)</div>
+                        <p className="whitespace-pre-wrap text-sm">{p.note}</p>
+                        <div className="flex flex-wrap gap-2">
+                          <CopyButton text={p.note} label="Copy note" />
+                          <Button size="xs" variant="outline" render={<a href={p.linkedinUrl} target="_blank" rel="noreferrer" />} nativeButton={false}>
+                            Open LinkedIn profile
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {p.email && p.emailStatus !== "none" && (
+                      <details className="rounded-lg bg-muted/50 p-3 text-sm">
+                        <summary className="cursor-pointer select-none text-xs font-medium text-muted-foreground">
+                          Email to {p.email} {p.gmailDraftId ? "(saved as a Gmail draft)" : ""}
+                        </summary>
+                        <p className="mt-2 font-medium">{p.emailSubject}</p>
+                        <p className="mt-1 whitespace-pre-wrap">{p.emailBody}</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <CopyButton text={`${p.emailSubject}\n\n${p.emailBody}`} label="Copy email" />
+                          <Button
+                            size="xs"
+                            variant="outline"
+                            render={<a href={`mailto:${p.email}?subject=${encodeURIComponent(p.emailSubject)}&body=${encodeURIComponent(p.emailBody)}`} />}
+                            nativeButton={false}
+                          >
+                            Open in mail
+                          </Button>
+                        </div>
+                      </details>
+                    )}
+                    {!done && (
+                      <form action={markPersonSent}>
+                        <input type="hidden" name="jobId" value={j.id} />
+                        <input type="hidden" name="personId" value={p.id} />
+                        <input type="hidden" name="back" value={back} />
+                        <SubmitButton size="sm">I sent it</SubmitButton>
+                      </form>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
         );
