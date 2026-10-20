@@ -10,6 +10,10 @@ import { writeState } from "@/store";
 import { loadTracker, writeTrackerMarkdown } from "@/tracker";
 
 const field = (form: FormData, name: string) => String(form.get(name) ?? "").trim();
+const named = (id: string) => {
+  const job = loadTracker().jobs.find((j) => j.id === id);
+  return job ? `${job.title} at ${job.company}` : id;
+};
 
 function backTo(form: FormData): string {
   const back = field(form, "back");
@@ -29,15 +33,18 @@ async function guard() {
   if (!validSession((await cookies()).get(SESSION_COOKIE)?.value)) redirect("/login");
 }
 
-async function step(form: FormData, label: string, fn: () => unknown) {
+/** `fn` may return a friendlier sentence for the banner than `label`, which is also the commit message. */
+async function step(form: FormData, label: string, fn: () => string | void) {
   await guard();
   const back = backTo(form);
   let error: string | null = null;
   try {
-    await writeState(label, () => {
-      fn();
+    const said = await writeState(label, () => {
+      const out = fn();
       writeTrackerMarkdown(loadTracker());
+      return out;
     });
+    if (said) label = said;
   } catch (err) {
     error = err instanceof Error ? err.message : String(err);
   }
@@ -50,35 +57,52 @@ export async function approveJob(form: FormData) {
   await step(form, `Approved ${id}`, () => {
     approve(id);
     runApproved();
+    return `Approved ${named(id)}. The apply agent fills the form on its next run`;
   });
 }
 
 export async function skipJob(form: FormData) {
   const id = field(form, "jobId");
-  await step(form, `Skipped ${id}`, () => skip(id));
+  await step(form, `Skipped ${id}`, () => {
+    skip(id);
+    return `Skipped ${named(id)}`;
+  });
 }
 
 export async function answerKeyword(form: FormData) {
   const term = field(form, "term");
   const answer = form.get("answer") === "yes" ? "yes" : "no";
   if (!term) return;
-  await step(form, `Answered ${answer} for ${term}`, () => confirmKeyword(term, answer, field(form, "note")));
+  await step(form, `Answered ${answer} for ${term}`, () => {
+    confirmKeyword(term, answer, field(form, "note"));
+  });
 }
 
 export async function confirmSubmitted(form: FormData) {
   const id = field(form, "jobId");
-  await step(form, `Marked ${id} as submitted`, () => markSubmitted(id));
+  await step(form, `Marked ${id} as submitted`, () => {
+    markSubmitted(id);
+    return `Marked ${named(id)} as applied`;
+  });
 }
 
 export async function sayYesToSend(form: FormData) {
   const id = field(form, "jobId");
-  await step(form, `Marked outreach for ${id} as sent`, () => markSent(id));
+  await step(form, `Marked outreach for ${id} as sent`, () => {
+    const r = markSent(id);
+    return `Marked ${r.sent.length + r.emails.length} messages for ${named(id)} as sent${r.heldByCap.length ? `, ${r.heldByCap.length} held by the daily invite cap` : ""}`;
+  });
 }
 
 export async function markPersonSent(form: FormData) {
   const id = field(form, "jobId");
   const person = field(form, "personId");
-  await step(form, `Marked ${person} as contacted`, () => markSent(id, [person]));
+  await step(form, `Marked ${person} on ${id} as contacted`, () => {
+    const r = markSent(id, [person]);
+    const p = loadTracker().jobs.find((j) => j.id === id)?.people.find((x) => x.id === person);
+    const who = p ? `${p.firstName} ${p.lastName}`.trim() : "them";
+    return r.heldByCap.length ? `Today's invite cap is used up, so ${who} is held for tomorrow` : `Marked ${who} as contacted`;
+  });
 }
 
 export async function saveAnswers(form: FormData) {

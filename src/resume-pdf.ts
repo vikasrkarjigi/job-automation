@@ -3,8 +3,10 @@ import type { ResumeDoc, Run } from "./resume-view.ts";
 
 const PAGE = { w: 612, h: 792 };
 const MARGIN = { x: 42, top: 40, bottom: 40 };
-const SIZE = { name: 18, contact: 9, section: 10.5, body: 9.8 };
-const LEAD = 1.28;
+const BASE = { name: 18, contact: 9, section: 10.5, body: 9.8, lead: 1.28 };
+/** Tried in order until the resume fits on one page; most resumes need the first. */
+const FITS = [1, 0.96, 0.92, 0.88];
+type Scale = typeof BASE;
 const INK = rgb(0.08, 0.08, 0.08);
 const MUTED = rgb(0.3, 0.3, 0.3);
 
@@ -31,6 +33,7 @@ class Writer {
   constructor(
     readonly pdf: PDFDocument,
     readonly fonts: Fonts,
+    readonly S: Scale,
   ) {
     this.page = pdf.addPage([PAGE.w, PAGE.h]);
     this.y = PAGE.h - MARGIN.top;
@@ -48,18 +51,18 @@ class Writer {
 
   centered(text: string, size: number, font: PDFFont, color = INK) {
     for (const line of wrapPlain(safe(text), font, size, this.width)) {
-      this.ensure(size * LEAD);
+      this.ensure(size * this.S.lead);
       this.y -= size;
       this.page.drawText(line, { x: MARGIN.x + (this.width - font.widthOfTextAtSize(line, size)) / 2, y: this.y, size, font, color });
-      this.y -= size * (LEAD - 1);
+      this.y -= size * (this.S.lead - 1);
     }
   }
 
   section(title: string) {
-    this.ensure(SIZE.section * 2.4 + SIZE.body * LEAD);
-    this.y -= SIZE.section * 0.9;
-    this.y -= SIZE.section;
-    this.page.drawText(safe(title.toUpperCase()), { x: MARGIN.x, y: this.y, size: SIZE.section, font: this.fonts.bold, color: INK });
+    this.ensure(this.S.section * 2.4 + this.S.body * this.S.lead);
+    this.y -= this.S.section * 0.9;
+    this.y -= this.S.section;
+    this.page.drawText(safe(title.toUpperCase()), { x: MARGIN.x, y: this.y, size: this.S.section, font: this.fonts.bold, color: INK });
     this.y -= 3;
     this.page.drawLine({ start: { x: MARGIN.x, y: this.y }, end: { x: PAGE.w - MARGIN.x, y: this.y }, thickness: 0.6, color: MUTED });
     this.y -= 4;
@@ -68,16 +71,16 @@ class Writer {
   entry(parts: string[]) {
     const [head, ...rest] = parts.map(safe);
     const right = rest.join("  |  ");
-    const size = SIZE.body;
+    const size = this.S.body;
     const headW = this.fonts.bold.widthOfTextAtSize(head, size);
     const rightW = this.fonts.regular.widthOfTextAtSize(right, size);
-    this.ensure(size * LEAD * 2);
+    this.ensure(size * this.S.lead * 2);
     this.y -= size * 0.35;
     if (headW + rightW + 12 <= this.width) {
       this.y -= size;
       this.page.drawText(head, { x: MARGIN.x, y: this.y, size, font: this.fonts.bold, color: INK });
       if (right) this.page.drawText(right, { x: PAGE.w - MARGIN.x - rightW, y: this.y, size, font: this.fonts.regular, color: MUTED });
-      this.y -= size * (LEAD - 1);
+      this.y -= size * (this.S.lead - 1);
       return;
     }
     this.rich([{ text: head, bold: true }], 0);
@@ -85,7 +88,7 @@ class Writer {
   }
 
   rich(runs: Run[], indent: number, color = INK, bullet = false) {
-    const size = SIZE.body;
+    const size = this.S.body;
     const x0 = MARGIN.x + indent;
     const width = this.width - indent;
     const words = runs.flatMap((r) =>
@@ -109,7 +112,7 @@ class Writer {
       lineW += isSpace ? font.widthOfTextAtSize(" ", size) : ww;
     }
     lines.forEach((line, i) => {
-      this.ensure(size * LEAD);
+      this.ensure(size * this.S.lead);
       this.y -= size;
       if (bullet && i === 0) this.page.drawText("•", { x: x0 - 9, y: this.y, size, font: this.fonts.regular, color });
       let x = x0;
@@ -118,7 +121,7 @@ class Writer {
         this.page.drawText(w.text, { x, y: this.y, size, font, color });
         x += font.widthOfTextAtSize(w.text, size);
       }
-      this.y -= size * (LEAD - 1);
+      this.y -= size * (this.S.lead - 1);
     });
   }
 }
@@ -137,14 +140,14 @@ function wrapPlain(text: string, font: PDFFont, size: number, width: number): st
   return lines;
 }
 
-export async function renderResumePdf(doc: ResumeDoc, title = "Resume"): Promise<Uint8Array> {
+async function draw(doc: ResumeDoc, title: string, S: Scale): Promise<PDFDocument> {
   const pdf = await PDFDocument.create();
   pdf.setTitle(safe(title));
   pdf.setCreator("Shortlist");
   const fonts = { regular: await pdf.embedFont(StandardFonts.TimesRoman), bold: await pdf.embedFont(StandardFonts.TimesRomanBold) };
-  const w = new Writer(pdf, fonts);
+  const w = new Writer(pdf, fonts, S);
 
-  doc.header.forEach((h, i) => (i === 0 ? w.centered(h, SIZE.name, fonts.bold) : w.centered(h, SIZE.contact, fonts.regular, MUTED)));
+  doc.header.forEach((h, i) => (i === 0 ? w.centered(h, S.name, fonts.bold) : w.centered(h, S.contact, fonts.regular, MUTED)));
   for (const s of doc.sections) {
     w.section(s.title);
     for (const b of s.blocks) {
@@ -154,5 +157,15 @@ export async function renderResumePdf(doc: ResumeDoc, title = "Resume"): Promise
       if (b.kind === "skills") w.rich([{ text: `${b.label}: `, bold: true }, { text: b.items.map((i) => i.text).join(", "), bold: false }], 0);
     }
   }
-  return pdf.save();
+  return pdf;
+}
+
+export async function renderResumePdf(doc: ResumeDoc, title = "Resume"): Promise<Uint8Array> {
+  let pdf: PDFDocument | null = null;
+  for (const f of FITS) {
+    const lead = BASE.lead - (1 - f) * 0.8;
+    pdf = await draw(doc, title, { name: BASE.name * f, contact: BASE.contact * f, section: BASE.section * f, body: BASE.body * f, lead });
+    if (pdf.getPageCount() === 1) break;
+  }
+  return pdf!.save();
 }

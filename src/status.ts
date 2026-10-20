@@ -16,10 +16,18 @@ export function statusLine(job: JobRow): string {
     case "approved":
       return "Approved. The apply agent fills the form on its next run and stops at Submit";
     case "apply_blocked":
-      return `Blocked: ${job.reason ?? "the apply agent needs something from you"}`;
+      return `Blocked: ${readableReason(job.reason) ?? "the apply agent needs something from you"}`;
     case "ready_to_submit":
       return "Waiting on you: the form is filled, open it and press Submit";
     case "submitted":
       return `Applied ${job.submittedAt ? new Date(job.submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}`.trim();
   }
+}
+
+function readableReason(reason: string | null): string | null {
+  if (!reason) return null;
+  const blanks = reason.match(/^blank in apply\.md: (.+)$/);
+  if (!blanks) return reason;
+  const keys = blanks[1].split(",").map((k) => k.trim().replace(/_/g, " "));
+  return `fill in ${keys.join(", ")} on My answers`;
 }

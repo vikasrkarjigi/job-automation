@@ -174,6 +174,13 @@ describe("dashboard exports", () => {
     expect(bytes.length).toBeGreaterThan(1500);
   });
 
+  it("keeps the real one page resume on one page", async () => {
+    const tex = fs.readFileSync(path.resolve(__dirname, "..", "profile", "base.tex"), "utf8");
+    const { PDFDocument } = await import("pdf-lib");
+    const pdf = await PDFDocument.load(await renderResumePdf(parseResume(tex, tex)));
+    expect(pdf.getPageCount()).toBe(1);
+  });
+
   it("writes every job, with the reason, to Excel", async () => {
     const data = loadTracker();
     const book = await trackerWorkbook(data, "https://example.app");
