@@ -29,36 +29,36 @@ Fill the blanks. A blank question is never guessed. Format: `- key (question): a
 - linkedin (LinkedIn profile URL): https://linkedin.com/in/vikasrkarjigi
 - github (GitHub URL): https://github.com/vikasrkarjigi
 - website (Website or portfolio URL): https://vkarjigi-portfolio.vercel.app
-- authorized_us (Are you legally authorized to work in the United States?):
-- sponsorship_now (Will you now require visa sponsorship?):
-- sponsorship_future (Will you in the future require visa sponsorship?):
-- visa_type (Current visa or work authorization type):
-- relocate (Are you willing to relocate?):
-- target_cities (Preferred locations):
-- work_mode (Remote, hybrid, or onsite preference):
-- travel (Are you willing to travel?):
-- start_date (Earliest start date):
-- notice_period (Notice period):
-- salary (Desired annual base salary):
-- years_experience (Years of relevant experience):
+- authorized_us (Are you legally authorized to work in the United States?): Yes
+- sponsorship_now (Will you now require visa sponsorship?): Yes
+- sponsorship_future (Will you in the future require visa sponsorship?): Yes
+- visa_type (Current visa or work authorization type): F1-OPT
+- relocate (Are you willing to relocate?): Yes
+- target_cities (Preferred locations): Anywhere in the US
+- work_mode (Remote, hybrid, or onsite preference): Anything works
+- travel (Are you willing to travel?): Yes
+- start_date (Earliest start date): Immediately
+- notice_period (Notice period): Immediately
+- salary (Desired annual base salary): Open to Discussion ($130000)
+- years_experience (Years of relevant experience): 3+
 - degree (Highest degree): Master's degree (Master of Applied Science)
 - field_of_study (Field of study): Data Science
 - previously_employed (Have you previously worked for this company?): No
-- non_compete (Are you bound by a non compete agreement?):
-- heard_about (How did you hear about this role?): Job board
-- background_check (Are you willing to complete a background check?):
-- drug_screen (Are you willing to undergo a drug screen?):
-- over_18 (Are you at least 18 years old?):
+- non_compete (Are you bound by a non compete agreement?): No
+- heard_about (How did you hear about this role?): Company Website
+- background_check (Are you willing to complete a background check?): Yes
+- drug_screen (Are you willing to undergo a drug screen?): Yes
+- over_18 (Are you at least 18 years old?): Yes
 - why_role (Why are you interested in this role?):
-- gender (Gender, voluntary): Decline to answer
-- race (Race or ethnicity, voluntary): Decline to answer
-- veteran (Veteran status, voluntary): Decline to answer
-- disability (Disability status, voluntary): Decline to answer
+- gender (Gender, voluntary): Man
+- race (Race or ethnicity, voluntary): Asian
+- veteran (Veteran status, voluntary): Non Veteran
+- disability (Disability status, voluntary): No
 
 ## Account and email code
 
-- account_email (Email used for board accounts):
-- otp_mailbox (Gmail mailbox that receives codes):
+- account_email (Email used for board accounts): vikasravikarjigi26@gmail.com
+- otp_mailbox (Gmail mailbox that receives codes): vikasravikarjigi26@gmail.com
 - otp_wait_minutes (Minutes to wait for a code): 5
 - password_secret (Name of the secret holding the board password): BOARD_PASSWORD
 
