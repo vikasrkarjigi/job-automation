@@ -9,8 +9,9 @@ import { boardCursors, dedupe, hardFilter, industryFor, isFresh, loadCompanies, 
 import { loadSettings, paths } from "./settings.ts";
 import { rememberLink } from "./skill-families.ts";
 import { tailorResume } from "./tailor.ts";
-import { addHistory, dayKey, findJob, jobId, jobKey, loadTracker, saveTracker, setStage } from "./tracker.ts";
-import type { Board, JobRow, RunRecord, Settings, TrackerData } from "./types.ts";
+import { addHistory, dayKey, findJob, jobId, jobKey, loadTracker, normalize, saveTracker, setStage } from "./tracker.ts";
+import type { Board, JobRow, RunRecord, Settings, TrackerData, WrittenAnswer } from "./types.ts";
+import { checkWritten, type WritingCheck } from "./writer.ts";
 
 const LOCK_TTL_MS = 2 * 3_600_000;
 
@@ -281,17 +282,33 @@ export function runApproved(opts: { now?: Date } = {}): ApprovedSummary {
   return { jobs: out };
 }
 
-export function answerQuestion(id: string, question: string, now = new Date()): { ok: boolean; answer?: string; reason?: string } {
+export function answerQuestion(id: string, question: string, now = new Date()): { ok: boolean; answer?: string; reason?: string; write?: boolean } {
   const data = loadTracker();
   const job = findJob(data, id);
+  const written = job.written?.find((w) => normalize(w.question) === normalize(question));
+  if (written) return { ok: true, answer: written.answer };
   const result = answerFor(question, loadAnswers());
   if (result.ok) return { ok: true, answer: result.answer };
+  if (result.write) return { ok: false, write: true, reason: result.reason };
   if (result.key.startsWith("custom_")) appendQuestion(question);
   const reason = `${question}: ${result.reason}`;
   job.reason = reason;
   setStage(job, "apply_blocked", reason, now);
   saveTracker(data);
   return { ok: false, reason };
+}
+
+/** Saves an answer written for one job. The agent's drafts must pass the style check; your edits are saved as you wrote them. */
+export function saveWritten(id: string, question: string, answer: string, by: WrittenAnswer["by"] = "agent", limit?: number, now = new Date()): WritingCheck {
+  const data = loadTracker();
+  const job = findJob(data, id);
+  const check = checkWritten(answer, question, job, limit);
+  if (by === "agent" && !check.ok) return check;
+  const entry: WrittenAnswer = { question: question.trim(), answer: answer.trim(), at: now.toISOString(), by };
+  job.written = [...(job.written ?? []).filter((w) => normalize(w.question) !== normalize(question)), entry];
+  addHistory(job, "drafted", `${by === "you" ? "you edited" : "wrote"} the answer to "${question.trim()}"`, now);
+  saveTracker(data);
+  return check;
 }
 
 export function markBlocked(id: string, reason: string, now = new Date()): JobRow {

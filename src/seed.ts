@@ -23,6 +23,7 @@ export function seedDemo(opts: { reset?: boolean; now?: Date } = {}) {
         fs.rmSync(dest, { recursive: true, force: true });
         fs.cpSync(path.join(repo, sub), dest, { recursive: true });
         if (sub === "profile") fs.cpSync(path.join(repo, "fixtures", "demo", "profile"), dest, { recursive: true });
+        if (sub === "agents") fs.copyFileSync(path.join(repo, "fixtures", "demo", "apply.md"), path.join(dest, "apply.md"));
       }
     }
   }

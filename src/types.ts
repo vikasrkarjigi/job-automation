@@ -103,8 +103,16 @@ export interface JobRow {
   submittedAt: string | null;
   submittedResumePath: string | null;
   people: Person[];
+  written?: WrittenAnswer[];
   history: HistoryEntry[];
   createdAt: string;
+}
+
+export interface WrittenAnswer {
+  question: string;
+  answer: string;
+  at: string;
+  by: "agent" | "you";
 }
 
 export interface RunRecord {

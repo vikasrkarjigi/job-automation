@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { Suspense } from "react";
 import { logout } from "@/app/actions";
-import { answerSections } from "@/apply";
+import { answerSections, NOT_BLANK } from "@/apply";
 import { authEnabled } from "@/auth";
 import { Answers } from "@/components/tracker/answers";
 import { Applications, Ignored, Outreach, Resumes, Runs } from "@/components/tracker/tables";
@@ -98,7 +98,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
   const { data, settings, sections } = state;
   const c = counts(data);
   const waiting = c.shortlisted + c.needsConfirm + c.readyToSubmit;
-  const blanks = sections.flatMap((s) => s.answers).filter((a) => !a.answer && a.key !== "password_secret").length;
+  const blanks = sections.flatMap((s) => s.answers).filter((a) => !a.answer && !NOT_BLANK.has(a.key)).length;
 
   const nav: [Tab, string][] = [
     ["today", waiting ? `Today (${waiting})` : "Today"],

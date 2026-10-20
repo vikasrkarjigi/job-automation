@@ -1,13 +1,16 @@
 import { saveAnswers } from "@/app/actions";
 import { Input } from "@/components/ui/input";
-import type { SavedAnswer } from "@/apply";
+import { NOT_BLANK, type SavedAnswer } from "@/apply";
 import { SubmitButton } from "./client";
 
 const LONG = new Set(["why_role"]);
 const FIXED = new Set(["password_secret"]);
+const HINT: Record<string, string> = {
+  why_role: "Written fresh for every job from your resume and that posting, in your voice. You can read and edit each one before you submit. Anything you type here is worked into every answer, for example what draws you to agentic AI.",
+};
 
 export function Answers({ sections, back }: { sections: { title: string; answers: SavedAnswer[] }[]; back: string }) {
-  const blanks = sections.flatMap((s) => s.answers).filter((a) => !a.answer && !FIXED.has(a.key)).length;
+  const blanks = sections.flatMap((s) => s.answers).filter((a) => !a.answer && !NOT_BLANK.has(a.key)).length;
   return (
     <form action={saveAnswers} className="space-y-8">
       <input type="hidden" name="back" value={back} />
@@ -30,11 +33,14 @@ export function Answers({ sections, back }: { sections: { title: string; answers
             {s.answers.map((a) => (
               <label key={a.key} className={`space-y-1.5 ${LONG.has(a.key) ? "sm:col-span-2" : ""}`}>
                 <span className="flex items-center gap-2 text-sm">
-                  {a.question}
-                  {!a.answer && !FIXED.has(a.key) && <span className="rounded bg-amber-100 px-1.5 text-[11px] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">blank</span>}
+                  {HINT[a.key] ? a.question.split("?")[0] + "?" : a.question}
+                  {HINT[a.key] && <span className="rounded bg-muted px-1.5 text-[11px] font-medium text-muted-foreground">written per job</span>}
+                  {!a.answer && !NOT_BLANK.has(a.key) && <span className="rounded bg-amber-100 px-1.5 text-[11px] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">blank</span>}
                 </span>
+                {HINT[a.key] && <span className="block text-xs text-muted-foreground">{HINT[a.key]}</span>}
                 {LONG.has(a.key) ? (
                   <textarea
+                    placeholder={a.key === "why_role" ? "Optional notes, not the answer itself" : undefined}
                     name={`answer:${a.key}`}
                     defaultValue={a.answer}
                     rows={3}

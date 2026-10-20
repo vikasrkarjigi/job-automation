@@ -188,7 +188,7 @@ describe("dashboard exports", () => {
     const ExcelJS = (await import("exceljs")).default;
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(book as unknown as ArrayBuffer);
-    expect(wb.worksheets.map((w) => w.name)).toEqual(["All jobs", "Applied", "Not applied", "Outreach", "Runs"]);
+    expect(wb.worksheets.map((w) => w.name)).toEqual(["All jobs", "Applied", "Not applied", "Outreach", "Written answers", "Runs"]);
     expect(wb.getWorksheet("All jobs")!.rowCount).toBe(data.jobs.length + 1);
     expect(String(wb.getWorksheet("All jobs")!.getRow(2).getCell(5).value)).toBe(statusLine(data.jobs.sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0]));
   });

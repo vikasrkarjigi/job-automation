@@ -9,6 +9,7 @@ Runs only for jobs the human approved. `npm run approved` builds an apply packet
 3. If the board emails a one-time code, read the newest message from that company in Gmail and pass the text to `npm run otp -- <jobId> <file>` or `extractOtp` in `src/apply.ts`. Wait up to `otp_wait_minutes`, resend once, then stop and record the block.
 4. Run `npm run pdf -- <jobId>` and upload the PDF path it prints. It is drawn from the frozen resume in the packet, so never edit the resume to make a form fit.
 5. Fill every page. For each question, call `npm run answer -- <jobId> "<question text>"`. Use the returned answer. If it returns `BLOCKED`, stop and record the block. The question is appended below as a blank for the human.
+   If it returns `WRITE`, the question is open ended and gets an answer written for this job. Run `npm run brief -- <jobId> "<question text>"` to get the posting highlights, the closest resume results, the allowed skills, and `agents/writing-style.md`. Write the answer in Vikas's voice, then save it with `npm run write -- <jobId> "<question text>" "<answer>" [form word limit]`. If it prints `REWRITE`, fix every listed problem and save again. Paste the saved answer into the form. Vikas reads and can edit every written answer on the dashboard before he presses Submit.
 6. Next and Save are fine. Stop when the button says Submit, Submit application, or Send application. Record `npm run ready -- <jobId>` and send the human the link to that page.
 
 Also stop and record a block for a captcha you cannot pass, or a code that arrives by text or a phone call.
@@ -49,7 +50,7 @@ Fill the blanks. A blank question is never guessed. Format: `- key (question): a
 - background_check (Are you willing to complete a background check?): Yes
 - drug_screen (Are you willing to undergo a drug screen?): Yes
 - over_18 (Are you at least 18 years old?): Yes
-- why_role (Why are you interested in this role?):
+- why_role (Why are you interested in this role? Written fresh for each job from your resume and the posting. Optional notes it should always work in):
 - gender (Gender, voluntary): Man
 - race (Race or ethnicity, voluntary): Asian
 - veteran (Veteran status, voluntary): Non Veteran

@@ -121,6 +121,19 @@ export async function trackerWorkbook(data: TrackerData, siteUrl = ""): Promise<
 
   sheet(
     book,
+    "Written answers",
+    [
+      { header: "Company", width: 22 },
+      { header: "Job", width: 30 },
+      { header: "Question", width: 40 },
+      { header: "Answer", width: 90 },
+      { header: "By", width: 12 },
+    ],
+    jobs.flatMap((j) => (j.written ?? []).map((w) => [j.company, j.title, w.question, w.answer, w.by === "you" ? "You" : "Agent"])),
+  );
+
+  sheet(
+    book,
     "Runs",
     [
       { header: "Started", width: 18 },

@@ -24,6 +24,8 @@
     "gmail-draft": "tsx src/cli.ts gmail-draft",
     "check-bullet": "tsx src/cli.ts check-bullet",
     "pdf": "tsx src/cli.ts pdf",
+    "brief": "tsx src/cli.ts brief",
+    "write": "tsx src/cli.ts write",
     "xlsx": "tsx src/cli.ts xlsx",
     "seed-demo": "tsx src/cli.ts seed-demo",
     "export": "tsx src/cli.ts export",

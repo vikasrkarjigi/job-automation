@@ -21,6 +21,9 @@ export function parseAnswers(md: string): SavedAnswer[] {
   return out;
 }
 
+/** Answers the apply agent never needs from you: written per job, or fixed settings. */
+export const NOT_BLANK = new Set(["why_role", "password_secret"]);
+
 export function answerSections(md: string): { title: string; answers: SavedAnswer[] }[] {
   const out: { title: string; answers: SavedAnswer[] }[] = [];
   for (const line of md.split("\n")) {
@@ -75,7 +78,19 @@ const RULES: [RegExp, string][] = [
   [/country/, "country"],
 ];
 
-export type AnswerResult = { ok: true; key: string; answer: string } | { ok: false; key: string; reason: string };
+/** Questions whose answer depends on the job, so a saved answer is never reused verbatim. */
+const OPEN_ENDED =
+  /^(why\b|describe\b|tell (us|me)\b|explain\b|share\b|walk (us|me)\b|give (us )?an example|how would you\b|what (interests|excites|draws|motivates|attracts) you|what makes you|what (do|would) you (bring|hope)|cover letter|is there anything else|anything else|additional information)/;
+
+export function isOpenEnded(question: string): boolean {
+  return OPEN_ENDED.test(question.toLowerCase().trim());
+}
+
+export const isWhyRole = (question: string) => /\bwhy\b.*\b(interested|this (role|position|job|company|team)|join|work (here|for|at)|us)\b/i.test(question);
+
+export type AnswerResult =
+  | { ok: true; key: string; answer: string }
+  | { ok: false; key: string; reason: string; write?: true };
 
 const yes = (s: string | undefined) => /^y(es)?\b/i.test(s ?? "");
 
@@ -96,6 +111,7 @@ export function answerFor(question: string, answers: Map<string, SavedAnswer>): 
     const a = answers.get(key)?.answer;
     return a ? { ok: true, key, answer: a } : { ok: false, key, reason: `${key} is blank in apply.md` };
   }
+  if (isWhyRole(question)) return { ok: false, key: "why_role", reason: "written for this job", write: true };
   const custom = answers.get(customKey(question));
   if (custom) {
     return custom.answer
@@ -107,6 +123,7 @@ export function answerFor(question: string, answers: Map<string, SavedAnswer>): 
     const a = answers.get(key)?.answer;
     return a ? { ok: true, key, answer: a } : { ok: false, key, reason: `${key} is blank in apply.md` };
   }
+  if (isOpenEnded(question)) return { ok: false, key: customKey(question), reason: "written for this job", write: true };
   return { ok: false, key: customKey(question), reason: "new question, added to apply.md" };
 }
 

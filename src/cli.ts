@@ -14,6 +14,7 @@ import {
   recordGmailDraft,
   runApproved,
   runMorning,
+  saveWritten,
   skip,
 } from "./orchestrator.ts";
 import { loadBaseResume, loadConfirmations, loadEvidence } from "./profile.ts";
@@ -23,6 +24,7 @@ import { parseResume } from "./resume-view.ts";
 import { seedDemo } from "./seed.ts";
 import { root } from "./settings.ts";
 import { allowedTermsFor, bulletsOf, checkBullet } from "./tailor.ts";
+import { writingBrief } from "./writer.ts";
 import { dayKey, findJob, loadTracker, writeTrackerMarkdown } from "./tracker.ts";
 
 const [cmd, ...args] = process.argv.slice(2);
@@ -60,7 +62,7 @@ switch (cmd) {
   case "answer": {
     need(2, '<jobId> "<question text>"');
     const r = answerQuestion(args[0], args[1]);
-    print(r.ok ? r.answer! : `BLOCKED: ${r.reason}`);
+    print(r.ok ? r.answer! : r.write ? `WRITE: ${r.reason}. Run npm run brief -- ${args[0]} "<question>", write it, then npm run write -- ${args[0]} "<question>" "<answer>"` : `BLOCKED: ${r.reason}`);
     break;
   }
   case "otp": {
@@ -114,6 +116,18 @@ switch (cmd) {
     const out = path.resolve(args[0] ?? path.join(os.tmpdir(), `shortlist-${dayKey()}.xlsx`));
     fs.writeFileSync(out, await trackerWorkbook(loadTracker(), process.env.SHORTLIST_WEB_URL ?? ""));
     print(out);
+    break;
+  }
+  case "brief": {
+    need(2, '<jobId> "<question text>"');
+    print(writingBrief(findJob(loadTracker(), args[0]), args[1]));
+    break;
+  }
+  case "write": {
+    need(3, '<jobId> "<question text>" "<answer>" [wordLimit]');
+    const check = saveWritten(args[0], args[1], args[2], "agent", args[3] ? Number(args[3]) : undefined);
+    print(check.ok ? `SAVED (${check.words} words)` : `REWRITE: ${check.problems.join("; ")}`);
+    if (!check.ok) process.exitCode = 1;
     break;
   }
   case "seed-demo":

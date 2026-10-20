@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { passwordMatches, SESSION_COOKIE, sessionToken, validSession } from "@/auth";
 import { loadAnswers, saveAnswer } from "@/apply";
-import { approve, confirmKeyword, markSent, markSubmitted, runApproved, skip } from "@/orchestrator";
+import { approve, confirmKeyword, markSent, markSubmitted, runApproved, saveWritten, skip } from "@/orchestrator";
 import { writeState } from "@/store";
 import { loadTracker, writeTrackerMarkdown } from "@/tracker";
 
@@ -102,6 +102,18 @@ export async function markPersonSent(form: FormData) {
     const p = loadTracker().jobs.find((j) => j.id === id)?.people.find((x) => x.id === person);
     const who = p ? `${p.firstName} ${p.lastName}`.trim() : "them";
     return r.heldByCap.length ? `Today's invite cap is used up, so ${who} is held for tomorrow` : `Marked ${who} as contacted`;
+  });
+}
+
+export async function editWritten(form: FormData) {
+  const id = field(form, "jobId");
+  const question = field(form, "question");
+  const answer = String(form.get("answer") ?? "").trim();
+  if (!question || !answer) return;
+  await step(form, `Edited an answer on ${id}`, () => {
+    const check = saveWritten(id, question, answer, "you");
+    const note = check.ok ? "" : `. Heads up: ${check.problems.join("; ")}`;
+    return `Saved your answer for ${named(id)}${note}`;
   });
 }
 
