@@ -1,6 +1,6 @@
 # Shortlist
 
-Shortlist runs in Slack. Each channel is one agent you can talk to, and the whole flow keeps running on Cursor hosting with your laptop closed. A web tracker shows the same pipeline with readable tailored resumes.
+Shortlist finds jobs on a schedule in Cursor's cloud, and you run everything else from one password protected website: approvals, skill questions, application answers, outreach, resumes as PDF, and an Excel export. Slack is optional.
 
 A job pipeline for entry level AI engineer roles. Every morning it fetches postings from the last 24 hours, drops anything that fails a hard filter, scores the rest against your resume in code, tailors only the jobs that can honestly clear the bar, and waits for you. Applications stop on the Submit page and outreach stops at drafts until you say yes. A tracker records every job, the exact resume each one received, and every person contacted.
 
@@ -34,6 +34,34 @@ How it is built (`bot/`, using `@cursor/bdk`):
 - Browser work (Indeed, Jobright, Apollo, Vibe, Gmail, application forms) is handed to a Cursor cloud agent, and the thread wakes when that agent finishes. LinkedIn goes through Apify directly when `APIFY_TOKEN` is set.
 - `bot/schedules/pipeline-run.ts` checks hourly and runs only at 4, 12, and 20 local time (`SHORTLIST_TZ`, default `America/Los_Angeles`; `SHORTLIST_RUN_HOURS` to change). Post in #scout to run it by hand.
 - Every tailored resume is kept in storage and as a `tailored-resume` artifact. When you submit, the exact file is locked to that job.
+
+## The dashboard (one website for everything)
+
+The web app is the main way to use Shortlist. It reads and saves the same files the scheduled runs write, straight from this GitHub repository, so it always shows the latest run and every button is picked up by the next one.
+
+| Tab | What you do there |
+| --- | --- |
+| Today | Approve or skip tailored resumes, answer skill questions, mark an application as submitted |
+| Applications | Every job that passed the checks, with a plain status and reason, and the resume as a page or PDF |
+| Outreach | The people found for each approved job, with Copy note, Open LinkedIn profile, and I sent it |
+| Resumes | Every tailored resume with the changes highlighted, and a PDF download |
+| Ignored | Every job that was not applied to, and why |
+| My answers | The application answers the apply agent fills forms with. Blanks are marked. |
+| Runs | What each scheduled run fetched, kept, and dropped |
+
+Download Excel in the header exports all of it as one `.xlsx` with All jobs, Applied, Not applied, Outreach, and Runs sheets.
+
+### Put it online with Vercel (free)
+
+1. At vercel.com, choose Add New, then Project, and import `vikasrkarjigi/job-automation`. Keep the detected Next.js settings.
+2. Before deploying, add two Environment Variables:
+   - `SHORTLIST_GITHUB_TOKEN`: a fine grained GitHub token for this repository only, with Contents read and write. The dashboard uses it to read the pipeline and save your clicks as commits.
+   - `DASHBOARD_PASSWORD`: the password for the login page.
+3. Deploy. Bookmark the URL. Optional: `SHORTLIST_GITHUB_REPO` and `SHORTLIST_GITHUB_BRANCH` if the data lives somewhere other than `vikasrkarjigi/job-automation` on `main`.
+
+Without `SHORTLIST_GITHUB_TOKEN` the app reads and writes the local checkout instead, and without `DASHBOARD_PASSWORD` it has no login. That is how `npm run dev` works on a laptop.
+
+`npm run pdf -- <jobId>` writes the same PDF from the command line, which is what the apply agent uploads. `npm run xlsx` writes the Excel file.
 
 ### Connect it with the Cursor Slack app (works on a personal plan)
 
@@ -87,4 +115,6 @@ Run `npm run dev` to see the real tracker at http://localhost:4317. Open any job
 | `npm run submitted -- <jobId>` | You pressed Submit. Records which resume was sent. |
 | `npm run sent -- <jobId> [personId...]` | You said yes. Marks invites and emails sent, under the daily cap. |
 | `npm run check-bullet -- "<bullet>" <jobId>` | Run the bullet checker on a draft from a writer model. |
-| `npm test` | Unit tests for the filters, gate, tailor, apply, and outreach rules. |
+| `npm run pdf -- <jobId> [out.pdf]` | Draw that job's tailored resume as a PDF for upload. |
+| `npm run xlsx [out.xlsx]` | Export every job, outreach person, and run to Excel. |
+| `npm test` | Unit tests for the filters, gate, tailor, apply, outreach, dashboard storage, PDF, and Excel. |
