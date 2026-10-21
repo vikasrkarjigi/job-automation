@@ -1,4 +1,5 @@
 import { ACTIVE, runInfo, startRun } from "./cloud.ts";
+import { loadSearchCriteria } from "./search-criteria.ts";
 import { dueSlot, loadLaunches, loadSchedule, saveLaunches, type Launch, type RunKind } from "./schedule.ts";
 import { readState, writeState } from "./store.ts";
 
@@ -29,7 +30,8 @@ export async function runNow(kind: RunKind, now = new Date()): Promise<Launch> {
   const launches = await readState(loadLaunches);
   const busy = await activeRun(kind, launches, now);
   if (busy) throw new Error(`A ${LABEL[kind]} is already running. It started ${new Date(busy.at).toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit" })} Pacific`);
-  const started = await startRun(kind);
+  const criteria = kind === "fetch" ? loadSearchCriteria() : null;
+  const started = await startRun(kind, criteria);
   const entry: Launch = { kind, trigger: "you", slot: null, at: now.toISOString(), model: started.model ?? null, ...started, error: null };
   await record(entry, `Started a ${LABEL[kind]}`);
   return entry;
@@ -61,7 +63,7 @@ export async function tick(now = new Date()): Promise<TickResult> {
     return { started: false, reason: "previous run still going" };
   }
   try {
-    const started = await startRun("fetch");
+    const started = await startRun("fetch", loadSearchCriteria());
     await record({ ...entry, ...started }, `Started the ${entry.slot} job search`);
     return { started: true, slot: entry.slot!, url: started.url };
   } catch (err) {

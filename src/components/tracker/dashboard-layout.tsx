@@ -1,19 +1,19 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { logout, startAgent } from "@/app/actions";
+import { logout } from "@/app/actions";
 import { authEnabled } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Metric } from "./design";
 import { MobileDock } from "./mobile-dock";
 import { NavLink } from "./nav-link";
 import { NavPrefetch } from "./nav-prefetch";
-import { SubmitButton } from "./client";
 
-export type DeskTab = "today" | "applications" | "outreach" | "resumes" | "ignored" | "answers" | "agents" | "models" | "schedule" | "runs";
+export type DeskTab = "today" | "find" | "applications" | "outreach" | "resumes" | "ignored" | "answers" | "agents" | "models" | "schedule" | "runs";
 
 export const NAV: { tab: DeskTab; label: string; icon: string }[] = [
   { tab: "today", label: "Overview", icon: "today" },
+  { tab: "find", label: "Find jobs", icon: "find" },
   { tab: "applications", label: "Applications", icon: "applications" },
   { tab: "outreach", label: "Outreach", icon: "outreach" },
   { tab: "resumes", label: "Resumes", icon: "resumes" },
@@ -64,15 +64,19 @@ export function DashboardLayout({
           </nav>
         </Suspense>
         <div className="space-y-2 border-t border-sidebar-border p-3">
-          <form action={startAgent}>
-            <input type="hidden" name="kind" value="fetch" />
-            <SubmitButton className="w-full" pendingLabel="Starting…">
-              Find jobs now
-            </SubmitButton>
-          </form>
+          <Button className="w-full" render={<Link href="/?tab=find" prefetch />} nativeButton={false}>
+            Find jobs
+          </Button>
           <Button variant="outline" className="w-full border-sidebar-border bg-transparent text-sidebar-foreground hover:bg-sidebar-accent/40" render={<a href="/export" />} nativeButton={false}>
             Export Excel
           </Button>
+          {authEnabled() && (
+            <form action={logout}>
+              <Button type="submit" variant="ghost" className="w-full justify-start text-sidebar-foreground/80 hover:bg-sidebar-accent/40">
+                Log out
+              </Button>
+            </form>
+          )}
         </div>
       </aside>
 
@@ -82,30 +86,9 @@ export function DashboardLayout({
             <Link href="/" prefetch className="font-semibold lg:hidden">
               Shortlist
             </Link>
-            <Suspense fallback={null}>
-              <div className="hidden min-w-0 flex-1 gap-1.5 overflow-x-auto py-1 lg:flex">
-                {NAV.map(({ tab: t, label, icon }) => (
-                  <NavLink key={t} tab={t} href={href(t)} icon={icon} badge={navBadges[t]} variant="pill">
-                    {label}
-                  </NavLink>
-                ))}
-              </div>
-            </Suspense>
-            <div className="flex shrink-0 items-center gap-2">
-              <form action={startAgent} className="lg:hidden">
-                <input type="hidden" name="kind" value="fetch" />
-                <SubmitButton size="sm" pendingLabel="…">
-                  Find jobs
-                </SubmitButton>
-              </form>
-              {authEnabled() && (
-                <form action={logout}>
-                  <Button type="submit" size="sm" variant="ghost">
-                    Log out
-                  </Button>
-                </form>
-              )}
-            </div>
+            <Link href="/?tab=find" prefetch className="text-sm font-medium text-primary lg:hidden">
+              Find jobs
+            </Link>
           </div>
           <div className="flex gap-2 overflow-x-auto border-t border-border px-3 py-2.5 sm:px-6 lg:px-8">
             <Metric label="Waiting on you" value={metrics.waiting} highlight={metrics.waiting > 0} />

@@ -8,6 +8,8 @@ import { loadAnswers, saveAnswer } from "@/apply";
 import { approve, confirmKeyword, markSent, markSubmitted, runApproved, saveWritten, skip } from "@/orchestrator";
 import { saveAgentConfig } from "@/agent-config";
 import { runNow } from "@/launcher";
+import { criteriaFromForm, saveSearchCriteria } from "@/search-criteria";
+import { saveSettings } from "@/settings";
 import { describeSchedule, saveSchedule, type RunKind } from "@/schedule";
 import { writeState } from "@/store";
 import { loadTracker, writeTrackerMarkdown } from "@/tracker";
@@ -151,6 +153,41 @@ export async function startAgent(form: FormData) {
       ? "Started a job search. It usually takes 10 to 25 minutes, and new jobs land on Today when it finishes"
       : "Started filling your approved applications. Each one stops at the Submit button for you";
   redirect(withNotice("/?tab=agents", error ? "error" : "started", error ?? said));
+}
+
+export async function startJobSearch(form: FormData) {
+  await guard();
+  const back = backTo(form);
+  const criteria = criteriaFromForm({
+    titles: String(form.get("titles") ?? ""),
+    maxYears: field(form, "maxYears"),
+    batchSize: field(form, "batchSize"),
+    visa: field(form, "visa"),
+    salaryMin: field(form, "salaryMin"),
+    salaryMax: field(form, "salaryMax"),
+    country: field(form, "country"),
+    state: field(form, "state"),
+    city: field(form, "city"),
+    plainEnglish: field(form, "plainEnglish"),
+  });
+  let error: string | null = null;
+  try {
+    await writeState("Saved job search criteria", () => {
+      saveSearchCriteria(criteria);
+      saveSettings({ batchSize: criteria.batchSize, maxYears: criteria.maxYears });
+    });
+    await runNow("fetch");
+  } catch (err) {
+    error = err instanceof Error ? err.message : String(err);
+  }
+  revalidatePath("/", "layout");
+  redirect(
+    withNotice(
+      back.startsWith("/") ? back : "/?tab=find",
+      error ? "error" : "started",
+      error ?? "Started a job search with your criteria. New jobs land on Overview when it finishes",
+    ),
+  );
 }
 
 export async function saveAgentModels(form: FormData) {

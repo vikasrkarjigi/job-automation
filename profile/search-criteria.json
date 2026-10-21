@@ -1,0 +1,20 @@
+{
+  "titles": [
+    "AI Engineer",
+    "AI/ML Engineer",
+    "Software Engineer (AI/ML)",
+    "Applied AI Engineer",
+    "Machine Learning Engineer",
+    "LLM Engineer",
+    "Generative AI Engineer"
+  ],
+  "maxYears": 3,
+  "batchSize": 10,
+  "visa": "any",
+  "salaryMin": null,
+  "salaryMax": null,
+  "country": "",
+  "state": "",
+  "city": "",
+  "plainEnglish": ""
+}

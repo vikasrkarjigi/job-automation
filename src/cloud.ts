@@ -1,5 +1,6 @@
 import { effectiveModelChain } from "./agent-config.ts";
 import { friendlyStartFailure, modelChain, parseCursorError, shouldTryNextModel } from "./agent-models.ts";
+import { describeCriteria, type SearchCriteria } from "./search-criteria.ts";
 import type { Launch, RunKind } from "./schedule.ts";
 
 /**
@@ -88,12 +89,31 @@ async function call<T>(method: string, route: string, body?: unknown): Promise<T
   return (await res.json()) as T;
 }
 
-async function createAgent(kind: RunKind, modelId: string): Promise<{ agent: { id: string; url: string }; run: { id: string } }> {
+function fetchPromptExtra(criteria: SearchCriteria | null | undefined): string {
+  if (!criteria) return "";
+  return `
+
+## Vikas's search criteria for this run (profile/search-criteria.json)
+
+${describeCriteria(criteria)}
+
+Use these titles on Indeed, LinkedIn, and Jobright. Prefer the location when building search queries.
+If plain English is present, treat it as the primary intent and align searches and judgment with it while still obeying hard filters in src/scout.ts.
+Set profile/settings.json batchSize to ${criteria.batchSize} and maxYears to ${criteria.maxYears} before npm run morning if they differ.
+`;
+}
+
+async function createAgent(
+  kind: RunKind,
+  modelId: string,
+  criteria?: SearchCriteria | null,
+): Promise<{ agent: { id: string; url: string }; run: { id: string } }> {
   const key = cursorKey();
   if (!key) throw new Error("CURSOR_API_KEY is not set in Vercel, so the dashboard cannot start agents yet");
+  const promptText = PROMPTS[kind].text + (kind === "fetch" ? fetchPromptExtra(criteria) : "");
   const body: Record<string, unknown> = {
     name: PROMPTS[kind].name,
-    prompt: { text: PROMPTS[kind].text },
+    prompt: { text: promptText },
     repos: [{ url: repoUrl(), startingRef: branch() }],
     workOnCurrentBranch: true,
     autoCreatePR: false,
@@ -114,14 +134,17 @@ async function createAgent(kind: RunKind, modelId: string): Promise<{ agent: { i
   return JSON.parse(text) as { agent: { id: string; url: string }; run: { id: string } };
 }
 
-export async function startRun(kind: RunKind): Promise<Pick<Launch, "agentId" | "runId" | "url" | "model">> {
+export async function startRun(
+  kind: RunKind,
+  criteria?: SearchCriteria | null,
+): Promise<Pick<Launch, "agentId" | "runId" | "url" | "model">> {
   const chain = effectiveModelChain();
   const failures: { model: string; err: ReturnType<typeof parseCursorError> }[] = [];
 
   for (let i = 0; i < chain.length; i++) {
     const modelId = chain[i]!;
     try {
-      const out = await createAgent(kind, modelId);
+      const out = await createAgent(kind, modelId, criteria);
       return { agentId: out.agent.id, runId: out.run.id, url: out.agent.url, model: modelId };
     } catch (e) {
       const err = typeof e === "object" && e && "status" in e ? (e as ReturnType<typeof parseCursorError>) : parseCursorError(500, e instanceof Error ? e.message : String(e));

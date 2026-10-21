@@ -10,7 +10,7 @@ import { NavIcon } from "./design";
 function tabFromUrl(pathname: string, tabParam: string | null): DeskTab {
   if (pathname !== "/") return "today";
   const t = tabParam ?? "today";
-  const allowed: DeskTab[] = ["today", "applications", "outreach", "resumes", "ignored", "answers", "agents", "models", "schedule", "runs"];
+  const allowed: DeskTab[] = ["today", "find", "applications", "outreach", "resumes", "ignored", "answers", "agents", "models", "schedule", "runs"];
   return (allowed.includes(t as DeskTab) ? t : "today") as DeskTab;
 }
 

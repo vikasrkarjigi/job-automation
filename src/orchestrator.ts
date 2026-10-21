@@ -6,6 +6,7 @@ import { gate, scoreJob } from "./ats.ts";
 import { buildPeople, loadPeopleInput } from "./outreach.ts";
 import { loadBaseResume, loadConfirmations, loadEvidence, recordConfirmation } from "./profile.ts";
 import { boardCursors, dedupe, hardFilter, industryFor, isFresh, loadCompanies, pagesToFetch, readInbox } from "./scout.ts";
+import { loadSearchCriteria } from "./search-criteria.ts";
 import { loadSettings, paths } from "./settings.ts";
 import { rememberLink } from "./skill-families.ts";
 import { tailorResume } from "./tailor.ts";
@@ -109,7 +110,8 @@ function evaluatePendingJobs(data: TrackerData, run: RunRecord, settings: Settin
 
 export function runMorning(opts: { now?: Date } = {}): MorningSummary {
   const now = opts.now ?? new Date();
-  const settings = loadSettings();
+  const criteria = loadSearchCriteria();
+  const settings = { ...loadSettings(), batchSize: criteria.batchSize, maxYears: criteria.maxYears };
   const day = dayKey(now);
   const data = loadTracker();
   const run = newRun("morning", now);

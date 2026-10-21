@@ -2,6 +2,8 @@
 
 You fetch postings and hand them to `npm run morning`. The keep or drop decision is code in `src/scout.ts`. You do not judge fit.
 
+When `profile/search-criteria.json` exists, use its titles, location, salary, visa, batch size, max years, and any plain-English note from the dashboard **Find jobs** tab. Those values override the defaults below for searches and for hard filters.
+
 ## Titles to search
 
 - AI Engineer

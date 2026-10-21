@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { splitSections } from "./sections.ts";
+import type { SearchCriteria } from "./search-criteria.defaults.ts";
+import { loadSearchCriteria } from "./search-criteria.ts";
 import { paths } from "./settings.ts";
 import { cityOf, jobKey, normalize } from "./tracker.ts";
 import type { Board, RawPosting, Settings } from "./types.ts";
@@ -24,10 +26,20 @@ const TITLE_PATTERNS = [
 const TITLE_EXCLUDES =
   /\b(senior|sr|staff|principal|lead|manager|director|head|vp|vice president|research scientist|product manager|intern|internship)\b/;
 
-export function checkTitle(title: string): string | null {
+function titleNeedles(custom?: string[]): string[] {
+  if (custom?.length) return custom.map((x) => normalize(x).replace(/\s+/g, " ").trim()).filter(Boolean);
+  return TITLE_PATTERNS;
+}
+
+export function checkTitle(title: string, customTitles?: string[]): string | null {
   const t = normalize(title);
   if (TITLE_EXCLUDES.test(t)) return `title is out of scope: ${title}`;
-  if (!TITLE_PATTERNS.some((p) => ` ${t} `.includes(` ${p} `))) return `title is not an AI engineer role: ${title}`;
+  const needles = titleNeedles(customTitles);
+  const hit = needles.some((p) => {
+    const compact = p.replace(/[()/]/g, " ").replace(/\s+/g, " ").trim();
+    return ` ${t} `.includes(` ${compact} `) || t.includes(compact);
+  });
+  if (!hit) return `title is not in your search list: ${title}`;
   return null;
 }
 
@@ -65,11 +77,63 @@ const NO_SPONSOR = [
   /\bgreen\s+card\s+holders?\s+only/i,
 ];
 
-export function checkSponsorship(description: string): string | null {
+const SPONSOR_YES = [
+  /\b(?:visa|h-?1b)\s+sponsorship\s+(?:available|provided|offered|is available)\b/i,
+  /\b(?:will|can)\s+sponsor\b/i,
+  /\beligible\s+for\s+(?:visa|h-?1b)\s+sponsorship\b/i,
+  /\bsponsorship\s+is\s+available\b/i,
+];
+
+export function checkSponsorship(description: string, visa: SearchCriteria["visa"] = "any"): string | null {
   for (const re of NO_SPONSOR) {
     const m = description.match(re);
     if (m) return `does not sponsor: "${m[0].trim()}"`;
   }
+  if (visa === "must_sponsor" && !SPONSOR_YES.some((re) => re.test(description))) {
+    return "no explicit visa sponsorship mentioned";
+  }
+  return null;
+}
+
+const SALARY = /\$\s*(\d{1,3}(?:,\d{3})+|\d{2,3})\s*(?:k|K)?(?:\s*(?:-|–|—|to)\s*\$?\s*(\d{1,3}(?:,\d{3})+|\d{2,3})\s*(?:k|K)?)?/g;
+
+function toUsd(n: string, k: boolean): number {
+  const v = Number(n.replace(/,/g, ""));
+  return k || v < 1000 ? v * 1000 : v;
+}
+
+export function salaryBand(description: string): { min: number | null; max: number | null } {
+  let min: number | null = null;
+  let max: number | null = null;
+  for (const m of description.matchAll(SALARY)) {
+    const a = toUsd(m[1]!, /k/i.test(m[0]));
+    const b = m[2] ? toUsd(m[2], /k/i.test(m[0])) : a;
+    const lo = Math.min(a, b);
+    const hi = Math.max(a, b);
+    if (min === null || lo < min) min = lo;
+    if (max === null || hi > max) max = hi;
+  }
+  return { min, max };
+}
+
+export function checkSalary(description: string, wantMin: number | null, wantMax: number | null): string | null {
+  if (wantMin == null && wantMax == null) return null;
+  const band = salaryBand(description);
+  if (band.min == null && band.max == null) return null;
+  const lo = band.min ?? band.max!;
+  const hi = band.max ?? band.min!;
+  if (wantMax != null && lo > wantMax) return `salary starts above your max ($${wantMax.toLocaleString()})`;
+  if (wantMin != null && hi < wantMin) return `salary below your minimum ($${wantMin.toLocaleString()})`;
+  return null;
+}
+
+export function checkLocation(location: string, criteria: Pick<SearchCriteria, "country" | "state" | "city">): string | null {
+  const { country, state, city } = criteria;
+  if (!country && !state && !city) return null;
+  const loc = normalize(location);
+  if (city && !loc.includes(normalize(city))) return `location does not match city ${city}: ${location}`;
+  if (state && !loc.includes(normalize(state))) return `location does not match state ${state}: ${location}`;
+  if (country && !loc.includes(normalize(country))) return `location does not match country ${country}: ${location}`;
   return null;
 }
 
@@ -148,11 +212,19 @@ export function dedupe(postings: RawPosting[]): MergedPosting[] {
   return [...byKey.values()];
 }
 
-export function hardFilter(p: RawPosting, industry: string | null, settings: Settings): string | null {
+export function hardFilter(
+  p: RawPosting,
+  industry: string | null,
+  settings: Settings,
+  criteria: SearchCriteria = loadSearchCriteria(),
+): string | null {
+  const maxYears = criteria.maxYears ?? settings.maxYears;
   return (
-    checkTitle(p.title) ??
-    checkExperience(p.description, settings.maxYears) ??
-    checkSponsorship(p.description) ??
+    checkTitle(p.title, criteria.titles) ??
+    checkExperience(p.description, maxYears) ??
+    checkSponsorship(p.description, criteria.visa) ??
+    checkLocation(p.location, criteria) ??
+    checkSalary(p.description, criteria.salaryMin, criteria.salaryMax) ??
     checkAgency(p.company, p.description, industry)
   );
 }

@@ -7,7 +7,10 @@ import { agentSummaries } from "@/agent-activity";
 import { answerSections, NOT_BLANK } from "@/apply";
 import { cursorKey, runInfos } from "@/cloud";
 import { Agents, KIND_LABEL, at } from "@/components/tracker/agents";
+import { FindJobsForm } from "@/components/tracker/find-jobs";
 import { ModelSettings } from "@/components/tracker/model-settings";
+import { startJobSearch } from "@/app/actions";
+import { loadSearchCriteria } from "@/search-criteria";
 import { Answers } from "@/components/tracker/answers";
 import { AutoRefresh } from "@/components/tracker/client";
 import { DashboardLayout, type DeskTab } from "@/components/tracker/dashboard-layout";
@@ -20,10 +23,14 @@ import { describeSchedule, loadLaunches, loadSchedule, upcoming } from "@/schedu
 import { readState } from "@/store";
 import { counts, loadTracker } from "@/tracker";
 
-const TABS: DeskTab[] = ["today", "applications", "outreach", "resumes", "ignored", "answers", "agents", "models", "schedule", "runs"];
+const TABS: DeskTab[] = ["today", "find", "applications", "outreach", "resumes", "ignored", "answers", "agents", "models", "schedule", "runs"];
 
 const TAB_COPY: Record<DeskTab, { title: string; description: string }> = {
   today: { title: "Overview", description: "Jobs from the last 24 hours that need your decision, a keyword answer, or a final Submit click." },
+  find: {
+    title: "Find jobs",
+    description: "Set filters or describe what you want in plain English, then run a cloud search. Criteria are saved for scheduled runs too.",
+  },
   applications: { title: "Applications", description: "Every job that passed your filters, with stage, score, and resume links." },
   outreach: { title: "Outreach", description: "Draft notes to recruiters and hiring managers. Nothing sends until you approve." },
   resumes: { title: "Resumes", description: "Tailored resumes written for each shortlisted role." },
@@ -84,6 +91,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
       schedule: loadSchedule(),
       launches: loadLaunches(),
       agentConfig: loadAgentConfig(),
+      searchCriteria: loadSearchCriteria(),
     }));
   } catch (err) {
     return (
@@ -96,7 +104,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
     );
   }
 
-  const { data, settings, sections, schedule, launches, agentConfig } = state;
+  const { data, settings, sections, schedule, launches, agentConfig, searchCriteria } = state;
   const now = new Date();
   const sixHoursAgo = now.getTime() - 6 * 3_600_000;
   const recentLaunches = launches.filter((l) => Date.parse(l.at) >= sixHoursAgo);
@@ -144,6 +152,9 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
     >
       <PageHeader title={copy.title} description={copy.description} />
 
+      {tab === "find" && (
+        <FindJobsForm initial={searchCriteria} back={back} hasKey={!!cursorKey()} action={startJobSearch} />
+      )}
       {tab === "today" &&
         (data.jobs.length === 0 ? (
           <EmptyState title="No jobs in your pipeline yet">

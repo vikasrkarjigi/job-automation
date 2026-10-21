@@ -5,7 +5,7 @@ import type { DeskTab } from "./dashboard-layout";
 import { href, NAV } from "./dashboard-layout";
 import { NavLink } from "./nav-link";
 
-const DOCK: DeskTab[] = ["today", "applications", "agents", "models", "answers"];
+const DOCK: DeskTab[] = ["today", "find", "applications", "agents", "models"];
 
 export function MobileDock({ tab, navBadges }: { tab: DeskTab; navBadges: Partial<Record<DeskTab, string>> }) {
   const [more, setMore] = useState(false);

@@ -39,3 +39,10 @@ export function loadSettings(): Settings {
   if (!fs.existsSync(file)) return DEFAULT_SETTINGS;
   return { ...DEFAULT_SETTINGS, ...JSON.parse(fs.readFileSync(file, "utf8")) };
 }
+
+export function saveSettings(partial: Partial<Settings>): Settings {
+  const next = { ...loadSettings(), ...partial };
+  fs.mkdirSync(paths.profile(), { recursive: true });
+  fs.writeFileSync(paths.settings(), `${JSON.stringify(next, null, 2)}\n`);
+  return next;
+}
