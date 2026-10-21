@@ -128,6 +128,14 @@ export function Agents({
                 <Link href="/?tab=models" className="text-primary underline-offset-2 hover:underline">
                   Cloud models
                 </Link>
+                {" · "}
+                <Link href="/?tab=guides" className="text-primary underline-offset-2 hover:underline">
+                  Agent guides
+                </Link>
+                {" · "}
+                <Link href="/?tab=guides" className="text-primary underline-offset-2 hover:underline">
+                  Agent guides
+                </Link>
               </>
             ) : (
               <>

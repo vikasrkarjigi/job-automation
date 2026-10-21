@@ -13,6 +13,7 @@ import { AutoRefresh, CopyButton, SubmitButton } from "./client";
 import { ContentCard, EmptyState } from "./design";
 import { filterJobsBySearch } from "@/job-search";
 import { SearchHint } from "./dashboard-search";
+import { ResumeList } from "./resume-list";
 import { ApplicationJobRow } from "./job-activity";
 
 function Empty({ title, children }: { title: string; children: React.ReactNode }) {
@@ -27,31 +28,7 @@ export function Resumes({ jobs, query }: { jobs: JobRow[]; query?: string }) {
   return (
     <>
       <SearchHint query={query} total={all.length} shown={rows.length} />
-      <div className="grid gap-3 sm:grid-cols-2">
-      {rows.map((j) => (
-        <a key={j.id} href={`/resume/${j.id}`} className="group rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="font-medium group-hover:underline">{j.title}</div>
-              <div className="text-xs text-muted-foreground">{j.company}</div>
-            </div>
-            <StageBadge stage={j.stage} />
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span className="tabular-nums">
-              ATS {j.scoreBefore ?? "?"} → {j.scoreAfter ?? "?"}
-            </span>
-            {(j.analysis?.renames ?? []).map((r) => (
-              <Badge key={r.from} variant="outline">
-                {r.from} → {r.to}
-              </Badge>
-            ))}
-            {j.submittedResumePath && <Badge>Submitted {when(j.submittedAt)}</Badge>}
-          </div>
-
-        </a>
-      ))}
-      </div>
+      <ResumeList rows={rows} />
     </>
   );
 }

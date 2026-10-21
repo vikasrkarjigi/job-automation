@@ -7,6 +7,8 @@ import { passwordMatches, SESSION_COOKIE, sessionToken, validSession } from "@/a
 import { loadAnswers, saveAnswer } from "@/apply";
 import { approve, confirmKeyword, markSent, markSubmitted, runApproved, saveWritten, skip } from "@/orchestrator";
 import { saveAgentConfig } from "@/agent-config";
+import { AGENT_DOC_CATALOG, saveAgentDoc, type AgentDocId } from "@/agent-docs";
+import { cursorKey } from "@/cloud";
 import { runNow } from "@/launcher";
 import { criteriaFromForm, saveSearchCriteria } from "@/search-criteria";
 import { saveSettings } from "@/settings";
@@ -57,11 +59,53 @@ async function step(form: FormData, label: string, fn: () => string | void) {
 }
 
 export async function approveJob(form: FormData) {
+  await guard();
   const id = field(form, "jobId");
-  await step(form, `Approved ${id}`, () => {
-    approve(id);
-    runApproved();
-    return `Approved ${named(id)}. The apply agent fills the form on its next run`;
+  const back = backTo(form);
+  let error: string | null = null;
+  let message = "";
+  try {
+    message =
+      (await writeState(`Approved ${id}`, () => {
+        approve(id);
+        runApproved();
+        return `Approved ${named(id)}`;
+      })) ?? `Approved ${named(id)}`;
+  } catch (err) {
+    error = err instanceof Error ? err.message : String(err);
+    revalidatePath("/", "layout");
+    redirect(withNotice(back, "error", error));
+    return;
+  }
+
+  if (cursorKey()) {
+    try {
+      await runNow("apply");
+      message = `${message}. Apply agent is filling the form now — open Applications to track progress`;
+    } catch (err) {
+      const t = err instanceof Error ? err.message : String(err);
+      message = t.includes("already running")
+        ? `${message}. Apply agent is already running — check Applications`
+        : `${message}. Could not auto-start apply (${t}). Use Agents → Fill approved applications.`;
+    }
+  } else {
+    message = `${message}. Add CURSOR_API_KEY in Vercel to auto-start apply when you approve`;
+  }
+
+  revalidatePath("/", "layout");
+  const dest = new URL("/?tab=applications", "http://local");
+  const q = new URL(back, "http://local").searchParams.get("q");
+  if (q) dest.searchParams.set("q", q);
+  redirect(withNotice(dest.pathname + dest.search, "started", message));
+}
+
+export async function saveAgentGuide(form: FormData) {
+  const id = field(form, "docId") as AgentDocId;
+  const content = String(form.get("content") ?? "");
+  const file = AGENT_DOC_CATALOG.find((d) => d.id === id)?.file ?? `${id}.md`;
+  await step(form, `Updated agents/${file}`, () => {
+    saveAgentDoc(id, content);
+    return `Saved agents/${file}`;
   });
 }
 

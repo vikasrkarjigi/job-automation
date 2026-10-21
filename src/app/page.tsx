@@ -3,9 +3,11 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { Suspense } from "react";
 import { loadAgentConfig } from "@/agent-config";
+import { loadAllAgentDocs } from "@/agent-docs";
 import { agentSummaries } from "@/agent-activity";
 import { answerSections, NOT_BLANK } from "@/apply";
 import { cursorKey, runInfos } from "@/cloud";
+import { AgentGuides } from "@/components/tracker/agent-guides";
 import { Agents, KIND_LABEL, at } from "@/components/tracker/agents";
 import { FindJobsForm } from "@/components/tracker/find-jobs";
 import { ModelSettings } from "@/components/tracker/model-settings";
@@ -23,7 +25,7 @@ import { describeSchedule, loadLaunches, loadSchedule, upcoming } from "@/schedu
 import { readState } from "@/store";
 import { counts, loadTracker } from "@/tracker";
 
-const TABS: DeskTab[] = ["today", "find", "applications", "outreach", "resumes", "ignored", "answers", "agents", "models", "schedule", "runs"];
+const TABS: DeskTab[] = ["today", "find", "applications", "outreach", "resumes", "ignored", "answers", "agents", "guides", "models", "schedule", "runs"];
 
 const TAB_COPY: Record<DeskTab, { title: string; description: string }> = {
   today: { title: "Overview", description: "Jobs from the last 24 hours that need your decision, a keyword answer, or a final Submit click." },
@@ -37,6 +39,10 @@ const TAB_COPY: Record<DeskTab, { title: string; description: string }> = {
   ignored: { title: "Ignored", description: "Jobs that failed a hard filter or were skipped, with the reason." },
   answers: { title: "My answers", description: "Saved answers the apply agent uses on every form. Blanks always stop the run." },
   agents: { title: "Agents", description: "Pipeline agents, live cloud runs, and recent activity." },
+  guides: {
+    title: "Agent guides",
+    description: "Edit the Markdown instructions each cloud agent reads from agents/*.md. Changes commit to GitHub and apply on the next run.",
+  },
   models: { title: "Cloud models", description: "Choose and order Cursor cloud agent models. When one hits a usage limit, the next model in the chain runs automatically." },
   schedule: { title: "Schedule", description: "When automatic job searches should run." },
   runs: { title: "Run log", description: "What each pipeline run fetched, kept, and dropped." },
@@ -110,6 +116,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
   }
 
   const { data, settings, sections, schedule, launches, agentConfig, searchCriteria } = state;
+  const agentDocs = tab === "guides" ? loadAllAgentDocs() : null;
   const now = new Date();
   const sixHoursAgo = now.getTime() - 6 * 3_600_000;
   const recentLaunches = launches.filter((l) => Date.parse(l.at) >= sixHoursAgo);
@@ -164,7 +171,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
         (data.jobs.length === 0 ? (
           <EmptyState title="No jobs in your pipeline yet">
             {next.length ? `Next search: ${next[0]} (${describeSchedule(schedule)}). ` : "Scheduled search is off. "}
-            Use Find jobs now in the sidebar, and fill My answers so applications never stop on a blank field.
+            Open Find jobs in the nav, and fill My answers so applications never stop on a blank field.
           </EmptyState>
         ) : (
           <Today jobs={data.jobs} settings={settings} query={searchQuery} />
@@ -174,6 +181,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
       {tab === "resumes" && <Resumes jobs={data.jobs} query={searchQuery} />}
       {tab === "ignored" && <Ignored jobs={data.jobs} query={searchQuery} />}
       {tab === "answers" && <Answers sections={sections} back={back} />}
+      {tab === "guides" && agentDocs && <AgentGuides initial={agentDocs} back={back} />}
       {tab === "agents" && (
         <Agents
           summaries={agentSummaries(data)}

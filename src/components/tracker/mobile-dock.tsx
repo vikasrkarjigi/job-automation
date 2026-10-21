@@ -56,18 +56,15 @@ export function MobileDock({ tab, navBadges }: { tab: DeskTab; navBadges: Partia
                 </NavLink>
               ))}
             </div>
-            <div className="mt-4 grid gap-2 border-t border-border pt-4">
-              <Button variant="outline" className="w-full" render={<a href="/export" />} nativeButton={false}>
-                Export Excel
-              </Button>
-              {authEnabled() && (
+            {authEnabled() && (
+              <div className="mt-4 border-t border-border pt-4">
                 <form action={logout}>
                   <Button type="submit" variant="ghost" className="w-full">
                     Log out
                   </Button>
                 </form>
-              )}
-            </div>
+              </div>
+            )}
             <button type="button" className="mt-3 w-full rounded-lg border py-2 text-sm font-medium" onClick={() => setMore(false)}>
               Close
             </button>
