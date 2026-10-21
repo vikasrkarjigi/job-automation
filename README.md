@@ -55,6 +55,8 @@ The header has **Find jobs now**, **Agents**, **Schedule**, and **Download Excel
 
 ### Put it online with Vercel (free)
 
+If pushes to `main` do not create a new Vercel deployment, see [docs/VERCEL-DEPLOY.md](docs/VERCEL-DEPLOY.md).
+
 1. At vercel.com, choose Add New, then Project, and import `vikasrkarjigi/job-automation`. Keep the detected Next.js settings.
 2. Before deploying, add these Environment Variables:
    - `SHORTLIST_GITHUB_TOKEN`: a fine grained GitHub token for this repository only, with Contents read and write. The dashboard uses it to read the pipeline and save your clicks as commits.
