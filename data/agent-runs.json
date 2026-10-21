@@ -1,0 +1,13 @@
+[
+  {
+    "kind": "fetch",
+    "trigger": "you",
+    "slot": null,
+    "at": "2026-10-21T05:08:37.673Z",
+    "model": "composer-2.5",
+    "agentId": "bc-a301e29f-bb9e-4b54-879b-6f21bdec329b",
+    "runId": "run-fa168dad-aba4-4aba-a758-20af4f471cb8",
+    "url": "https://cursor.com/agents/bc-a301e29f-bb9e-4b54-879b-6f21bdec329b",
+    "error": null
+  }
+]
