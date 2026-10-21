@@ -1,8 +1,8 @@
 export default function Loading() {
   return (
     <div className="min-h-svh w-full animate-pulse bg-background">
-      <div className="hidden h-full w-[248px] bg-sidebar xl:block" />
-      <div className="space-y-4 p-6 xl:ml-[248px]">
+      <div className="hidden h-full w-[248px] bg-sidebar lg:block" />
+      <div className="space-y-4 p-6 lg:ml-[248px]">
         <div className="h-10 w-56 rounded-lg bg-muted" />
         <div className="flex gap-2 overflow-hidden">
           {Array.from({ length: 5 }, (_, i) => (

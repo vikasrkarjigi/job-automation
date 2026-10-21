@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { login } from "@/app/actions";
+import { APP_NAME, APP_TAGLINE } from "@/brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -8,8 +9,8 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
     <div className="flex min-h-svh">
       <div className="hidden w-[min(420px,40%)] flex-col justify-between bg-sidebar p-10 text-sidebar-foreground lg:flex">
         <div>
-          <p className="text-2xl font-semibold tracking-tight text-sidebar-accent-foreground">Shortlist</p>
-          <p className="mt-2 text-sm text-sidebar-foreground/70">Job search pipeline for AI engineer roles.</p>
+          <p className="text-2xl font-semibold tracking-tight text-sidebar-accent-foreground">{APP_NAME}</p>
+          <p className="mt-2 text-sm text-sidebar-foreground/70">{APP_TAGLINE}</p>
         </div>
         <ul className="space-y-3 text-sm text-sidebar-foreground/80">
           <li>Scout, score, and tailor from one dashboard</li>
@@ -20,7 +21,7 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm space-y-6">
           <div className="lg:hidden">
-            <p className="text-xl font-semibold">Shortlist</p>
+            <p className="text-xl font-semibold">{APP_NAME}</p>
             <p className="text-sm text-muted-foreground">Sign in to your dashboard</p>
           </div>
           <Suspense fallback={<LoginForm next="" failed={false} />}>

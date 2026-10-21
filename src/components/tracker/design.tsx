@@ -31,11 +31,32 @@ export function SectionLabel({ children }: { children: ReactNode }) {
   return <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{children}</p>;
 }
 
-export function Metric({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
+export function Metric({
+  label,
+  value,
+  highlight,
+  compact,
+  className,
+}: {
+  label: string;
+  value: number;
+  highlight?: boolean;
+  compact?: boolean;
+  className?: string;
+}) {
   return (
-    <div className={cn("min-w-[8.5rem] shrink-0 flex-1 rounded-lg border border-border bg-card px-4 py-2.5 shadow-sm sm:py-3", highlight && "border-primary/40 ring-1 ring-primary/20")}>
-      <p className={cn("text-2xl font-semibold tabular-nums tracking-tight", highlight && "text-primary")}>{value}</p>
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+    <div
+      className={cn(
+        compact
+          ? "rounded-md border border-sidebar-border bg-sidebar-accent/25 px-2 py-1.5"
+          : "min-w-[8.5rem] shrink-0 flex-1 rounded-lg border border-border bg-card px-4 py-2.5 shadow-sm sm:py-3",
+        highlight && !compact && "border-primary/40 ring-1 ring-primary/20",
+        highlight && compact && "border-sidebar-primary/40 ring-1 ring-sidebar-primary/20",
+        className,
+      )}
+    >
+      <p className={cn("font-semibold tabular-nums tracking-tight", compact ? "text-lg" : "text-2xl", highlight && (compact ? "text-sidebar-primary" : "text-primary"))}>{value}</p>
+      <p className={cn("text-[10px] font-medium leading-tight sm:text-xs", compact ? "text-sidebar-foreground/65" : "text-muted-foreground")}>{label}</p>
     </div>
   );
 }

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shortlist",
-  description: "Morning shortlist of AI engineer jobs, tailored resumes, applications, and outreach.",
+  title: "Job automation",
+  description: "Job pipeline: search, tailor resumes, fill applications, and track outreach.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
