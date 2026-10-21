@@ -55,12 +55,14 @@ export function ReadyToSubmitPanel({
   url,
   title,
   company,
+  accountEmail,
   compact,
 }: {
   jobId: string;
   url: string;
   title: string;
   company: string;
+  accountEmail?: string;
   compact?: boolean;
 }) {
   if (compact) {
@@ -82,7 +84,7 @@ export function ReadyToSubmitPanel({
       </p>
       <p className="mt-1 text-sm text-muted-foreground">
         The form is filled. Open the link below (saved application page when the agent finished). Sign in with{" "}
-        {job.applyPacket?.accountEmail ?? "your board email"} if asked, review everything, then press Submit on their site.
+        {accountEmail ?? "vikasravikarjigi26@gmail.com"} if asked, review everything, then press Submit on their site.
       </p>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <GoSubmitButton url={url} label="Go submit this application →" />
@@ -106,7 +108,16 @@ export function ApplicationActionCell({ job }: { job: JobRow }) {
   if (!link) return <span className="text-xs text-muted-foreground">No link yet</span>;
 
   if (job.stage === "ready_to_submit") {
-    return <ReadyToSubmitPanel jobId={job.id} url={link.url} title={job.title} company={job.company} compact />;
+    return (
+      <ReadyToSubmitPanel
+        jobId={job.id}
+        url={link.url}
+        title={job.title}
+        company={job.company}
+        accountEmail={job.applyPacket?.accountEmail}
+        compact
+      />
+    );
   }
 
   if (job.stage === "approved" || job.stage === "apply_blocked" || job.stage === "awaiting_approval") {

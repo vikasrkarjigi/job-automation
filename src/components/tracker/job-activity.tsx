@@ -102,7 +102,7 @@ export function ApplicationActivityPanel({
   return (
     <div className="space-y-4 text-sm">
       {job.stage === "ready_to_submit" && url && (
-        <ReadyToSubmitPanel jobId={job.id} url={url} title={job.title} company={job.company} />
+        <ReadyToSubmitPanel jobId={job.id} url={url} title={job.title} company={job.company} accountEmail={job.applyPacket?.accountEmail} />
       )}
 
       {url && job.stage !== "ready_to_submit" && (

@@ -149,7 +149,7 @@ export function Today({
               return (
                 <div key={j.id} className="space-y-3">
                   {url ? (
-                    <ReadyToSubmitPanel jobId={j.id} url={url} title={j.title} company={j.company} />
+                    <ReadyToSubmitPanel jobId={j.id} url={url} title={j.title} company={j.company} accountEmail={j.applyPacket?.accountEmail} />
                   ) : (
                     <div className="rounded-xl border p-4 text-sm text-muted-foreground">Application link not saved yet — check Applications after the apply agent runs.</div>
                   )}
