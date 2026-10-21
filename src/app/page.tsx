@@ -7,6 +7,7 @@ import { agentSummaries } from "@/agent-activity";
 import { answerSections, NOT_BLANK } from "@/apply";
 import { cursorKey, runInfos } from "@/cloud";
 import { Agents, KIND_LABEL, at } from "@/components/tracker/agents";
+import { ModelSettings } from "@/components/tracker/model-settings";
 import { Answers } from "@/components/tracker/answers";
 import { AutoRefresh } from "@/components/tracker/client";
 import { DashboardLayout, type DeskTab } from "@/components/tracker/dashboard-layout";
@@ -19,7 +20,7 @@ import { describeSchedule, loadLaunches, loadSchedule, upcoming } from "@/schedu
 import { readState } from "@/store";
 import { counts, loadTracker } from "@/tracker";
 
-const TABS: DeskTab[] = ["today", "applications", "outreach", "resumes", "ignored", "answers", "agents", "schedule", "runs"];
+const TABS: DeskTab[] = ["today", "applications", "outreach", "resumes", "ignored", "answers", "agents", "models", "schedule", "runs"];
 
 const TAB_COPY: Record<DeskTab, { title: string; description: string }> = {
   today: { title: "Overview", description: "Jobs from the last 24 hours that need your decision, a keyword answer, or a final Submit click." },
@@ -28,7 +29,8 @@ const TAB_COPY: Record<DeskTab, { title: string; description: string }> = {
   resumes: { title: "Resumes", description: "Tailored resumes written for each shortlisted role." },
   ignored: { title: "Ignored", description: "Jobs that failed a hard filter or were skipped, with the reason." },
   answers: { title: "My answers", description: "Saved answers the apply agent uses on every form. Blanks always stop the run." },
-  agents: { title: "Agents & models", description: "Pipeline agents, cloud run history, and which Cursor models to use." },
+  agents: { title: "Agents", description: "Pipeline agents, live cloud runs, and recent activity." },
+  models: { title: "Cloud models", description: "Choose and order Cursor cloud agent models. When one hits a usage limit, the next model in the chain runs automatically." },
   schedule: { title: "Schedule", description: "When automatic job searches should run." },
   runs: { title: "Run log", description: "What each pipeline run fetched, kept, and dropped." },
 };
@@ -96,8 +98,13 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
 
   const { data, settings, sections, schedule, launches, agentConfig } = state;
   const now = new Date();
-  const watched = launches.filter((l, i) => (tab === "agents" && i >= launches.length - 20) || now.getTime() - Date.parse(l.at) < 6 * 3_600_000);
-  const infos = await runInfos(watched);
+  const sixHoursAgo = now.getTime() - 6 * 3_600_000;
+  const recentLaunches = launches.filter((l) => Date.parse(l.at) >= sixHoursAgo);
+  const watched =
+    tab === "agents"
+      ? launches.slice(-20)
+      : recentLaunches.filter((l) => l.runId);
+  const infos = cursorKey() && watched.length ? await runInfos(watched) : new Map();
   const running = launches.filter((l) => l.runId && ["CREATING", "RUNNING"].includes(infos.get(l.runId)?.status ?? ""));
   const next = upcoming(schedule, now);
   const c = counts(data);
@@ -160,9 +167,16 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
           hasKey={!!cursorKey()}
           next={next}
           approvedCount={data.jobs.filter((j) => j.stage === "approved").length}
-          agentConfig={agentConfig}
         />
       )}
+      {tab === "models" &&
+        (cursorKey() ? (
+          <ModelSettings initial={agentConfig} back={back} />
+        ) : (
+          <EmptyState title="Cursor API key required">
+            Add CURSOR_API_KEY in Vercel (Settings → Environment Variables), redeploy Production, then return here to pick models.
+          </EmptyState>
+        ))}
       {tab === "schedule" && <ScheduleForm schedule={schedule} next={next} hasKey={!!cursorKey()} back={back} />}
       {tab === "runs" && <Runs runs={data.runs} />}
     </DashboardLayout>

@@ -16,7 +16,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
     <div className="mb-8 flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
-        {description && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{description}</p>}
+        {description && <p className="mt-1 max-w-3xl text-sm text-muted-foreground lg:max-w-none">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -33,15 +33,16 @@ export function SectionLabel({ children }: { children: ReactNode }) {
 
 export function Metric({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
   return (
-    <div className={cn("rounded-lg border border-border bg-card px-4 py-3 shadow-sm", highlight && "border-primary/40 ring-1 ring-primary/20")}>
+    <div className={cn("min-w-[8.5rem] shrink-0 flex-1 rounded-lg border border-border bg-card px-4 py-2.5 shadow-sm sm:py-3", highlight && "border-primary/40 ring-1 ring-primary/20")}>
       <p className={cn("text-2xl font-semibold tabular-nums tracking-tight", highlight && "text-primary")}>{value}</p>
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
     </div>
   );
 }
 
-export function NavIcon({ name }: { name: string }) {
+export function NavIcon({ name, className }: { name: string; className?: string }) {
   const paths: Record<string, string> = {
+    models: "M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z",
     today: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
     applications: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
     outreach: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z",
@@ -54,7 +55,7 @@ export function NavIcon({ name }: { name: string }) {
   };
   const d = paths[name] ?? paths.today;
   return (
-    <svg aria-hidden className="size-4 shrink-0 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+    <svg aria-hidden className={cn("size-4 shrink-0 opacity-80", className)} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
       <path strokeLinecap="round" strokeLinejoin="round" d={d} />
     </svg>
   );

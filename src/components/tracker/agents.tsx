@@ -6,7 +6,6 @@ import type { Launch, RunKind } from "@/schedule";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ContentCard, SectionLabel } from "./design";
-import { ModelSettings } from "./model-settings";
 import { AutoRefresh, SubmitButton } from "./client";
 
 export const KIND_LABEL: Record<RunKind, string> = { fetch: "Find jobs", apply: "Fill applications" };
@@ -79,7 +78,6 @@ export function Agents({
   hasKey,
   next,
   approvedCount,
-  agentConfig,
 }: {
   summaries: AgentSummary[];
   launches: Launch[];
@@ -88,7 +86,6 @@ export function Agents({
   hasKey: boolean;
   next: string[];
   approvedCount: number;
-  agentConfig: { models: string[]; fallback: boolean };
 }) {
   const recent = [...launches].reverse();
   const live = recent.filter((l) => launchStatus(l, l.runId ? infos.get(l.runId) : undefined).tone === "live");
@@ -99,7 +96,6 @@ export function Agents({
     <div className="space-y-8">
       {live.length > 0 && <AutoRefresh />}
       {!hasKey && <SetupNeeded />}
-      {hasKey && <ModelSettings initial={agentConfig} back="/?tab=agents" />}
 
       <ContentCard className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1 text-sm">
@@ -127,6 +123,10 @@ export function Agents({
                 Next scheduled search: {next[0]}.{" "}
                 <Link href="/?tab=schedule" className="text-primary underline-offset-2 hover:underline">
                   Edit schedule
+                </Link>
+                {" · "}
+                <Link href="/?tab=models" className="text-primary underline-offset-2 hover:underline">
+                  Cloud models
                 </Link>
               </>
             ) : (
