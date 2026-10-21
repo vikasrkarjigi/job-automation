@@ -5,18 +5,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import type { JobRow, RunRecord } from "@/types";
 import { ago, StageBadge, statusLine, when } from "./bits";
 import { CopyButton, SubmitButton } from "./client";
+import { ContentCard, EmptyState } from "./design";
 
-function Empty({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">{children}</div>;
+function Empty({ title, children }: { title: string; children: React.ReactNode }) {
+  return <EmptyState title={title}>{children}</EmptyState>;
 }
 
 export function Resumes({ jobs }: { jobs: JobRow[] }) {
   const rows = jobs.filter((j) => j.resumePath).sort((a, b) => (b.submittedAt ?? b.createdAt).localeCompare(a.submittedAt ?? a.createdAt));
-  if (!rows.length) return <Empty>No tailored resumes yet. One is written for every job that clears the basic checks.</Empty>;
+  if (!rows.length) return <Empty title="No tailored resumes">One is written for every job that clears the basic checks.</Empty>;
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {rows.map((j) => (
-        <a key={j.id} href={`/resume/${j.id}`} className="group rounded-xl border p-4 transition-colors hover:bg-muted/50">
+        <a key={j.id} href={`/resume/${j.id}`} className="group rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="font-medium group-hover:underline">{j.title}</div>
@@ -44,9 +45,9 @@ export function Resumes({ jobs }: { jobs: JobRow[] }) {
 
 export function Applications({ jobs }: { jobs: JobRow[] }) {
   const rows = jobs.filter((j) => j.stage !== "ignored").sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  if (!rows.length) return <Empty>No jobs have passed the filters yet. Jobs that failed a check are on the Ignored tab with the reason.</Empty>;
+  if (!rows.length) return <Empty title="No applications yet">Jobs that fail a check appear under Ignored with the reason.</Empty>;
   return (
-    <div className="rounded-xl border">
+    <ContentCard className="overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -93,14 +94,14 @@ export function Applications({ jobs }: { jobs: JobRow[] }) {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ContentCard>
   );
 }
 
 export function Outreach({ jobs, back }: { jobs: JobRow[]; back: string }) {
   const withPeople = jobs.filter((j) => j.people.length);
   if (!withPeople.length) {
-    return <Empty>No outreach yet. After you approve a job, the outreach agent finds up to five recruiters and managers from Apollo or Vibe and drafts a note for each.</Empty>;
+    return <Empty title="No outreach yet">After you approve a job, the agent finds up to five people from Apollo or Vibe and drafts a note for each.</Empty>;
   }
   return (
     <div className="space-y-8">
@@ -126,7 +127,7 @@ export function Outreach({ jobs, back }: { jobs: JobRow[]; back: string }) {
               {j.people.map((p) => {
                 const done = (!p.linkedinUrl || p.invite === "sent") && p.emailStatus !== "draft";
                 return (
-                  <div key={p.id} className="space-y-3 rounded-xl border p-4">
+                  <div key={p.id} className="space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="font-medium">
@@ -193,9 +194,9 @@ export function Outreach({ jobs, back }: { jobs: JobRow[]; back: string }) {
 
 export function Ignored({ jobs }: { jobs: JobRow[] }) {
   const rows = jobs.filter((j) => j.stage === "ignored" || j.stage === "skipped_by_you");
-  if (!rows.length) return <Empty>Nothing has been ignored yet.</Empty>;
+  if (!rows.length) return <Empty title="Nothing ignored">Jobs you skip or that fail filters will appear here.</Empty>;
   return (
-    <div className="rounded-xl border">
+    <ContentCard className="overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -217,14 +218,14 @@ export function Ignored({ jobs }: { jobs: JobRow[] }) {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ContentCard>
   );
 }
 
 export function Runs({ runs }: { runs: RunRecord[] }) {
-  if (!runs.length) return <Empty>No runs yet.</Empty>;
+  if (!runs.length) return <Empty title="No runs logged">Pipeline runs appear here after a job search or approval batch.</Empty>;
   return (
-    <div className="rounded-xl border">
+    <ContentCard className="overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -256,6 +257,6 @@ export function Runs({ runs }: { runs: RunRecord[] }) {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </ContentCard>
   );
 }

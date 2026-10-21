@@ -1,24 +1,34 @@
 import { Suspense } from "react";
 import { login } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export default function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
-    <main className="flex min-h-svh items-center justify-center px-4">
-      <Card className="glass-panel w-full max-w-sm border-white/30 shadow-2xl shadow-indigo-500/10">
-        <CardHeader>
-          <CardTitle>Shortlist</CardTitle>
-          <CardDescription>Your job search dashboard. Enter the password you set in Vercel.</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="flex min-h-svh">
+      <div className="hidden w-[min(420px,40%)] flex-col justify-between bg-sidebar p-10 text-sidebar-foreground lg:flex">
+        <div>
+          <p className="text-2xl font-semibold tracking-tight text-sidebar-accent-foreground">Shortlist</p>
+          <p className="mt-2 text-sm text-sidebar-foreground/70">Job search pipeline for AI engineer roles.</p>
+        </div>
+        <ul className="space-y-3 text-sm text-sidebar-foreground/80">
+          <li>Scout, score, and tailor from one dashboard</li>
+          <li>Pick cloud agent models and run on demand</li>
+          <li>Track applications, outreach, and resumes</li>
+        </ul>
+      </div>
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="w-full max-w-sm space-y-6">
+          <div className="lg:hidden">
+            <p className="text-xl font-semibold">Shortlist</p>
+            <p className="text-sm text-muted-foreground">Sign in to your dashboard</p>
+          </div>
           <Suspense fallback={<LoginForm next="" failed={false} />}>
             <LoginWithParams searchParams={searchParams} />
           </Suspense>
-        </CardContent>
-      </Card>
-    </main>
+        </div>
+      </main>
+    </div>
   );
 }
 
@@ -29,7 +39,11 @@ async function LoginWithParams({ searchParams }: { searchParams: PageProps<"/log
 
 function LoginForm({ next, failed }: { next: string; failed: boolean }) {
   return (
-    <form action={login} className="space-y-3">
+    <form action={login} className="space-y-4 rounded-lg border border-border bg-card p-6 shadow-sm">
+      <div>
+        <h1 className="text-lg font-semibold">Sign in</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Use the password from your Vercel environment variables.</p>
+      </div>
       <input type="hidden" name="next" value={next} />
       <Input name="password" type="password" placeholder="Password" autoComplete="current-password" autoFocus required aria-invalid={failed || undefined} />
       {failed && <p className="text-sm text-destructive">That password is not right.</p>}

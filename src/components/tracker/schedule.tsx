@@ -1,5 +1,6 @@
 import { updateSchedule } from "@/app/actions";
 import { describeSchedule, MAX_TIMES, type Schedule } from "@/schedule";
+import { ContentCard, SectionLabel } from "./design";
 import { SubmitButton, TimesField } from "./client";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -18,7 +19,8 @@ export function ScheduleForm({ schedule, next, hasKey, back }: { schedule: Sched
   const zones = ZONES.some(([z]) => z === schedule.timezone) ? ZONES : [[schedule.timezone, schedule.timezone] as [string, string], ...ZONES];
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
-      <form action={updateSchedule} className="space-y-6 rounded-xl border p-5">
+      <form action={updateSchedule} className="space-y-6">
+        <ContentCard className="space-y-6 p-5">
         <input type="hidden" name="back" value={back} />
         <div>
           <h3 className="font-semibold">When to search for jobs</h3>
@@ -63,10 +65,11 @@ export function ScheduleForm({ schedule, next, hasKey, back }: { schedule: Sched
         </label>
 
         <SubmitButton>Save schedule</SubmitButton>
+        </ContentCard>
       </form>
 
       <aside className="space-y-4 text-sm">
-        <div className="rounded-xl border p-4">
+        <ContentCard className="p-4">
           <p className="font-medium">Right now</p>
           <p className="mt-1 text-muted-foreground">{describeSchedule(schedule)}.</p>
           {next.length > 0 && (
@@ -79,14 +82,14 @@ export function ScheduleForm({ schedule, next, hasKey, back }: { schedule: Sched
               </ul>
             </>
           )}
-        </div>
-        <div className="rounded-xl border p-4 text-muted-foreground">
+        </ContentCard>
+        <ContentCard className="p-4 text-muted-foreground">
           <p className="font-medium text-foreground">How it runs</p>
           <p className="mt-1">
             On Vercel Pro, a cron can check this every 30 minutes. On the free Hobby plan, use Find jobs now or your Cursor Automation at 4 am, 12 pm, and 8 pm Pacific until you upgrade or add a deploy hook.
           </p>
           {!hasKey && <p className="mt-2 text-amber-700 dark:text-amber-400">Add CURSOR_API_KEY in Vercel first, or nothing will start.</p>}
-        </div>
+        </ContentCard>
       </aside>
     </div>
   );

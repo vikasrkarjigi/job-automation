@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { saveAgentModels } from "@/app/actions";
 import { MODEL_CATALOG, catalogEntry } from "@/model-catalog";
+import { ContentCard } from "./design";
 import { SubmitButton } from "./client";
 
 export function ModelSettings({ initial, back }: { initial: { models: string[]; fallback: boolean }; back: string }) {
@@ -30,7 +31,8 @@ export function ModelSettings({ initial, back }: { initial: { models: string[]; 
   };
 
   return (
-    <form action={saveAgentModels} className="glass-panel space-y-5 p-5 sm:p-6">
+    <form action={saveAgentModels} className="space-y-5">
+      <ContentCard className="space-y-5 p-5 sm:p-6">
       <input type="hidden" name="back" value={back} />
       <input type="hidden" name="fallback" value={fallback ? "1" : "0"} />
       {selected.map((id) => (
@@ -106,6 +108,7 @@ export function ModelSettings({ initial, back }: { initial: { models: string[]; 
         <SubmitButton disabled={selected.length === 0}>Save model preferences</SubmitButton>
         <p className="text-xs text-muted-foreground">Saved to GitHub with your other pipeline settings. Next Find jobs now uses this order.</p>
       </div>
+      </ContentCard>
     </form>
   );
 }

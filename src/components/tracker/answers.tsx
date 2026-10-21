@@ -1,6 +1,7 @@
 import { saveAnswers } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import { NOT_BLANK, type SavedAnswer } from "@/apply";
+import { ContentCard, SectionLabel } from "./design";
 import { SubmitButton } from "./client";
 
 const LONG = new Set(["why_role"]);
@@ -14,7 +15,7 @@ export function Answers({ sections, back }: { sections: { title: string; answers
   return (
     <form action={saveAnswers} className="space-y-8">
       <input type="hidden" name="back" value={back} />
-      <div className="flex flex-col gap-3 rounded-xl border bg-muted/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <ContentCard className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm">
           {blanks > 0 ? (
             <>
@@ -25,10 +26,10 @@ export function Answers({ sections, back }: { sections: { title: string; answers
           )}
         </p>
         <SubmitButton>Save answers</SubmitButton>
-      </div>
+      </ContentCard>
       {sections.map((s) => (
         <section key={s.title} className="space-y-3">
-          <h2 className="text-sm font-medium">{s.title === "Saved answers" ? "Application answers" : s.title}</h2>
+          <SectionLabel>{s.title === "Saved answers" ? "Application answers" : s.title}</SectionLabel>
           <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
             {s.answers.map((a) => (
               <label key={a.key} className={`space-y-1.5 ${LONG.has(a.key) ? "sm:col-span-2" : ""}`}>

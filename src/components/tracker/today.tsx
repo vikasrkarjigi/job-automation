@@ -34,7 +34,7 @@ function JobMeta({ job }: { job: JobRow }) {
 
 function ShortlistCard({ job, settings }: { job: JobRow; settings: Settings }) {
   return (
-    <Card>
+    <Card className="shadow-sm">
       <CardHeader className="gap-1">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 space-y-1">
@@ -87,7 +87,7 @@ function ShortlistCard({ job, settings }: { job: JobRow; settings: Settings }) {
 
 function KeywordQuestion({ job }: { job: JobRow }) {
   return (
-    <Card>
+    <Card className="shadow-sm">
       <CardHeader className="gap-1">
         <CardTitle className="text-base">{job.title}</CardTitle>
         <JobMeta job={job} />
