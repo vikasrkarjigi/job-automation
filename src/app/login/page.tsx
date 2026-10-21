@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 export default function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <main className="flex min-h-svh items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
+      <Card className="glass-panel w-full max-w-sm border-white/30 shadow-2xl shadow-indigo-500/10">
         <CardHeader>
           <CardTitle>Shortlist</CardTitle>
           <CardDescription>Your job search dashboard. Enter the password you set in Vercel.</CardDescription>

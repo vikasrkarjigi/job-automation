@@ -6,14 +6,16 @@ import { logout, startAgent } from "@/app/actions";
 import { agentSummaries } from "@/agent-activity";
 import { answerSections, NOT_BLANK } from "@/apply";
 import { authEnabled } from "@/auth";
-import { cursorKey, modelChain, runInfos } from "@/cloud";
+import { cursorKey, runInfos } from "@/cloud";
 import { Agents, KIND_LABEL, at } from "@/components/tracker/agents";
 import { Answers } from "@/components/tracker/answers";
 import { AutoRefresh, SubmitButton } from "@/components/tracker/client";
 import { ScheduleForm } from "@/components/tracker/schedule";
 import { Applications, Ignored, Outreach, Resumes, Runs } from "@/components/tracker/tables";
 import { Today } from "@/components/tracker/today";
+import { PageShell, StatCard, TabNav } from "@/components/tracker/shell";
 import { Button } from "@/components/ui/button";
+import { loadAgentConfig } from "@/agent-config";
 import { loadSettings, paths } from "@/settings";
 import { describeSchedule, loadLaunches, loadSchedule, upcoming } from "@/schedule";
 import { readState } from "@/store";
@@ -21,26 +23,31 @@ import { counts, loadTracker } from "@/tracker";
 
 export default function Page({ searchParams }: PageProps<"/">) {
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Shortlist</h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">
-            AI engineer roles from the last 24 hours, found on your schedule or whenever you press Find jobs now. Approve a resume, answer a question, or mark an application as submitted right here.
+    <PageShell>
+      <header className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand)]">Job pipeline</p>
+          <h1 className="bg-gradient-to-br from-foreground via-foreground to-[var(--brand)] bg-clip-text text-3xl font-semibold tracking-tight text-transparent sm:text-4xl">
+            Shortlist
+          </h1>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            AI engineer roles from the last 24 hours. Search on demand, pick your cloud agent models, approve tailored resumes, and track every application in one place.
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
           <form action={startAgent}>
             <input type="hidden" name="kind" value="fetch" />
-            <SubmitButton pendingLabel="Starting...">Find jobs now</SubmitButton>
+            <SubmitButton pendingLabel="Starting..." className="btn-glow">
+              Find jobs now
+            </SubmitButton>
           </form>
-          <Button variant="outline" render={<Link href="/?tab=agents" />} nativeButton={false}>
+          <Button variant="outline" className="border-border/80 bg-card/60 backdrop-blur-sm" render={<Link href="/?tab=agents" />} nativeButton={false}>
             Agents
           </Button>
-          <Button variant="outline" render={<Link href="/?tab=schedule" />} nativeButton={false}>
+          <Button variant="outline" className="border-border/80 bg-card/60 backdrop-blur-sm" render={<Link href="/?tab=schedule" />} nativeButton={false}>
             Schedule
           </Button>
-          <Button variant="outline" render={<a href="/export" />} nativeButton={false}>
+          <Button variant="outline" className="border-border/80 bg-card/60 backdrop-blur-sm" render={<a href="/export" />} nativeButton={false}>
             Download Excel
           </Button>
           {authEnabled() && (
@@ -55,16 +62,7 @@ export default function Page({ searchParams }: PageProps<"/">) {
       <Suspense fallback={<DeskSkeleton />}>
         <Desk searchParams={searchParams} />
       </Suspense>
-    </main>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl border px-4 py-3">
-      <div className="text-2xl font-semibold tabular-nums tracking-tight">{value}</div>
-      <div className="text-xs text-muted-foreground">{label}</div>
-    </div>
+    </PageShell>
   );
 }
 
@@ -74,14 +72,14 @@ type Tab = (typeof TABS)[number];
 function Notice({ done, error, started }: { done?: string; error?: string; started?: string }) {
   if (error) {
     return (
-      <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+      <div role="alert" className="glass-panel border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
         That did not save: {error}
       </div>
     );
   }
   if (started) {
     return (
-      <div role="status" className="rounded-xl border border-emerald-600/30 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-800 dark:text-emerald-300">
+      <div role="status" className="glass-panel border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-900 dark:text-emerald-100">
         {started}.
       </div>
     );
@@ -110,6 +108,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
       sections: fs.existsSync(paths.applyMd()) ? answerSections(fs.readFileSync(paths.applyMd(), "utf8")) : [],
       schedule: loadSchedule(),
       launches: loadLaunches(),
+      agentConfig: loadAgentConfig(),
     }));
   } catch (err) {
     return (
@@ -120,7 +119,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
       </div>
     );
   }
-  const { data, settings, sections, schedule, launches } = state;
+  const { data, settings, sections, schedule, launches, agentConfig } = state;
   const now = new Date();
   const watched = launches.filter((l, i) => (tab === "agents" && i >= launches.length - 20) || now.getTime() - Date.parse(l.at) < 6 * 3_600_000);
   const infos = await runInfos(watched);
@@ -150,7 +149,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
         started={typeof sp.started === "string" ? sp.started : undefined}
       />
       {running.length > 0 && tab !== "agents" && (
-        <div role="status" className="flex flex-wrap items-center gap-2 rounded-xl border px-4 py-3 text-sm">
+        <div role="status" className="glass-panel flex flex-wrap items-center gap-2 px-4 py-3 text-sm">
           <AutoRefresh every={30} />
           <span className="size-2 animate-pulse rounded-full bg-emerald-500" aria-hidden />
           <span>
@@ -162,28 +161,24 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
         </div>
       )}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-        <Stat label="Waiting on you" value={waiting} />
-        <Stat label="Ready to submit" value={c.readyToSubmit} />
-        <Stat label="Applied" value={c.applied} />
-        <Stat label="People contacted" value={c.invitesSent} />
-        <Stat label="Not applied" value={c.ignored} />
+        <StatCard label="Waiting on you" value={waiting} highlight={waiting > 0} />
+        <StatCard label="Ready to submit" value={c.readyToSubmit} highlight={c.readyToSubmit > 0} />
+        <StatCard label="Applied" value={c.applied} />
+        <StatCard label="People contacted" value={c.invitesSent} />
+        <StatCard label="Not applied" value={c.ignored} />
       </div>
-      <nav aria-label="Dashboard sections" className="flex w-full gap-1 overflow-x-auto rounded-lg bg-muted p-[3px] sm:w-fit">
-        {nav.map(([key, label]) => (
-          <Link
-            key={key}
-            href={key === "today" ? "/" : `/?tab=${key}`}
-            aria-current={tab === key ? "page" : undefined}
-            className={`whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition-colors ${tab === key ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-          >
-            {label}
-          </Link>
-        ))}
-      </nav>
+      <TabNav
+        items={nav.map(([key, label]) => ({
+          key,
+          label,
+          href: key === "today" ? "/" : `/?tab=${key}`,
+          active: tab === key,
+        }))}
+      />
       <div>
         {tab === "today" &&
           (data.jobs.length === 0 ? (
-            <div className="rounded-xl border border-dashed p-10 text-center">
+            <div className="glass-panel border-dashed p-10 text-center">
               <p className="font-medium">No jobs yet.</p>
               <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
                 {next.length ? `The next search runs ${next[0]} (${describeSchedule(schedule)}). ` : "Scheduled searches are off. "}
@@ -207,7 +202,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
             hasKey={!!cursorKey()}
             next={next}
             approvedCount={data.jobs.filter((j) => j.stage === "approved").length}
-            models={modelChain()}
+            agentConfig={agentConfig}
           />
         )}
         {tab === "schedule" && <ScheduleForm schedule={schedule} next={next} hasKey={!!cursorKey()} back={back} />}

@@ -1,0 +1,4 @@
+{
+  "models": ["composer-2.5", "grok-4.7", "claude-opus-5-5", "claude-fable-5-1"],
+  "fallback": true
+}

@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest";
+import { effectiveModelChain } from "../src/agent-config.ts";
 import { friendlyStartFailure, modelChain, parseCursorError, shouldTryNextModel } from "../src/agent-models.ts";
 
 describe("agent model fallback", () => {
   it("defaults to composer, grok, then claude ids", () => {
     delete process.env.SHORTLIST_AGENT_MODELS;
     expect(modelChain().slice(0, 3)).toEqual(["composer-2.5", "grok-4.7", "claude-opus-5-5"]);
+  });
+
+  it("uses only the first model when fallback is off", () => {
+    delete process.env.SHORTLIST_AGENT_MODELS;
+    expect(effectiveModelChain({ models: ["grok-4.7", "composer-2.5"], fallback: false })).toEqual(["grok-4.7"]);
   });
 
   it("tries the next model on usage_limit_exceeded", () => {

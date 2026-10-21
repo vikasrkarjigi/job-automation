@@ -5,7 +5,18 @@ import { ACTIVE, modelLabel, type RunInfo } from "@/cloud";
 import type { Launch, RunKind } from "@/schedule";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Panel } from "./shell";
+import { ModelSettings } from "./model-settings";
 import { AutoRefresh, SubmitButton } from "./client";
+
+const AGENT_GLOW: Record<AgentId, string> = {
+  scout: "from-violet-500/15 via-indigo-500/5 to-transparent",
+  ats: "from-sky-500/15 via-blue-500/5 to-transparent",
+  tailor: "from-amber-500/15 via-orange-500/5 to-transparent",
+  apply: "from-emerald-500/15 via-teal-500/5 to-transparent",
+  outreach: "from-rose-500/15 via-pink-500/5 to-transparent",
+  tracker: "from-slate-500/15 via-zinc-500/5 to-transparent",
+};
 
 export const KIND_LABEL: Record<RunKind, string> = { fetch: "Find jobs", apply: "Fill applications" };
 const RUNS_AGENTS: Record<RunKind, AgentId[]> = { fetch: ["scout", "ats", "tailor"], apply: ["apply", "outreach"] };
@@ -75,32 +86,6 @@ function SetupNeeded() {
   );
 }
 
-function ModelChainInfo({ models }: { models: string[] }) {
-  return (
-    <div className="rounded-xl border p-4 text-sm">
-      <p className="font-medium">Cloud agent models</p>
-      <p className="mt-1 text-muted-foreground">
-        Find jobs now starts a Cursor cloud VM using your <code className="text-foreground">CURSOR_API_KEY</code>. If one model is busy or limited, the next in this list is tried automatically. Composer, Grok, and Claude here are Cursor models, not separate Anthropic or xAI API keys.
-      </p>
-      <ol className="mt-3 flex flex-wrap gap-2">
-        {models.map((m, i) => (
-          <li key={m} className="rounded-md border px-2 py-1 text-xs">
-            {i + 1}. {modelLabel(m)} <span className="text-muted-foreground">({m})</span>
-          </li>
-        ))}
-      </ol>
-      <p className="mt-3 text-muted-foreground">
-        If every model returns a usage limit error, open{" "}
-        <a href="https://cursor.com/dashboard?tab=settings" className="underline underline-offset-2" target="_blank" rel="noreferrer">
-          Cursor Settings
-        </a>{" "}
-        and turn on <strong className="font-medium text-foreground">on-demand usage</strong> for background agents, or wait for your plan to reset. Optional: set{" "}
-        <code className="text-foreground">SHORTLIST_AGENT_MODELS</code> in Vercel (comma-separated ids, same order as above).
-      </p>
-    </div>
-  );
-}
-
 export function Agents({
   summaries,
   launches,
@@ -109,7 +94,7 @@ export function Agents({
   hasKey,
   next,
   approvedCount,
-  models,
+  agentConfig,
 }: {
   summaries: AgentSummary[];
   launches: Launch[];
@@ -118,7 +103,7 @@ export function Agents({
   hasKey: boolean;
   next: string[];
   approvedCount: number;
-  models: string[];
+  agentConfig: { models: string[]; fallback: boolean };
 }) {
   const recent = [...launches].reverse();
   const live = recent.filter((l) => launchStatus(l, l.runId ? infos.get(l.runId) : undefined).tone === "live");
@@ -129,9 +114,9 @@ export function Agents({
     <div className="space-y-6">
       {live.length > 0 && <AutoRefresh />}
       {!hasKey && <SetupNeeded />}
-      {hasKey && <ModelChainInfo models={models} />}
+      {hasKey && <ModelSettings initial={agentConfig} back="/?tab=agents" />}
 
-      <section className="flex flex-col gap-4 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between">
+      <Panel className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1 text-sm">
           {live.length ? (
             live.map((l) => (
@@ -174,11 +159,14 @@ export function Agents({
           <RunNowButton kind="fetch" disabled={!hasKey || busy("fetch")} />
           <RunNowButton kind="apply" variant="outline" disabled={!hasKey || busy("apply") || approvedCount === 0} />
         </div>
-      </section>
+      </Panel>
 
-      <section aria-label="Agents" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <section aria-label="Agents" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {summaries.map((a) => (
-          <article key={a.id} className="flex flex-col rounded-xl border p-4">
+          <article
+            key={a.id}
+            className={`glass-panel group flex flex-col bg-gradient-to-br p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-indigo-500/10 ${AGENT_GLOW[a.id]}`}
+          >
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-semibold">{a.name}</h3>
               {working.has(a.id) ? (
@@ -221,11 +209,11 @@ export function Agents({
       <section className="space-y-2">
         <h3 className="text-sm font-semibold">Agent runs</h3>
         {recent.length === 0 ? (
-          <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+          <div className="glass-panel border-dashed p-6 text-center text-sm text-muted-foreground">
             Runs you start here or that the schedule starts show up in this list, with a link to watch each one.
           </div>
         ) : (
-          <ul className="divide-y rounded-xl border">
+          <ul className="glass-panel divide-y divide-border/60 overflow-hidden p-0">
             {recent.slice(0, 20).map((l) => {
               const info = l.runId ? infos.get(l.runId) : undefined;
               const status = launchStatus(l, info);

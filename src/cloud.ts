@@ -1,3 +1,4 @@
+import { effectiveModelChain } from "./agent-config.ts";
 import { friendlyStartFailure, modelChain, parseCursorError, shouldTryNextModel } from "./agent-models.ts";
 import type { Launch, RunKind } from "./schedule.ts";
 
@@ -114,7 +115,7 @@ async function createAgent(kind: RunKind, modelId: string): Promise<{ agent: { i
 }
 
 export async function startRun(kind: RunKind): Promise<Pick<Launch, "agentId" | "runId" | "url" | "model">> {
-  const chain = modelChain();
+  const chain = effectiveModelChain();
   const failures: { model: string; err: ReturnType<typeof parseCursorError> }[] = [];
 
   for (let i = 0; i < chain.length; i++) {
@@ -155,4 +156,5 @@ export async function runInfos(launches: Launch[]): Promise<Map<string, RunInfo>
   return out;
 }
 
-export { modelChain, modelLabel } from "./agent-models.ts";
+export { modelChain } from "./agent-models.ts";
+export { modelLabel } from "./model-catalog.ts";

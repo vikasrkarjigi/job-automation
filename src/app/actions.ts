@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { passwordMatches, SESSION_COOKIE, sessionToken, validSession } from "@/auth";
 import { loadAnswers, saveAnswer } from "@/apply";
 import { approve, confirmKeyword, markSent, markSubmitted, runApproved, saveWritten, skip } from "@/orchestrator";
+import { saveAgentConfig } from "@/agent-config";
 import { runNow } from "@/launcher";
 import { describeSchedule, saveSchedule, type RunKind } from "@/schedule";
 import { writeState } from "@/store";
@@ -150,6 +151,16 @@ export async function startAgent(form: FormData) {
       ? "Started a job search. It usually takes 10 to 25 minutes, and new jobs land on Today when it finishes"
       : "Started filling your approved applications. Each one stops at the Submit button for you";
   redirect(withNotice("/?tab=agents", error ? "error" : "started", error ?? said));
+}
+
+export async function saveAgentModels(form: FormData) {
+  await step(form, "Saved cloud agent model preferences", () => {
+    const models = form.getAll("model").map(String);
+    const fallback = form.get("fallback") === "1";
+    if (!models.length) throw new Error("pick at least one model");
+    saveAgentConfig({ models, fallback });
+    return `Model order saved${fallback ? "" : " (single model only, no fallbacks)"}`;
+  });
 }
 
 export async function updateSchedule(form: FormData) {

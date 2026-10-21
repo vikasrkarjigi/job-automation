@@ -1,19 +1,13 @@
-/** Default cloud-agent models to try, in order, when starting a run from the dashboard. */
-export const DEFAULT_MODEL_CHAIN = ["composer-2.5", "grok-4.7", "claude-opus-5-5", "claude-fable-5-1"] as const;
+import { DEFAULT_MODEL_CHAIN, effectiveModelChain } from "./agent-config.ts";
+
+export { DEFAULT_MODEL_CHAIN } from "./agent-config.ts";
+
+import { modelLabel } from "./model-catalog.ts";
+
+export { MODEL_CATALOG, catalogEntry, modelLabel } from "./model-catalog.ts";
 
 export function modelChain(): string[] {
-  const raw = process.env.SHORTLIST_AGENT_MODELS?.trim();
-  if (!raw) return [...DEFAULT_MODEL_CHAIN];
-  return [...new Set(raw.split(/[,;\s]+/).map((s) => s.trim()).filter(Boolean))];
-}
-
-export function modelLabel(id: string): string {
-  if (id.startsWith("composer")) return "Composer";
-  if (id.startsWith("grok")) return "Grok";
-  if (id.startsWith("claude")) return "Claude";
-  if (id.startsWith("gpt")) return "GPT";
-  if (id === "default") return "Cursor default";
-  return id;
+  return effectiveModelChain();
 }
 
 export interface CursorApiError {
