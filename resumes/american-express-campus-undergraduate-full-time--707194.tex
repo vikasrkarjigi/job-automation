@@ -1,0 +1,71 @@
+%% Converted from Vikas_Karjigi_Resume.pdf. Replace with your own .tex when you have it, keeping both tailor markers:
+%% "%% tailor:bullets" on its own line inside the itemize where new bullets go,
+%% and "%% tailor:skills" at the end of the skills line that new keywords are appended to.
+\documentclass[letterpaper,10pt]{article}
+\usepackage[empty]{fullpage}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\resumeItem}[1]{\item\small{#1}}
+
+\begin{document}
+
+\begin{center}
+  {\Large \textbf{Vikas Ravikumar Karjigi}} \\
+  (312) 273 8331 \quad vikasravikarjigi26@gmail.com \quad linkedin.com/in/vikasrkarjigi \quad github.com/vikasrkarjigi \quad vkarjigi-portfolio.vercel.app
+\end{center}
+
+\section*{Summary}
+Agentic AI Engineer with 3+ years of experience architecting production grade agentic AI, RAG, and LLM inference systems across healthcare, finance, and industrial operations. Reduced clinician query time 60\% and hallucinations 72\% on a healthcare RAG platform, and earned First Place at the Anthropic Claude Builders Hackathon 2026. Delivers full stack agentic GenAI applications using Python, LangChain, LangGraph, MCP, and FastAPI with production grade prompt engineering, tool calling, and LLM evaluation.
+
+\section*{Technical Skills}
+\begin{itemize}[leftmargin=0.15in, label={}]
+  \item \textbf{Programming and Data}{: Python, TypeScript, Next.js, SQL, Java, Bash, Pandas, NumPy, PySpark, Git}
+  \item \textbf{GenAI and Agentic AI}{: LLMs, RAG, LangChain, LangGraph, MCP, Multi Agent Systems, Prompt Engineering, Context Engineering, vLLM, LLM Evaluation, Guardrails, Vector Search, Pinecone} %% tailor:skills
+  \item \textbf{Machine Learning}{: scikit-learn, LightGBM, XGBoost, PyTorch, TensorFlow, Hugging Face, Embeddings, NLP, Model Validation}
+  \item \textbf{MLOps and Cloud}{: FastAPI, REST APIs, Real Time Inference, MLflow, Optuna, Airflow, Docker, Kubernetes, CI/CD, AWS, S3, Glue, Redshift, Azure OpenAI, Databricks}
+\end{itemize}
+
+\section*{Experience}
+\textbf{AI Engineer} \hfill PerkFlow, San Francisco, CA \hfill Feb 2026 to Present
+\begin{itemize}[leftmargin=0.15in]
+  %% tailor:bullets
+  \resumeItem{Implemented a tool calling Slack \textbf{agentic AI assistant} grounded in live company data with multi tenant scoping and self loop protection, achieving 97\% company grounded responses across a 403 query evaluation suite.}
+  \resumeItem{Integrated Gemma 4 on Modal with \textbf{vLLM} inference, bfloat16 precision, and an OpenAI compatible FastAPI endpoint on an A10G GPU supporting 10 concurrent requests, increasing internal agentic AI usage 38\% across the platform.}
+  \resumeItem{Launched a production AI insights microservice using \textbf{FastAPI} and Perplexity Sonar with structured JSON prompting and citation extraction, achieving 75\% citation grounding across a 350 recommendation evaluation set.}
+  \resumeItem{Spearheaded a three tier performance analytics suite with role based access routing and complex \textbf{SQL} analytics, refactoring a 776 line service 50\% leaner and cutting dashboard load time 38\% across dashboards.}
+\end{itemize}
+
+\textbf{Machine Learning Engineer} \hfill Illinois Institute of Technology, Chicago, IL \hfill Jun 2025 to May 2026
+\begin{itemize}[leftmargin=0.15in]
+  \resumeItem{Accelerated model iteration 61\% by automating hyperparameter search with \textbf{Optuna} across 300 trials, tracking parameters, metrics, and artifacts in MLflow with MinIO as the centralized artifact store.}
+\end{itemize}
+
+\textbf{AI Engineer} \hfill Souloxy, Remote, Chicago, IL \hfill Oct 2025 to Jan 2026
+\begin{itemize}[leftmargin=0.15in]
+  \resumeItem{Built an agentic clinical \textbf{RAG} pipeline indexing 8,000 clinical guidelines from S3 into Pinecone with LangGraph routing, metadata filtering, and chunking optimization, reducing clinician time to answer 60\% from 8.0 to 3.2 minutes.}
+  \resumeItem{Designed a safety \textbf{guardrail agent} enforcing OK or REFINE decisions with bounded retries, answering only from context with structured citations, reducing hallucinations 72\% from baseline across 500 evaluation queries.}
+\end{itemize}
+
+\textbf{Data Scientist} \hfill The Boeing Company, Bengaluru, India \hfill Aug 2022 to Jul 2024
+\begin{itemize}[leftmargin=0.15in]
+  \resumeItem{Orchestrated production batch inference and model serving pipelines on AWS with \textbf{Airflow} and Docker, cutting decision latency 98\% from 24 hours to 30 minutes across 45 automated data checks and 10 drift signals.}
+  \resumeItem{Standardized reusable \textbf{ML evaluation} and deployment frameworks across three programs, driving adoption by five cross functional teams and generating \$60K in annualized savings through optimization rollouts.}
+  \resumeItem{Engineered distributed production feature pipelines in \textbf{Java and SQL} using CTEs, window functions, and indexing to serve downstream ML workflows, reducing cycle time 22\% from 18 to 14 days across three sites.}
+  \resumeItem{Deployed early warning downtime risk models using \textbf{LightGBM}, XGBoost, and logistic regression into production scoring workflows, surfacing outputs in Tableau and reducing operational downtime 33\%.}
+\end{itemize}
+
+\section*{Projects}
+\textbf{OpsLens MCP: Multi Agent Industrial Root Cause Analysis} \hfill Python, FastAPI, MCP, LLM Guardrails, SSE
+\begin{itemize}[leftmargin=0.15in]
+  \resumeItem{Architected a 5 agent industrial RCA system on Anthropic \textbf{MCP} with a hand built deterministic Safety Gateway, achieving 82\% verdict accuracy across 40 scripted RCA scenarios and earning First Place at the Anthropic Claude Builders Hackathon 2026.}
+\end{itemize}
+\textbf{Agentic CI/CD Code Review Pipeline} \hfill Python, LangGraph, MCP, LangChain, Pinecone, FastAPI
+\begin{itemize}[leftmargin=0.15in]
+  \resumeItem{Devised an agentic PR review pipeline using \textbf{LangGraph} and MCP with static analysis, RAG retrieval, and issue search, achieving 68\% bug detection accuracy across a labeled set of 200 real world pull requests.}
+\end{itemize}
+
+\section*{Education}
+\textbf{Master of Applied Science in Data Science, GPA 4.0/4.0} \hfill Illinois Institute of Technology, Chicago, IL \hfill Aug 2024 to May 2026 \\
+\textbf{Bachelor of Engineering in Electronics and Communication} \hfill RVCE, Bengaluru, India \hfill Aug 2018 to Aug 2022
+
+\end{document}

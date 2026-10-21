@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "Northwind Labs": "Computer Software",
   "Apex Systems": "Staffing & Recruiting",
   "Lumen Robotics": "Machinery",
@@ -9,3 +10,23 @@
   "Sable Systems": "Information Technology & Services",
   "Piper Analytics": "Computer Software"
 }
+=======
+  "Jefferson Capital": "Iv1_BANKS_AND_FINANCIAL_SERVICES",
+  "Take-Two Interactive Software, Inc.": "Iv1_INTERNET_AND_SOFTWARE",
+  "Whoop": "Iv1_CONSUMER_GOODS_AND_SERVICES",
+  "CURE Auto Insurance": "Iv1_INSURANCE",
+  "Fieldwire": "Iv1_CONSTRUCTION",
+  "MarLabs": "Iv1_INTERNET_AND_SOFTWARE",
+  "ABC Legal Services": "Iv1_CONSULTING_AND_BUSINESS_SERVICES",
+  "WellSpan Health": "Iv1_HEALTH_CARE",
+  "ISO New England": "Iv1_ENERGY_AND_UTILITIES",
+  "Schweitzer Engineering Laboratories": "Iv1_INDUSTRIAL_MANUFACTURING",
+  "Firefly Aerospace": "Iv1_AEROSPACE_AND_DEFENSE",
+  "Ceresti Health": "Iv1_HEALTH_CARE",
+  "FanDuel": "Iv1_INTERNET_AND_SOFTWARE",
+  "Clarity Innovations, LLC": "Iv1_COMPUTERS_AND_ELECTRONICS",
+  "Berkshire Hathaway Homestate Companies": "Iv1_INSURANCE",
+  "Heritage Auctions": "Iv1_CONSULTING_AND_BUSINESS_SERVICES",
+  "Debevoise & Plimpton LLP": "Iv1_CONSULTING_AND_BUSINESS_SERVICES"
+}
+>>>>>>> 9a2a04c (Scheduled run 2026-10-21 05:13 UTC)
