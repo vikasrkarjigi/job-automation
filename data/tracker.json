@@ -51,7 +51,7 @@
       ],
       "postedAt": "2026-10-21T00:00:00.000Z",
       "description": "Role Description\n\nThe AI/ML Engineer - Entry Level role is a full-time remote position focused on developing and implementing machine learning models and algorithms to solve real-world problems. Day-to-day responsibilities include collecting and preprocessing data, experimenting with supervised and unsupervised learning techniques, and building, training, and evaluating models such as neural networks and other predictive systems.\n\n\n\n\nQualifications\n\n * Strong foundation in Computer Science and Algorithms, with knowledge of data structures and computational complexity.\n * Understanding of Pattern Recognition and Neural Networks, including basic concepts of supervised and unsupervised learning.\n * Background in Statistics, probability, and data analysis to design experiments and evaluate model performance.\n * Familiarity with programming languages commonly used in AI/ML (such as Python) and libraries like TensorFlow, PyTorch, or scikit-learn.\n * Bachelor’s degree in Computer Science, Data Science, Mathematics, Engineering, or a related field (or equivalent practical experience).",
-      "stage": "awaiting_approval",
+      "stage": "approved",
       "filterPassed": true,
       "reason": null,
       "analysis": {
@@ -100,8 +100,34 @@
       "resumePath": "resumes/divine-talent-ai-ml-engineer-entry-level-3a62ef.tex",
       "tailorNotes": [],
       "writerModel": null,
-      "approvedAt": null,
-      "applyPacket": null,
+      "approvedAt": "2026-10-21T05:20:22.008Z",
+      "applyPacket": {
+        "url": "https://www.linkedin.com/jobs/view/ai-ml-engineer-entry-level-at-divine-talent-4480734390?trk=public_jobs_topcard-title",
+        "ats": "other",
+        "resumePath": "resumes/divine-talent-ai-ml-engineer-entry-level-3a62ef.tex",
+        "accountEmail": "vikasravikarjigi26@gmail.com",
+        "passwordSecret": "BOARD_PASSWORD",
+        "answers": {
+          "legal_name": "Vikas Ravikumar Karjigi",
+          "preferred_name": "Vikas",
+          "email": "vikasravikarjigi26@gmail.com",
+          "phone": "(312) 273 8331",
+          "city": "San Francisco",
+          "state": "CA",
+          "country": "United States",
+          "linkedin": "https://linkedin.com/in/vikasrkarjigi",
+          "github": "https://github.com/vikasrkarjigi",
+          "website": "https://vkarjigi-portfolio.vercel.app",
+          "authorized_us": "Yes",
+          "sponsorship_now": "Yes",
+          "sponsorship_future": "Yes",
+          "relocate": "Yes",
+          "work_mode": "Anything works",
+          "start_date": "Immediately",
+          "salary": "Open to Discussion ($130000)"
+        },
+        "blockedOn": null
+      },
       "submittedAt": null,
       "submittedResumePath": null,
       "people": [],
@@ -115,6 +141,11 @@
           "at": "2026-10-21T05:13:02.797Z",
           "stage": "awaiting_approval",
           "note": "tailored 100 to 100, at target"
+        },
+        {
+          "at": "2026-10-21T05:20:22.008Z",
+          "stage": "approved",
+          "note": "you approved the tailored resume"
         }
       ],
       "createdAt": "2026-10-21T05:13:02.797Z"
@@ -1313,6 +1344,20 @@
       "passedFilters": 10,
       "shortlisted": 10,
       "ignored": 2,
+      "needsConfirm": 0,
+      "failed": [],
+      "note": ""
+    },
+    {
+      "id": "approved-2026-10-21T05:20:22.012Z-d7ac",
+      "kind": "approved",
+      "startedAt": "2026-10-21T05:20:22.012Z",
+      "finishedAt": "2026-10-21T05:20:22.016Z",
+      "fetched": 0,
+      "droppedStale": 0,
+      "passedFilters": 0,
+      "shortlisted": 0,
+      "ignored": 0,
       "needsConfirm": 0,
       "failed": [],
       "note": ""
