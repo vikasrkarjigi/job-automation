@@ -51,7 +51,7 @@ The web app is the main way to use Shortlist. It reads and saves the same files 
 | Schedule | When job searches run automatically (default 4 am, 12 pm, and 8 pm Pacific). You can change times, days, and time zone here |
 | Run log | What each pipeline run fetched, kept, and dropped |
 
-The header has **Find jobs now**, **Agents**, **Schedule**, and **Download Excel**. Find jobs now starts a Cursor cloud agent that scouts, scores, and tailors in one go. Scheduled searches use the same agent; a GitHub Action calls the dashboard every 30 minutes and starts a search when a slot is due.
+The header has **Find jobs now**, **Agents**, **Schedule**, and **Download Excel**. After you change env vars in Vercel, redeploy Production so the new values and the latest Git commit both take effect. Find jobs now starts a Cursor cloud agent that scouts, scores, and tailors in one go. Scheduled searches use the same agent; a GitHub Action calls the dashboard every 30 minutes and starts a search when a slot is due.
 
 ### Put it online with Vercel (free)
 
