@@ -1,6 +1,5 @@
-import { ACTIVE, type RunInfo } from "./cloud.ts";
-import type { Launch } from "./schedule.ts";
-import type { HistoryEntry, JobRow, Stage } from "./types.ts";
+import { ACTIVE, type RunInfo } from "./run-info.ts";
+import type { HistoryEntry, JobRow, Launch, Stage } from "./types.ts";
 
 export interface ApplyRunSnapshot {
   live: boolean;

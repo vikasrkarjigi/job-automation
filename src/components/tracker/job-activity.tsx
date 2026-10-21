@@ -1,25 +1,65 @@
 "use client";
 
 import { useState } from "react";
-import type { JobApplyInsight } from "@/apply-transparency";
+import { resolveApplicationUrl, type JobApplyInsight } from "@/apply-transparency";
+import { StageBadge } from "./bits";
+import { ApplicationActionCell } from "./application-actions";
 import type { JobRow } from "@/types";
 import { ago, when } from "./bits";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { ApplicationUrlChip, GoSubmitButton, ReadyToSubmitPanel } from "./application-actions";
 
+function ApplicationRowCells({ job, statusText }: { job: JobRow; statusText: string }) {
+  const url = resolveApplicationUrl(job);
+  return (
+    <>
+      <TableCell>
+        <div className="font-medium">{job.title}</div>
+        <div className="text-xs text-muted-foreground">
+          {job.company} · {job.location}
+        </div>
+        <div className="mt-1 text-[10px] text-primary">Tap for activity</div>
+      </TableCell>
+      <TableCell>
+        <StageBadge stage={job.stage} />
+      </TableCell>
+      <TableCell className="max-w-md whitespace-normal text-sm">{statusText}</TableCell>
+      <TableCell className="text-right tabular-nums">
+        {job.scoreBefore ?? "?"} <span className="text-muted-foreground">to</span> {job.scoreAfter ?? "?"}
+      </TableCell>
+      <TableCell>
+        {job.resumePath ? (
+          <span className="flex gap-2 text-xs">
+            <a className="underline-offset-2 hover:underline" href={`/resume/${job.id}`} onClick={(e) => e.stopPropagation()}>
+              View
+            </a>
+            <a className="underline-offset-2 hover:underline" href={`/resume/${job.id}/pdf`} onClick={(e) => e.stopPropagation()}>
+              PDF
+            </a>
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">not tailored</span>
+        )}
+      </TableCell>
+      <TableCell className="text-right tabular-nums">{job.people.length}</TableCell>
+      <TableCell onClick={(e) => e.stopPropagation()}>
+        <ApplicationActionCell job={job} url={url} />
+      </TableCell>
+    </>
+  );
+}
+
 export function ApplicationJobRow({
   job,
   insight,
   steps,
   statusText,
-  rowCells,
 }: {
   job: JobRow;
   insight: JobApplyInsight;
   steps: { at: string; title: string; note: string }[];
   statusText: string;
-  rowCells: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const showDetail = ["approved", "apply_blocked", "ready_to_submit", "submitted"].includes(job.stage);
@@ -30,7 +70,7 @@ export function ApplicationJobRow({
         className={cn(showDetail && "cursor-pointer hover:bg-muted/40", open && "bg-muted/30")}
         onClick={() => showDetail && setOpen((v) => !v)}
       >
-        {rowCells}
+        <ApplicationRowCells job={job} statusText={statusText} />
       </TableRow>
       {open && showDetail && (
         <TableRow className="bg-muted/20 hover:bg-muted/20">

@@ -137,6 +137,21 @@ export interface TrackerData {
   lock: { runId: string; since: string } | null;
 }
 
+export type RunKind = "fetch" | "apply";
+
+export interface Launch {
+  kind: RunKind;
+  trigger: "you" | "schedule";
+  /** "YYYY-MM-DD HH:MM" in the schedule's time zone, for scheduled runs. */
+  slot: string | null;
+  at: string;
+  agentId: string | null;
+  runId: string | null;
+  url: string | null;
+  model?: string | null;
+  error: string | null;
+}
+
 export interface Settings {
   batchSize: number;
   maxAgeHours: number;

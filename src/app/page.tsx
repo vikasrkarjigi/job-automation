@@ -3,7 +3,6 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { Suspense } from "react";
 import { loadAgentConfig } from "@/agent-config";
-import { loadAllAgentDocs } from "@/agent-docs";
 import { agentSummaries } from "@/agent-activity";
 import { answerSections, NOT_BLANK } from "@/apply";
 import { cursorKey, runInfos } from "@/cloud";
@@ -116,7 +115,10 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
   }
 
   const { data, settings, sections, schedule, launches, agentConfig, searchCriteria } = state;
-  const agentDocs = tab === "guides" ? loadAllAgentDocs() : null;
+  const agentDocs =
+    tab === "guides"
+      ? (await import("@/agent-docs")).loadAllAgentDocs()
+      : null;
   const now = new Date();
   const sixHoursAgo = now.getTime() - 6 * 3_600_000;
   const recentLaunches = launches.filter((l) => Date.parse(l.at) >= sixHoursAgo);

@@ -1,7 +1,7 @@
 import { effectiveModelChain } from "./agent-config.ts";
 import { friendlyStartFailure, modelChain, parseCursorError, shouldTryNextModel } from "./agent-models.ts";
 import { describeCriteria, type SearchCriteria } from "./search-criteria.ts";
-import type { Launch, RunKind } from "./schedule.ts";
+import type { Launch, RunKind } from "./types.ts";
 
 /**
  * Starts and watches Cursor cloud agents through the Cloud Agents API. Each
@@ -14,14 +14,10 @@ import type { Launch, RunKind } from "./schedule.ts";
 
 const API = "https://api.cursor.com/v1";
 
-export type RunStatus = "CREATING" | "RUNNING" | "FINISHED" | "ERROR" | "CANCELLED" | "EXPIRED";
-export const ACTIVE: RunStatus[] = ["CREATING", "RUNNING"];
+import { ACTIVE, type RunInfo, type RunStatus } from "./run-info.ts";
 
-export interface RunInfo {
-  status: RunStatus;
-  durationMs: number | null;
-  result: string | null;
-}
+export type { RunInfo, RunStatus } from "./run-info.ts";
+export { ACTIVE } from "./run-info.ts";
 
 export const cursorKey = () => process.env.CURSOR_API_KEY?.trim() || null;
 

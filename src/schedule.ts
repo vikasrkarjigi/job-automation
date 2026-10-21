@@ -2,7 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { paths } from "./settings.ts";
 
-export type RunKind = "fetch" | "apply";
+import type { Launch, RunKind } from "./types.ts";
+
+export type { Launch, RunKind } from "./types.ts";
 
 export interface Schedule {
   enabled: boolean;
@@ -11,20 +13,6 @@ export interface Schedule {
   times: string[];
   /** 0 is Sunday. */
   days: number[];
-}
-
-export interface Launch {
-  kind: RunKind;
-  trigger: "you" | "schedule";
-  /** "YYYY-MM-DD HH:MM" in the schedule's time zone, for scheduled runs. */
-  slot: string | null;
-  at: string;
-  agentId: string | null;
-  runId: string | null;
-  url: string | null;
-  /** Cursor cloud model id used for this run, when started successfully. */
-  model?: string | null;
-  error: string | null;
 }
 
 export const DEFAULT_SCHEDULE: Schedule = {

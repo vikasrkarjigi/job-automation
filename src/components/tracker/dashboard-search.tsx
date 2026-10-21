@@ -12,7 +12,7 @@ function tabFromParams(tabParam: string | null): DeskTab {
   return (allowed.includes(t as DeskTab) ? t : "today") as DeskTab;
 }
 
-export function DashboardSearch({ variant }: { variant: "compact" }) {
+export function DashboardSearch({ variant, className }: { variant: "compact"; className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
@@ -53,7 +53,7 @@ export function DashboardSearch({ variant }: { variant: "compact" }) {
   }
 
   return (
-    <div className="relative w-44 shrink-0 sm:w-52">
+    <div className={cn("relative min-w-[11rem] shrink-0", className)}>
       <label className="sr-only" htmlFor="dashboard-search">
         Search jobs and resumes
       </label>
@@ -63,12 +63,12 @@ export function DashboardSearch({ variant }: { variant: "compact" }) {
         placeholder="Search…"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className={cn("h-9 text-sm")}
+        className={cn("h-9 pr-8 text-sm")}
       />
       {currentQ && (
         <button
           type="button"
-          className="absolute -bottom-5 right-0 text-[10px] text-muted-foreground underline-offset-2 hover:underline"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium text-muted-foreground hover:text-foreground"
           onClick={() => {
             setValue("");
             commit("");
