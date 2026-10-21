@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "Northwind Labs": "Computer Software",
   "Apex Systems": "Staffing & Recruiting",
   "Lumen Robotics": "Machinery",
@@ -8,9 +7,7 @@
   "Talent Bridge Partners": "Staffing & Recruiting",
   "Meridian Health AI": "Hospital & Health Care",
   "Sable Systems": "Information Technology & Services",
-  "Piper Analytics": "Computer Software"
-}
-=======
+  "Piper Analytics": "Computer Software",
   "Jefferson Capital": "Iv1_BANKS_AND_FINANCIAL_SERVICES",
   "Take-Two Interactive Software, Inc.": "Iv1_INTERNET_AND_SOFTWARE",
   "Whoop": "Iv1_CONSUMER_GOODS_AND_SERVICES",
@@ -29,4 +26,3 @@
   "Heritage Auctions": "Iv1_CONSULTING_AND_BUSINESS_SERVICES",
   "Debevoise & Plimpton LLP": "Iv1_CONSULTING_AND_BUSINESS_SERVICES"
 }
->>>>>>> 9a2a04c (Scheduled run 2026-10-21 05:13 UTC)
