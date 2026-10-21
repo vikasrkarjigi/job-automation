@@ -2,7 +2,7 @@
 
 Generated from data/tracker.json after every stage change. Do not edit by hand.
 
-Applied: 0. Ready to submit: 0. Awaiting your approval: 8. Waiting on a keyword answer: 0. Ignored: 2.
+Applied: 0. Ready to submit: 0. Awaiting your approval: 7. Waiting on a keyword answer: 0. Ignored: 2.
 People found: 0. LinkedIn invites sent: 0.
 
 ## Applications
@@ -12,7 +12,7 @@ People found: 0. LinkedIn invites sent: 0.
 | AI/ML Engineer - Entry Level | Divine Talent | approved | 100 | 100 | resumes/divine-talent-ai-ml-engineer-entry-level-3a62ef.tex |  |
 | Campus Undergraduate Full-Time Engineer - 2027 AI Engineer I, Enterprise Technology Services- Palo Alto, CA | American Express | awaiting_approval | 93 | 93 | resumes/american-express-campus-undergraduate-full-time--1af4ad.tex |  |
 | Campus Graduate Masters Full-Time Engineer - 2027 AI Engineer I, Enterprise Technology Services- New York, NY | American Express | awaiting_approval | 93 | 93 | resumes/american-express-campus-graduate-masters-full-ti-19effe.tex |  |
-| AI Engineer II - Enterprise Architecture | American Express | awaiting_approval | 93 | 93 | resumes/american-express-ai-engineer-ii-enterprise-archi-e3ad36.tex |  |
+| AI Engineer II - Enterprise Architecture | American Express | approved | 93 | 93 | resumes/american-express-ai-engineer-ii-enterprise-archi-e3ad36.tex |  |
 | Campus Graduate Masters Full-Time Engineer - 2027 AI Engineer I, Enterprise Technology Services- Sunrise, FL | American Express | awaiting_approval | 93 | 93 | resumes/american-express-campus-graduate-masters-full-ti-040455.tex |  |
 | Campus Undergraduate Full-Time Engineer - 2027 AI Engineer I, Enterprise Technology Services- Sunrise, FL | American Express | awaiting_approval | 93 | 93 | resumes/american-express-campus-undergraduate-full-time--093d2b.tex |  |
 | Agentic AI Engineer - Core Platforms | American Express | approved | 100 | 100 | resumes/american-express-agentic-ai-engineer-core-platfo-a71ae9.tex |  |
