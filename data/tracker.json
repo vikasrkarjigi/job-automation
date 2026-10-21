@@ -51,9 +51,9 @@
       ],
       "postedAt": "2026-10-21T00:00:00.000Z",
       "description": "Role Description\n\nThe AI/ML Engineer - Entry Level role is a full-time remote position focused on developing and implementing machine learning models and algorithms to solve real-world problems. Day-to-day responsibilities include collecting and preprocessing data, experimenting with supervised and unsupervised learning techniques, and building, training, and evaluating models such as neural networks and other predictive systems.\n\n\n\n\nQualifications\n\n * Strong foundation in Computer Science and Algorithms, with knowledge of data structures and computational complexity.\n * Understanding of Pattern Recognition and Neural Networks, including basic concepts of supervised and unsupervised learning.\n * Background in Statistics, probability, and data analysis to design experiments and evaluate model performance.\n * Familiarity with programming languages commonly used in AI/ML (such as Python) and libraries like TensorFlow, PyTorch, or scikit-learn.\n * Bachelor’s degree in Computer Science, Data Science, Mathematics, Engineering, or a related field (or equivalent practical experience).",
-      "stage": "approved",
+      "stage": "apply_blocked",
       "filterPassed": true,
-      "reason": null,
+      "reason": "LinkedIn Apply needs a signed-in account; BOARD_PASSWORD is not configured on this cloud agent (injected secrets: GITHUB_TOKEN, CURSOR_API_KEY only). Resume PDF at /tmp/divine-talent-ai-ml-engineer-entry-level-3a62ef.pdf. Outreach waiting on Apollo/Vibe people in data/people/divine-talent-ai-ml-engineer-entry-level-3a62ef.json.",
       "analysis": {
         "split": "headings",
         "keywords": [
@@ -146,6 +146,21 @@
           "at": "2026-10-21T05:20:22.008Z",
           "stage": "approved",
           "note": "you approved the tailored resume"
+        },
+        {
+          "at": "2026-10-21T05:59:42.837Z",
+          "stage": "apply_blocked",
+          "note": "LinkedIn Apply needs a signed-in account; BOARD_PASSWORD is not configured on this cloud agent (injected secrets: GITHUB_TOKEN, CURSOR_API_KEY only). Resume PDF generated at /tmp/divine-talent-ai-ml-engineer-entry-level-3a62ef.pdf. Re-run apply after adding BOARD_PASSWORD and a logged-in LinkedIn session, or complete Apply while signed in on the dashboard browser."
+        },
+        {
+          "at": "2026-10-21T05:59:46.133Z",
+          "stage": "approved",
+          "note": "apply packet ready, blanks filled"
+        },
+        {
+          "at": "2026-10-21T05:59:51.720Z",
+          "stage": "apply_blocked",
+          "note": "LinkedIn Apply needs a signed-in account; BOARD_PASSWORD is not configured on this cloud agent (injected secrets: GITHUB_TOKEN, CURSOR_API_KEY only). Resume PDF at /tmp/divine-talent-ai-ml-engineer-entry-level-3a62ef.pdf. Outreach waiting on Apollo/Vibe people in data/people/divine-talent-ai-ml-engineer-entry-level-3a62ef.json."
         }
       ],
       "createdAt": "2026-10-21T05:13:02.797Z"
@@ -1443,6 +1458,34 @@
       "kind": "approved",
       "startedAt": "2026-10-21T05:45:13.110Z",
       "finishedAt": "2026-10-21T05:45:13.116Z",
+      "fetched": 0,
+      "droppedStale": 0,
+      "passedFilters": 0,
+      "shortlisted": 0,
+      "ignored": 0,
+      "needsConfirm": 0,
+      "failed": [],
+      "note": ""
+    },
+    {
+      "id": "approved-2026-10-21T05:55:43.469Z-178b",
+      "kind": "approved",
+      "startedAt": "2026-10-21T05:55:43.469Z",
+      "finishedAt": "2026-10-21T05:55:43.477Z",
+      "fetched": 0,
+      "droppedStale": 0,
+      "passedFilters": 0,
+      "shortlisted": 0,
+      "ignored": 0,
+      "needsConfirm": 0,
+      "failed": [],
+      "note": ""
+    },
+    {
+      "id": "approved-2026-10-21T05:59:46.133Z-34c3",
+      "kind": "approved",
+      "startedAt": "2026-10-21T05:59:46.133Z",
+      "finishedAt": "2026-10-21T05:59:46.137Z",
       "fetched": 0,
       "droppedStale": 0,
       "passedFilters": 0,
