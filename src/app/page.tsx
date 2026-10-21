@@ -79,7 +79,12 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
   await connection();
   const sp = await searchParams;
   const tab: DeskTab = TABS.includes(sp.tab as DeskTab) ? (sp.tab as DeskTab) : "today";
-  const back = tab === "today" ? "/" : `/?tab=${tab}`;
+  const searchQuery = typeof sp.q === "string" ? sp.q : undefined;
+  const back = (() => {
+    const u = new URL(tab === "today" ? "/" : `/?tab=${tab}`, "http://local");
+    if (searchQuery?.trim()) u.searchParams.set("q", searchQuery.trim());
+    return u.pathname + u.search;
+  })();
   const copy = TAB_COPY[tab];
 
   let state;
@@ -162,12 +167,12 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
             Use Find jobs now in the sidebar, and fill My answers so applications never stop on a blank field.
           </EmptyState>
         ) : (
-          <Today jobs={data.jobs} settings={settings} />
+          <Today jobs={data.jobs} settings={settings} query={searchQuery} />
         ))}
-      {tab === "applications" && <Applications jobs={data.jobs} launches={launches} infos={infos} />}
-      {tab === "outreach" && <Outreach jobs={data.jobs} back={back} />}
-      {tab === "resumes" && <Resumes jobs={data.jobs} />}
-      {tab === "ignored" && <Ignored jobs={data.jobs} />}
+      {tab === "applications" && <Applications jobs={data.jobs} launches={launches} infos={infos} query={searchQuery} />}
+      {tab === "outreach" && <Outreach jobs={data.jobs} back={back} query={searchQuery} />}
+      {tab === "resumes" && <Resumes jobs={data.jobs} query={searchQuery} />}
+      {tab === "ignored" && <Ignored jobs={data.jobs} query={searchQuery} />}
       {tab === "answers" && <Answers sections={sections} back={back} />}
       {tab === "agents" && (
         <Agents

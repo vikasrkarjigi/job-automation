@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import type { JobRow, Settings } from "@/types";
 import { ago, KeywordChips, Score, Sources, statusLine } from "./bits";
 import { resolveApplicationUrl } from "@/apply-transparency";
+import { filterJobsBySearch } from "@/job-search";
+import { SearchHint } from "./dashboard-search";
 import { ReadyToSubmitPanel } from "./application-actions";
 import { SubmitButton } from "./client";
 import { WrittenAnswers } from "./written";
@@ -155,16 +157,19 @@ function Section({
 export function Today({
   jobs,
   settings,
+  query,
 }: {
   jobs: JobRow[];
   settings: Settings;
+  query?: string;
 }) {
-  const questions = jobs.filter((j) => j.stage === "needs_confirm");
-  const shortlist = jobs
+  const pool = filterJobsBySearch(jobs, query);
+  const questions = pool.filter((j) => j.stage === "needs_confirm");
+  const shortlist = pool
     .filter((j) => j.stage === "awaiting_approval")
     .sort((a, b) => (b.scoreAfter ?? 0) - (a.scoreAfter ?? 0));
-  const ready = jobs.filter((j) => j.stage === "ready_to_submit");
-  const filling = jobs.filter(
+  const ready = pool.filter((j) => j.stage === "ready_to_submit");
+  const filling = pool.filter(
     (j) => j.stage === "approved" || j.stage === "apply_blocked",
   );
 
@@ -174,6 +179,14 @@ export function Today({
     !ready.length &&
     !filling.length
   ) {
+    if (query?.trim() && jobs.length) {
+      return (
+        <div className="rounded-xl border border-dashed p-10 text-center">
+          <p className="font-medium">No jobs match your search on Overview.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Try Applications or Resumes, or clear the search in the sidebar.</p>
+        </div>
+      );
+    }
     return (
       <div className="rounded-xl border border-dashed p-10 text-center">
         <p className="font-medium">Nothing is waiting on you.</p>
@@ -187,6 +200,7 @@ export function Today({
 
   return (
     <div className="space-y-8">
+      <SearchHint query={query} total={jobs.length} shown={pool.length} />
       {ready.length > 0 && (
         <Section
           title="Ready to submit"

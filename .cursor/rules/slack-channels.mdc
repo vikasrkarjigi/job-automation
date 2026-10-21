@@ -36,6 +36,8 @@ Use the Slack channel the request came from. If it is not one of these, act as t
 
 After any command that changes state, run `npm run export`, then commit `data/`, `resumes/`, `tracker/`, `profile/`, and `agents/apply.md` and push straight to `main` (`git pull --rebase origin main` first). Do not create a branch or open a pull request for pipeline state. Code changes are the only exception, and only when the person asks for them.
 
+When you change **application code** or UI, also run **`npm run push:github`** so GitHub `main` updates and Vercel redeploys (see `.cursor/rules/github-sync.mdc`).
+
 ## Replying in Slack
 
 - Lead with the answer. For each job give title, company, score before and after, and the job id.

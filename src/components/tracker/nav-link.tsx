@@ -48,7 +48,10 @@ export function NavLink({
         onNavigate?.();
         if (active) return;
         e.preventDefault();
-        startTransition(() => router.push(href));
+        const dest = new URL(href, "http://local");
+        const q = sp.get("q");
+        if (q) dest.searchParams.set("q", q);
+        startTransition(() => router.push(dest.pathname + dest.search));
       }}
       className={cn(
         "relative font-medium transition-all duration-150",

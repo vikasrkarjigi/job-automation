@@ -1,0 +1,18 @@
+---
+description: Keep GitHub main in sync with Vercel (push after code changes)
+alwaysApply: true
+---
+
+# Push to GitHub (Vercel source of truth)
+
+Vercel Production deploys from **https://github.com/vikasrkarjigi/job-automation** branch `main`, not from Cursor-only git.
+
+After **any code or docs change** (not only pipeline `data/` commits):
+
+1. Commit on `main`.
+2. Run **`npm run push:github`** (needs `SHORTLIST_GITHUB_TOKEN` in the Cloud Agent environment secrets — same PAT as Vercel).
+3. If push fails with missing token, ask Vikas once to add **SHORTLIST_GITHUB_TOKEN** under Cloud Agent → Environment → Secrets, then retry.
+
+After pipeline-only saves (`data/`, `tracker/`, etc.), the dashboard on Vercel already commits to GitHub when `SHORTLIST_GITHUB_TOKEN` is set there; still run `git pull --rebase` from `github` before coding to avoid drift.
+
+Optional full check before push: **`npm run ship`** (typecheck, test, build, push:github).

@@ -9,6 +9,7 @@ import { Metric } from "./design";
 import { MobileDock } from "./mobile-dock";
 import { NavLink } from "./nav-link";
 import { NavPrefetch } from "./nav-prefetch";
+import { DashboardSearch } from "./dashboard-search";
 
 export type DeskTab = "today" | "find" | "applications" | "outreach" | "resumes" | "ignored" | "answers" | "agents" | "models" | "schedule" | "runs";
 
@@ -64,6 +65,9 @@ export function DashboardLayout({ tab, metrics, navBadges, runningBanner, notice
             <span className="mt-0.5 block text-xs text-sidebar-foreground/60">{APP_TAGLINE}</span>
           </Link>
         </div>
+        <Suspense fallback={null}>
+          <DashboardSearch variant="sidebar" />
+        </Suspense>
         <Suspense fallback={<div className="min-h-0 flex-1 px-2 py-3" aria-hidden />}>
           <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-2 py-3" aria-label="Main">
             {NAV.map(({ tab: t, label, icon }) => (
@@ -93,12 +97,15 @@ export function DashboardLayout({ tab, metrics, navBadges, runningBanner, notice
 
       <div className="flex min-h-svh min-w-0 flex-1 flex-col lg:pl-[248px]">
         <main className="w-full flex-1 px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 lg:hidden">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 lg:hidden">
             <div>
               <p className="font-semibold">{APP_NAME}</p>
               <p className="text-xs text-muted-foreground">{APP_TAGLINE}</p>
             </div>
           </div>
+          <Suspense fallback={null}>
+            <DashboardSearch variant="mobile" />
+          </Suspense>
           <div className="mb-6 flex gap-2 overflow-x-auto lg:hidden">
             <Metric label="Waiting on you" value={metrics.waiting} highlight={metrics.waiting > 0} />
             <Metric label="Ready to submit" value={metrics.ready} highlight={metrics.ready > 0} />

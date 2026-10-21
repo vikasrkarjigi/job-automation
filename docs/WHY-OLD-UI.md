@@ -10,19 +10,20 @@ Recent dashboard work (Job automation branding, no top header, Find jobs tab, Cl
 
 Those two streams diverged: GitHub had your **data** commits but was **missing the latest UI commits**, so Production stayed on the older layout (Shortlist, top tabs, Agents & models combined).
 
-## Fix (one time)
+## Fix (automatic from now on)
 
-From a machine with GitHub access, using a PAT with **Contents: Read and write** on this repo:
+Cloud agents run **`npm run push:github`** after UI/code commits. That needs the same secret as Vercel:
+
+**Cursor → Cloud Agents → Environment → Secrets → `SHORTLIST_GITHUB_TOKEN`**  
+(fine-grained PAT, this repo only, **Contents: Read and write**)
+
+Then in the agent: `npm run ship` or `npm run push:github`.
+
+Manual one-liner if needed:
 
 ```bash
-git clone https://github.com/vikasrkarjigi/job-automation.git
-cd job-automation
-git pull origin main
-# If you use Cursor’s repo as source, pull/rebase from there first, then:
-git push origin main
+npm run push:github
 ```
-
-Or in GitHub → **Compare & pull request** / merge any open branch that contains commits through `Remove top header; rebrand to Job automation job pipeline`.
 
 After `main` updates, Vercel should start a new **Production** deployment within a minute. Hard-refresh the site (Ctrl+Shift+R).
 

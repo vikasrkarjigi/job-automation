@@ -29,6 +29,8 @@
     "xlsx": "tsx src/cli.ts xlsx",
     "seed-demo": "tsx src/cli.ts seed-demo",
     "export": "tsx src/cli.ts export",
+    "push:github": "tsx scripts/push-github.ts",
+    "ship": "npm run typecheck && npm run test && npm run build && npm run push:github",
     "demo": "SHORTLIST_ROOT=.demo tsx src/cli.ts seed-demo --reset && SHORTLIST_ROOT=.demo tsx src/cli.ts morning",
     "dev:demo": "SHORTLIST_ROOT=.demo next dev -H 0.0.0.0 -p 4317"
   },

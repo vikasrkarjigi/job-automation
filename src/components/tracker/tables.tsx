@@ -11,17 +11,23 @@ import type { Launch } from "@/schedule";
 import { ago, StageBadge, statusLine, when } from "./bits";
 import { AutoRefresh, CopyButton, SubmitButton } from "./client";
 import { ContentCard, EmptyState } from "./design";
+import { filterJobsBySearch } from "@/job-search";
+import { SearchHint } from "./dashboard-search";
 import { ApplicationJobRow } from "./job-activity";
 
 function Empty({ title, children }: { title: string; children: React.ReactNode }) {
   return <EmptyState title={title}>{children}</EmptyState>;
 }
 
-export function Resumes({ jobs }: { jobs: JobRow[] }) {
-  const rows = jobs.filter((j) => j.resumePath).sort((a, b) => (b.submittedAt ?? b.createdAt).localeCompare(a.submittedAt ?? a.createdAt));
-  if (!rows.length) return <Empty title="No tailored resumes">One is written for every job that clears the basic checks.</Empty>;
+export function Resumes({ jobs, query }: { jobs: JobRow[]; query?: string }) {
+  const all = jobs.filter((j) => j.resumePath).sort((a, b) => (b.submittedAt ?? b.createdAt).localeCompare(a.submittedAt ?? a.createdAt));
+  const rows = filterJobsBySearch(all, query);
+  if (!all.length) return <Empty title="No tailored resumes">One is written for every job that clears the basic checks.</Empty>;
+  if (!rows.length) return <Empty title="No resumes match your search">Try company, city, job title, or part of the job id.</Empty>;
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <>
+      <SearchHint query={query} total={all.length} shown={rows.length} />
+      <div className="grid gap-3 sm:grid-cols-2">
       {rows.map((j) => (
         <a key={j.id} href={`/resume/${j.id}`} className="group rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
           <div className="flex items-start justify-between gap-3">
@@ -45,16 +51,23 @@ export function Resumes({ jobs }: { jobs: JobRow[] }) {
 
         </a>
       ))}
-    </div>
+      </div>
+    </>
   );
 }
 
-export function Applications({ jobs, launches, infos }: { jobs: JobRow[]; launches: Launch[]; infos: Map<string, RunInfo> }) {
-  const rows = jobs.filter((j) => j.stage !== "ignored").sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+export function Applications({ jobs, launches, infos, query }: { jobs: JobRow[]; launches: Launch[]; infos: Map<string, RunInfo>; query?: string }) {
+  const all = jobs.filter((j) => j.stage !== "ignored").sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const rows = filterJobsBySearch(all, query);
   const applyRun: ApplyRunSnapshot = applyRunSnapshot(launches, infos);
-  if (!rows.length) return <Empty title="No applications yet">Jobs that fail a check appear under Ignored with the reason.</Empty>;
+  if (!all.length) return <Empty title="No applications yet">Jobs that fail a check appear under Ignored with the reason.</Empty>;
+  if (!rows.length) return <Empty title="No applications match your search">Search matches title, company, city, stage, score, and job id — not exact keywords only.</Empty>;
   return (
     <ContentCard className="overflow-hidden">
+      <div className="space-y-0">
+      <div className="px-4 pt-3">
+      <SearchHint query={query} total={all.length} shown={rows.length} />
+      </div>
       {applyRun.live && <AutoRefresh every={25} />}
       <p className="border-b border-border px-4 py-2 text-xs text-muted-foreground">
         Click a job in <strong>Filling form</strong>, <strong>Blocked</strong>, or <strong>Ready to submit</strong> to see activity, checklist, and links.
@@ -128,17 +141,21 @@ export function Applications({ jobs, launches, infos }: { jobs: JobRow[]; launch
           })}
         </TableBody>
       </Table>
+      </div>
     </ContentCard>
   );
 }
 
-export function Outreach({ jobs, back }: { jobs: JobRow[]; back: string }) {
-  const withPeople = jobs.filter((j) => j.people.length);
-  if (!withPeople.length) {
+export function Outreach({ jobs, back, query }: { jobs: JobRow[]; back: string; query?: string }) {
+  const all = jobs.filter((j) => j.people.length);
+  const withPeople = filterJobsBySearch(all, query);
+  if (!all.length) {
     return <Empty title="No outreach yet">After you approve a job, the agent finds up to five people from Apollo or Vibe and drafts a note for each.</Empty>;
   }
+  if (!withPeople.length) return <Empty title="No outreach matches your search">Try the company or job title.</Empty>;
   return (
     <div className="space-y-8">
+      <SearchHint query={query} total={all.length} shown={withPeople.length} />
       {withPeople.map((j) => {
         const unsent = j.people.some((p) => (p.linkedinUrl && p.invite !== "sent") || p.emailStatus === "draft");
         return (
@@ -226,11 +243,14 @@ export function Outreach({ jobs, back }: { jobs: JobRow[]; back: string }) {
   );
 }
 
-export function Ignored({ jobs }: { jobs: JobRow[] }) {
-  const rows = jobs.filter((j) => j.stage === "ignored" || j.stage === "skipped_by_you");
-  if (!rows.length) return <Empty title="Nothing ignored">Jobs you skip or that fail filters will appear here.</Empty>;
+export function Ignored({ jobs, query }: { jobs: JobRow[]; query?: string }) {
+  const all = jobs.filter((j) => j.stage === "ignored" || j.stage === "skipped_by_you");
+  const rows = filterJobsBySearch(all, query);
+  if (!all.length) return <Empty title="Nothing ignored">Jobs you skip or that fail filters will appear here.</Empty>;
+  if (!rows.length) return <Empty title="Nothing matches your search">Try company, filter reason, or job title.</Empty>;
   return (
     <ContentCard className="overflow-hidden">
+      <SearchHint query={query} total={all.length} shown={rows.length} />
       <Table>
         <TableHeader>
           <TableRow>
