@@ -83,7 +83,7 @@ export function ScheduleForm({ schedule, next, hasKey, back }: { schedule: Sched
         <div className="rounded-xl border p-4 text-muted-foreground">
           <p className="font-medium text-foreground">How it runs</p>
           <p className="mt-1">
-            Vercel checks this schedule every 30 minutes and starts the search when a time comes up, so a run can begin up to about half an hour after the time you pick.
+            On Vercel Pro, a cron can check this every 30 minutes. On the free Hobby plan, use Find jobs now or your Cursor Automation at 4 am, 12 pm, and 8 pm Pacific until you upgrade or add a deploy hook.
           </p>
           {!hasKey && <p className="mt-2 text-amber-700 dark:text-amber-400">Add CURSOR_API_KEY in Vercel first, or nothing will start.</p>}
         </div>

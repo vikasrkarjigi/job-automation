@@ -64,7 +64,8 @@ If pushes to `main` do not create a new Vercel deployment, see [docs/VERCEL-DEPL
    - `CURSOR_API_KEY`: your Cursor API key from cursor.com/dashboard → API Keys. Required for Find jobs now and for the schedule to start agents.
    - Optional `CRON_SECRET`: if set, the scheduled tick endpoint requires `Authorization: Bearer <secret>`. Add the same value as a GitHub repository secret so `.github/workflows/schedule.yml` can call your dashboard safely.
 3. Deploy. Bookmark the URL. Optional: `SHORTLIST_GITHUB_REPO` and `SHORTLIST_GITHUB_BRANCH` if the data lives somewhere other than `vikasrkarjigi/job-automation` on `main`.
-4. Optional `CRON_SECRET`: when set, `/api/tick` requires `Authorization: Bearer <secret>`. Vercel Cron sends that header automatically if you add the same value in the project. Without it, the tick endpoint is open but only starts a run when a schedule slot is due.
+4. Optional `CRON_SECRET`: when set, `/api/tick` requires `Authorization: Bearer <secret>`.
+5. **Scheduled searches on Vercel Hobby:** use **Find jobs now**, or your existing **Cursor Automation** (4 am / 12 pm / 8 pm Pacific). Do not add a sub-daily cron in `vercel.json` on Hobby; it makes every deploy fail. Pro plan can call `/api/tick` every 30 minutes.
 
 Without `SHORTLIST_GITHUB_TOKEN` the app reads and writes the local checkout instead, and without `DASHBOARD_PASSWORD` it has no login. That is how `npm run dev` works on a laptop.
 

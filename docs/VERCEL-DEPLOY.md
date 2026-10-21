@@ -17,6 +17,12 @@ If **Vercel stays on an old commit** (for example `aba9acd`) and no new row appe
 
 After a fix, every push to `main` should add a new deployment within about a minute.
 
+## Red X on GitHub commits (`Vercel — Deployment failed`)
+
+If GitHub shows **0/1** with a red X and context **Vercel**, the push **did** reach Vercel but the **build was rejected**. A common cause on the **Hobby** plan is `vercel.json` **cron** expressions that run more than **once per day** (for example every 30 minutes). Those commits fail validation and Production stays on the last good deploy (often an older commit).
+
+This repo no longer ships that cron on Hobby. After the fix deploys, use **Find jobs now** on the dashboard, or keep your **Cursor Automation** schedule, or upgrade to **Pro** if you want Vercel to poll the schedule every 30 minutes.
+
 ## Backup: Deploy Hook + GitHub Action
 
 If Git integration is flaky, add this GitHub Action (create the file in the GitHub web UI so you do not need a token with **workflow** scope):
