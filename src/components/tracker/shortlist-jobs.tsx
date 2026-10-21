@@ -1,56 +1,65 @@
 "use client";
 
 import { approveJob, skipJob } from "@/app/actions";
-import { Button } from "@/components/ui/button";
 import type { JobRow, Settings } from "@/types";
-import { KeywordChips, Score } from "./bits";
+import { StageBadge } from "./bits";
 import { SubmitButton } from "./client";
-import { ContentCard } from "./design";
-import { JobSummaryRow } from "./job-row-card";
-import { useJobViewMode } from "./view-mode";
+import { JobColumnHeader, JobColumnRow } from "./job-column-layout";
+import { ResumeRowLinks } from "./job-row-card";
 import { ShortlistCardInner } from "./shortlist-card";
+import { StageLegend } from "./stage-legend";
+import { useJobViewMode } from "./view-mode";
 
 export function ShortlistJobs({ jobs, settings }: { jobs: JobRow[]; settings: Settings }) {
   const [mode] = useJobViewMode();
 
   if (mode === "rows") {
     return (
-      <ContentCard className="overflow-hidden divide-y divide-border">
-        {jobs.map((j) => (
-          <JobSummaryRow
-            key={j.id}
-            job={j}
-            trailing={
-              <>
-                <Score before={j.scoreBefore} after={j.scoreAfter} target={settings.targetScore} />
+      <div className="space-y-4">
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+          <JobColumnHeader labels={["Job", "Stage", "Score", "Actions", "Resume", ""]} />
+          {jobs.map((j) => (
+            <JobColumnRow key={j.id} stage={j.stage}>
+              <div className="min-w-0">
+                <p className="truncate font-medium">{j.title}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {j.company} · {j.location}
+                </p>
+              </div>
+              <StageBadge stage={j.stage} />
+              <p className="text-right text-sm font-semibold tabular-nums">{j.scoreAfter ?? "?"}</p>
+              <div className="flex flex-wrap gap-1">
                 <form action={approveJob}>
                   <input type="hidden" name="jobId" value={j.id} />
-                  <SubmitButton size="sm" pendingLabel="…">
+                  <SubmitButton size="xs" pendingLabel="…">
                     Approve
                   </SubmitButton>
                 </form>
                 <form action={skipJob}>
                   <input type="hidden" name="jobId" value={j.id} />
-                  <SubmitButton size="sm" variant="outline" pendingLabel="…">
+                  <SubmitButton size="xs" variant="outline" pendingLabel="…">
                     Skip
                   </SubmitButton>
                 </form>
-                <Button size="sm" variant="ghost" render={<a href={`/resume/${j.id}`} target="_blank" rel="noreferrer" />} nativeButton={false}>
-                  Resume
-                </Button>
-              </>
-            }
-          />
-        ))}
-      </ContentCard>
+              </div>
+              <ResumeRowLinks jobId={j.id} />
+              <span />
+            </JobColumnRow>
+          ))}
+        </div>
+        <StageLegend />
+      </div>
     );
   }
 
   return (
-    <div className="grid gap-4">
-      {jobs.map((j) => (
-        <ShortlistCardInner key={j.id} job={j} settings={settings} />
-      ))}
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {jobs.map((j) => (
+          <ShortlistCardInner key={j.id} job={j} settings={settings} />
+        ))}
+      </div>
+      <StageLegend />
     </div>
   );
 }

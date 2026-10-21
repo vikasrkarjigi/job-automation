@@ -1,30 +1,11 @@
-import { Badge } from "@/components/ui/badge";
 import type { JobRow, Stage } from "@/types";
+import { STAGE_LABEL, stageBadgeClass } from "./stage-styles";
 
 export { statusLine } from "@/status";
-
-const STAGE_LABEL: Record<Stage, string> = {
-  ignored: "Ignored",
-  scoring: "Scoring",
-  needs_confirm: "Keyword question",
-  awaiting_approval: "Awaiting you",
-  skipped_by_you: "Skipped",
-  approved: "Filling form",
-  apply_blocked: "Blocked",
-  ready_to_submit: "Ready to submit",
-  submitted: "Submitted",
-};
+export { STAGE_LABEL } from "./stage-styles";
 
 export function StageBadge({ stage }: { stage: Stage }) {
-  const variant =
-    stage === "submitted"
-      ? "default"
-      : stage === "apply_blocked"
-        ? "destructive"
-        : stage === "ignored" || stage === "skipped_by_you"
-          ? "outline"
-          : "secondary";
-  return <Badge variant={variant}>{STAGE_LABEL[stage]}</Badge>;
+  return <span className={stageBadgeClass(stage)}>{STAGE_LABEL[stage]}</span>;
 }
 
 export function ago(iso: string | null, now = Date.now()): string {

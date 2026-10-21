@@ -9,6 +9,7 @@ import { ago, when } from "./bits";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { ApplicationUrlChip, GoSubmitButton, ReadyToSubmitPanel } from "./application-actions";
+import { ExpandableText } from "./expandable-text";
 
 function ApplicationRowCells({ job, statusText }: { job: JobRow; statusText: string }) {
   const url = resolveApplicationUrl(job);
@@ -75,7 +76,7 @@ export function ApplicationJobRow({
       {open && showDetail && (
         <TableRow className="bg-muted/20 hover:bg-muted/20">
           <TableCell colSpan={7} className="p-4 sm:p-5">
-            <JobActivityDetail job={job} insight={insight} steps={steps} statusText={statusText} />
+            <ApplicationActivityPanel job={job} insight={insight} steps={steps} statusText={statusText} />
           </TableCell>
         </TableRow>
       )}
@@ -83,7 +84,7 @@ export function ApplicationJobRow({
   );
 }
 
-function JobActivityDetail({
+export function ApplicationActivityPanel({
   job,
   insight,
   steps,
@@ -109,7 +110,7 @@ function JobActivityDetail({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-foreground">{insight.summary}</p>
-          <p className="mt-1 max-w-3xl text-muted-foreground">{statusText}</p>
+          <ExpandableText text={statusText} max={160} className="mt-1 max-w-3xl" />
         </div>
         <div className="flex flex-wrap gap-2">
           {insight.agentWatchUrl && (

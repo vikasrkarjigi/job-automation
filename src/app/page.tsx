@@ -16,6 +16,7 @@ import { Answers } from "@/components/tracker/answers";
 import { AutoRefresh } from "@/components/tracker/client";
 import { DashboardLayout, type DeskTab } from "@/components/tracker/dashboard-layout";
 import { EmptyState, PageHeader } from "@/components/tracker/design";
+import { TabPageActions } from "@/components/tracker/tab-page-actions";
 import { ScheduleForm } from "@/components/tracker/schedule";
 import { Applications, Ignored, Outreach, Resumes, Runs } from "@/components/tracker/tables";
 import { Today } from "@/components/tracker/today";
@@ -164,7 +165,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
       }
       runningBanner={runningBanner}
     >
-      <PageHeader title={copy.title} description={copy.description} />
+      <PageHeader title={copy.title} description={copy.description} actions={<TabPageActions tab={tab} />} />
 
       {tab === "find" && (
         <FindJobsForm initial={searchCriteria} back={back} hasKey={!!cursorKey()} action={startJobSearch} />

@@ -1,132 +1,120 @@
 "use client";
 
+import { useState } from "react";
 import type { ApplyRunSnapshot } from "@/apply-transparency";
 import { applyStatusLine, jobApplyInsight, resolveApplicationUrl, timelineSteps } from "@/apply-transparency";
 import type { JobRow } from "@/types";
-import { statusLine } from "./bits";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { StageBadge, statusLine } from "./bits";
 import { ApplicationActionCell } from "./application-actions";
 import { AutoRefresh } from "./client";
 import { ContentCard } from "./design";
-import { ApplicationJobRow } from "./job-activity";
-import { JobSummaryRow } from "./job-row-card";
-import { StageBadge } from "./bits";
+import { ExpandableText } from "./expandable-text";
+import { ApplicationActivityPanel } from "./job-activity";
+import { JobColumnHeader, JobColumnRow, JobTile } from "./job-column-layout";
+import { ResumeRowLinks } from "./job-row-card";
+import { StageLegend } from "./stage-legend";
 import { useJobViewMode } from "./view-mode";
+
+const IN_APPLY = new Set<JobRow["stage"]>(["approved", "apply_blocked", "ready_to_submit", "submitted"]);
 
 export function ApplicationsList({ rows, applyRun }: { rows: JobRow[]; applyRun: ApplyRunSnapshot }) {
   const [mode] = useJobViewMode();
+  const [expanded, setExpanded] = useState<string | null>(null);
 
-  if (mode === "rows") {
-    return (
-      <ContentCard className="overflow-hidden">
-        {applyRun.live && <AutoRefresh every={25} />}
-        <div className="divide-y divide-border">
-          {rows.map((j) => {
-            const inApply = ["approved", "apply_blocked", "ready_to_submit", "submitted"].includes(j.stage);
-            const statusText = inApply ? applyStatusLine(j, applyRun) : statusLine(j);
-            return (
-              <JobSummaryRow
-                key={j.id}
-                job={j}
-                trailing={
-                  <>
-                    <span className="max-w-[14rem] truncate text-xs text-muted-foreground sm:max-w-xs">{statusText}</span>
-                    <span className="text-xs tabular-nums">
-                      {j.scoreBefore ?? "?"} → {j.scoreAfter ?? "?"}
-                    </span>
-                    <ApplicationActionCell job={j} url={resolveApplicationUrl(j)} />
-                  </>
-                }
-              />
-            );
-          })}
-        </div>
-      </ContentCard>
-    );
+  function statusFor(j: JobRow) {
+    return IN_APPLY.has(j.stage) ? applyStatusLine(j, applyRun) : statusLine(j);
+  }
+
+  function toggle(j: JobRow) {
+    if (!IN_APPLY.has(j.stage)) return;
+    setExpanded((id) => (id === j.id ? null : j.id));
   }
 
   return (
-    <ContentCard className="overflow-hidden">
+    <div className="space-y-4">
       {applyRun.live && <AutoRefresh every={25} />}
-      <p className="border-b border-border px-4 py-2 text-xs text-muted-foreground">
-        Click a job in <strong>Filling form</strong>, <strong>Blocked</strong>, or <strong>Ready to submit</strong> to see activity, checklist, and links.
-        {applyRun.live && " Apply agent is running — this table auto-refreshes."}
-      </p>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Job</TableHead>
-            <TableHead>Stage</TableHead>
-            <TableHead>Status and reason</TableHead>
-            <TableHead className="text-right">Score</TableHead>
-            <TableHead>Resume</TableHead>
-            <TableHead className="text-right">People</TableHead>
-            <TableHead>Submit</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      {mode === "rows" ? (
+        <ContentCard className="overflow-hidden">
+          <JobColumnHeader labels={["Job", "Stage", "Status", "Score", "Resume", "Action"]} />
           {rows.map((j) => {
-            const inApply = ["approved", "apply_blocked", "ready_to_submit", "submitted"].includes(j.stage);
-            const statusText = inApply ? applyStatusLine(j, applyRun) : statusLine(j);
-            if (!inApply) {
-              return (
-                <TableRow key={j.id}>
-                  <ApplicationCells job={j} statusText={statusText} />
-                </TableRow>
-              );
-            }
+            const statusText = statusFor(j);
+            const open = expanded === j.id;
             return (
-              <ApplicationJobRow
-                key={j.id}
-                job={j}
-                insight={jobApplyInsight(j, applyRun)}
-                steps={timelineSteps(j)}
-                statusText={statusText}
-              />
+              <div key={j.id}>
+                <JobColumnRow stage={j.stage} onClick={IN_APPLY.has(j.stage) ? () => toggle(j) : undefined}>
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{j.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {j.company} · {j.location}
+                    </p>
+                  </div>
+                  <StageBadge stage={j.stage} />
+                  <ExpandableText text={statusText} max={72} className="max-md:col-span-full" />
+                  <p className="text-right text-xs tabular-nums">
+                    {j.scoreBefore ?? "?"}→{j.scoreAfter ?? "?"}
+                  </p>
+                  <div className="text-xs">{j.resumePath ? <ResumeRowLinks jobId={j.id} /> : "—"}</div>
+                  <div onClick={(e) => e.stopPropagation()} className="flex justify-end">
+                    <ApplicationActionCell job={j} url={resolveApplicationUrl(j)} />
+                  </div>
+                </JobColumnRow>
+                {open && IN_APPLY.has(j.stage) && (
+                  <div className="border-b border-border bg-muted/25 px-4 py-4 sm:px-5">
+                    <ApplicationActivityPanel
+                      job={j}
+                      insight={jobApplyInsight(j, applyRun)}
+                      steps={timelineSteps(j)}
+                      statusText={statusText}
+                    />
+                  </div>
+                )}
+              </div>
             );
           })}
-        </TableBody>
-      </Table>
-    </ContentCard>
-  );
-}
-
-function ApplicationCells({ job, statusText }: { job: JobRow; statusText: string }) {
-  const inApply = ["approved", "apply_blocked", "ready_to_submit", "submitted"].includes(job.stage);
-  return (
-    <>
-      <TableCell>
-        <div className="font-medium">{job.title}</div>
-        <div className="text-xs text-muted-foreground">
-          {job.company} · {job.location}
+        </ContentCard>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {rows.map((j) => {
+            const statusText = statusFor(j);
+            const open = expanded === j.id;
+            return (
+              <JobTile key={j.id} stage={j.stage} onClick={IN_APPLY.has(j.stage) ? () => toggle(j) : undefined}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="line-clamp-2 font-semibold leading-snug">{j.title}</p>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">{j.company}</p>
+                  </div>
+                  <StageBadge stage={j.stage} />
+                </div>
+                <p className="mt-2 text-xs tabular-nums text-muted-foreground">
+                  Score {j.scoreBefore ?? "?"} → {j.scoreAfter ?? "?"}
+                </p>
+                <ExpandableText text={statusText} max={64} className="mt-2" />
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3" onClick={(e) => e.stopPropagation()}>
+                  {j.resumePath && <ResumeRowLinks jobId={j.id} />}
+                  <ApplicationActionCell job={j} url={resolveApplicationUrl(j)} />
+                  {IN_APPLY.has(j.stage) && (
+                    <button type="button" className="text-xs font-medium text-primary" onClick={() => toggle(j)}>
+                      {open ? "Hide details" : "Details…"}
+                    </button>
+                  )}
+                </div>
+                {open && IN_APPLY.has(j.stage) && (
+                  <div className="mt-3 border-t border-border pt-3" onClick={(e) => e.stopPropagation()}>
+                    <ApplicationActivityPanel
+                      job={j}
+                      insight={jobApplyInsight(j, applyRun)}
+                      steps={timelineSteps(j)}
+                      statusText={statusText}
+                    />
+                  </div>
+                )}
+              </JobTile>
+            );
+          })}
         </div>
-        {inApply && <div className="mt-1 text-[10px] text-primary">Tap for activity</div>}
-      </TableCell>
-      <TableCell>
-        <StageBadge stage={job.stage} />
-      </TableCell>
-      <TableCell className="max-w-md whitespace-normal text-sm">{statusText}</TableCell>
-      <TableCell className="text-right tabular-nums">
-        {job.scoreBefore ?? "?"} <span className="text-muted-foreground">to</span> {job.scoreAfter ?? "?"}
-      </TableCell>
-      <TableCell>
-        {job.resumePath ? (
-          <span className="flex gap-2 text-xs">
-            <a className="underline-offset-2 hover:underline" href={`/resume/${job.id}`}>
-              View
-            </a>
-            <a className="underline-offset-2 hover:underline" href={`/resume/${job.id}/pdf`}>
-              PDF
-            </a>
-          </span>
-        ) : (
-          <span className="text-xs text-muted-foreground">not tailored</span>
-        )}
-      </TableCell>
-      <TableCell className="text-right tabular-nums">{job.people.length}</TableCell>
-      <TableCell>
-        <ApplicationActionCell job={job} url={resolveApplicationUrl(job)} />
-      </TableCell>
-    </>
+      )}
+      <StageLegend />
+    </div>
   );
 }

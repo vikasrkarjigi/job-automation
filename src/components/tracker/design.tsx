@@ -13,12 +13,12 @@ export function EmptyState({ title, children }: { title: string; children: React
 
 export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
   return (
-    <div className="mb-8 flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
-      <div>
+    <div className="mb-6 flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-start sm:justify-between">
+      <div className="min-w-0 flex-1">
         <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
         {description && <p className="mt-1 max-w-3xl text-sm text-muted-foreground lg:max-w-none">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 sm:pt-0.5">{actions}</div>}
     </div>
   );
 }
@@ -49,13 +49,13 @@ export function Metric({
       className={cn(
         compact
           ? "rounded-md border border-sidebar-border bg-sidebar-accent/25 px-2 py-1.5"
-          : "min-w-[8.5rem] shrink-0 flex-1 rounded-lg border border-border bg-card px-4 py-2.5 shadow-sm sm:py-3",
+          : "min-w-0 flex-1 rounded-xl border border-border bg-card px-4 py-3 shadow-sm sm:min-w-[8.5rem] sm:py-4",
         highlight && !compact && "border-primary/40 ring-1 ring-primary/20",
         highlight && compact && "border-sidebar-primary/40 ring-1 ring-sidebar-primary/20",
         className,
       )}
     >
-      <p className={cn("font-semibold tabular-nums tracking-tight", compact ? "text-lg" : "text-2xl", highlight && (compact ? "text-sidebar-primary" : "text-primary"))}>{value}</p>
+      <p className={cn("font-semibold tabular-nums tracking-tight", compact ? "text-lg" : "text-3xl", highlight && (compact ? "text-sidebar-primary" : "text-primary"))}>{value}</p>
       <p className={cn("text-[10px] font-medium leading-tight sm:text-xs", compact ? "text-sidebar-foreground/65" : "text-muted-foreground")}>{label}</p>
     </div>
   );

@@ -83,7 +83,7 @@ export function DashboardLayout({ tab, metrics, navBadges, runningBanner, notice
           </div>
           {notice}
           {runningBanner}
-          <DashboardToolbar tab={tab} metrics={metrics} />
+          <DashboardToolbar metrics={metrics} />
           <div className="w-full">{children}</div>
         </main>
 
