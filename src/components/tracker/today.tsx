@@ -270,7 +270,7 @@ export function Today({
                 <div className="text-sm text-muted-foreground">
                   {j.stage === "apply_blocked"
                     ? statusLine(j)
-                    : "The apply agent is filling the form. It stops on the Submit page."}
+                    : "Approved — open Applications and tap this job for status. Start Fill approved applications on Agents if nothing is running."}
                 </div>
                 <WrittenAnswers job={j} />
               </div>

@@ -3,9 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { JobRow, RunRecord } from "@/types";
+import { applyRunSnapshot, applyStatusLine, jobApplyInsight, timelineSteps } from "@/apply-transparency";
+import type { ApplyRunSnapshot } from "@/apply-transparency";
+import type { RunInfo } from "@/cloud";
+import type { Launch } from "@/schedule";
 import { ago, StageBadge, statusLine, when } from "./bits";
-import { CopyButton, SubmitButton } from "./client";
+import { AutoRefresh, CopyButton, SubmitButton } from "./client";
 import { ContentCard, EmptyState } from "./design";
+import { ApplicationJobRow } from "./job-activity";
 
 function Empty({ title, children }: { title: string; children: React.ReactNode }) {
   return <EmptyState title={title}>{children}</EmptyState>;
@@ -43,11 +48,17 @@ export function Resumes({ jobs }: { jobs: JobRow[] }) {
   );
 }
 
-export function Applications({ jobs }: { jobs: JobRow[] }) {
+export function Applications({ jobs, launches, infos }: { jobs: JobRow[]; launches: Launch[]; infos: Map<string, RunInfo> }) {
   const rows = jobs.filter((j) => j.stage !== "ignored").sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const applyRun: ApplyRunSnapshot = applyRunSnapshot(launches, infos);
   if (!rows.length) return <Empty title="No applications yet">Jobs that fail a check appear under Ignored with the reason.</Empty>;
   return (
     <ContentCard className="overflow-hidden">
+      {applyRun.live && <AutoRefresh every={25} />}
+      <p className="border-b border-border px-4 py-2 text-xs text-muted-foreground">
+        Click a job in <strong>Filling form</strong>, <strong>Blocked</strong>, or <strong>Ready to submit</strong> to see activity, checklist, and links.
+        {applyRun.live && " Apply agent is running — this table auto-refreshes."}
+      </p>
       <Table>
         <TableHeader>
           <TableRow>
@@ -60,38 +71,56 @@ export function Applications({ jobs }: { jobs: JobRow[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((j) => (
-            <TableRow key={j.id}>
-              <TableCell>
-                <div className="font-medium">{j.title}</div>
-                <div className="text-xs text-muted-foreground">
-                  {j.company} · {j.location}
-                </div>
-              </TableCell>
-              <TableCell>
-                <StageBadge stage={j.stage} />
-              </TableCell>
-              <TableCell className="max-w-72 whitespace-normal text-sm">{statusLine(j)}</TableCell>
-              <TableCell className="text-right tabular-nums">
-                {j.scoreBefore ?? "?"} <span className="text-muted-foreground">to</span> {j.scoreAfter ?? "?"}
-              </TableCell>
-              <TableCell>
-                {j.resumePath ? (
-                  <span className="flex gap-2 text-xs">
-                    <a className="underline-offset-2 hover:underline" href={`/resume/${j.id}`}>
-                      View
-                    </a>
-                    <a className="underline-offset-2 hover:underline" href={`/resume/${j.id}/pdf`}>
-                      PDF
-                    </a>
-                  </span>
-                ) : (
-                  <span className="text-xs text-muted-foreground">not tailored</span>
-                )}
-              </TableCell>
-              <TableCell className="text-right tabular-nums">{j.people.length}</TableCell>
-            </TableRow>
-          ))}
+          {rows.map((j) => {
+            const inApply = ["approved", "apply_blocked", "ready_to_submit", "submitted"].includes(j.stage);
+            const statusText = inApply ? applyStatusLine(j, applyRun) : statusLine(j);
+            const cells = (
+              <>
+                <TableCell>
+                  <div className="font-medium">{j.title}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {j.company} · {j.location}
+                  </div>
+                  {inApply && <div className="mt-1 text-[10px] text-primary">Tap for activity</div>}
+                </TableCell>
+                <TableCell>
+                  <StageBadge stage={j.stage} />
+                </TableCell>
+                <TableCell className="max-w-md whitespace-normal text-sm">{statusText}</TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {j.scoreBefore ?? "?"} <span className="text-muted-foreground">to</span> {j.scoreAfter ?? "?"}
+                </TableCell>
+                <TableCell>
+                  {j.resumePath ? (
+                    <span className="flex gap-2 text-xs">
+                      <a className="underline-offset-2 hover:underline" href={`/resume/${j.id}`} onClick={(e) => e.stopPropagation()}>
+                        View
+                      </a>
+                      <a className="underline-offset-2 hover:underline" href={`/resume/${j.id}/pdf`} onClick={(e) => e.stopPropagation()}>
+                        PDF
+                      </a>
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">not tailored</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">{j.people.length}</TableCell>
+              </>
+            );
+            if (!inApply) {
+              return <TableRow key={j.id}>{cells}</TableRow>;
+            }
+            return (
+              <ApplicationJobRow
+                key={j.id}
+                job={j}
+                insight={jobApplyInsight(j, applyRun)}
+                steps={timelineSteps(j)}
+                statusText={statusText}
+                rowCells={cells}
+              />
+            );
+          })}
         </TableBody>
       </Table>
     </ContentCard>

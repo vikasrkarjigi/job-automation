@@ -164,7 +164,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
         ) : (
           <Today jobs={data.jobs} settings={settings} />
         ))}
-      {tab === "applications" && <Applications jobs={data.jobs} />}
+      {tab === "applications" && <Applications jobs={data.jobs} launches={launches} infos={infos} />}
       {tab === "outreach" && <Outreach jobs={data.jobs} back={back} />}
       {tab === "resumes" && <Resumes jobs={data.jobs} />}
       {tab === "ignored" && <Ignored jobs={data.jobs} />}
