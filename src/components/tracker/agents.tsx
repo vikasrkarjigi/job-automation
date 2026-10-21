@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { startAgent } from "@/app/actions";
 import type { AgentId, AgentSummary } from "@/agent-activity";
-import { ACTIVE, type RunInfo } from "@/cloud";
+import { ACTIVE, modelLabel, type RunInfo } from "@/cloud";
 import type { Launch, RunKind } from "@/schedule";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -75,6 +75,32 @@ function SetupNeeded() {
   );
 }
 
+function ModelChainInfo({ models }: { models: string[] }) {
+  return (
+    <div className="rounded-xl border p-4 text-sm">
+      <p className="font-medium">Cloud agent models</p>
+      <p className="mt-1 text-muted-foreground">
+        Find jobs now starts a Cursor cloud VM using your <code className="text-foreground">CURSOR_API_KEY</code>. If one model is busy or limited, the next in this list is tried automatically. Composer, Grok, and Claude here are Cursor models, not separate Anthropic or xAI API keys.
+      </p>
+      <ol className="mt-3 flex flex-wrap gap-2">
+        {models.map((m, i) => (
+          <li key={m} className="rounded-md border px-2 py-1 text-xs">
+            {i + 1}. {modelLabel(m)} <span className="text-muted-foreground">({m})</span>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-3 text-muted-foreground">
+        If every model returns a usage limit error, open{" "}
+        <a href="https://cursor.com/dashboard?tab=settings" className="underline underline-offset-2" target="_blank" rel="noreferrer">
+          Cursor Settings
+        </a>{" "}
+        and turn on <strong className="font-medium text-foreground">on-demand usage</strong> for background agents, or wait for your plan to reset. Optional: set{" "}
+        <code className="text-foreground">SHORTLIST_AGENT_MODELS</code> in Vercel (comma-separated ids, same order as above).
+      </p>
+    </div>
+  );
+}
+
 export function Agents({
   summaries,
   launches,
@@ -83,6 +109,7 @@ export function Agents({
   hasKey,
   next,
   approvedCount,
+  models,
 }: {
   summaries: AgentSummary[];
   launches: Launch[];
@@ -91,6 +118,7 @@ export function Agents({
   hasKey: boolean;
   next: string[];
   approvedCount: number;
+  models: string[];
 }) {
   const recent = [...launches].reverse();
   const live = recent.filter((l) => launchStatus(l, l.runId ? infos.get(l.runId) : undefined).tone === "live");
@@ -101,6 +129,7 @@ export function Agents({
     <div className="space-y-6">
       {live.length > 0 && <AutoRefresh />}
       {!hasKey && <SetupNeeded />}
+      {hasKey && <ModelChainInfo models={models} />}
 
       <section className="flex flex-col gap-4 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1 text-sm">
@@ -110,7 +139,8 @@ export function Agents({
                 <StatusBadge label="Running" tone="live" />
                 <span>
                   {KIND_LABEL[l.kind]}, started {at(l.at, timezone)}
-                  {l.trigger === "schedule" ? " by the schedule" : " by you"}.
+                  {l.trigger === "schedule" ? " by the schedule" : " by you"}
+                  {l.model ? ` on ${modelLabel(l.model)}` : ""}.
                 </span>
                 {l.url && (
                   <a href={l.url} target="_blank" rel="noreferrer" className="underline underline-offset-2">
@@ -207,6 +237,7 @@ export function Agents({
                       <StatusBadge {...status} />
                       <span className="text-xs text-muted-foreground">
                         {at(l.at, timezone)}, {l.trigger === "schedule" ? "scheduled" : "started by you"}
+                        {l.model ? `, ${modelLabel(l.model)}` : ""}
                         {info?.durationMs ? `, took ${took(info.durationMs)}` : ""}
                       </span>
                     </div>

@@ -61,7 +61,8 @@ If pushes to `main` do not create a new Vercel deployment, see [docs/VERCEL-DEPL
 2. Before deploying, add these Environment Variables:
    - `SHORTLIST_GITHUB_TOKEN`: a fine grained GitHub token for this repository only, with Contents read and write. The dashboard uses it to read the pipeline and save your clicks as commits.
    - `DASHBOARD_PASSWORD`: the password for the login page.
-   - `CURSOR_API_KEY`: your Cursor API key from cursor.com/dashboard → API Keys. Required for Find jobs now and for the schedule to start agents.
+   - `CURSOR_API_KEY`: your Cursor API key from cursor.com/dashboard → API Keys. Required for Find jobs now. This starts **Cursor cloud agents** (Composer, Grok, Claude, etc. through Cursor). It is not a separate Anthropic or xAI key.
+   - Optional `SHORTLIST_AGENT_MODELS`: comma-separated Cursor model ids to try in order (default `composer-2.5,grok-4.7,claude-opus-5-5,claude-fable-5-1`). If you see a usage limit error, enable **on-demand usage** under cursor.com/dashboard → Settings.
    - Optional `CRON_SECRET`: if set, the scheduled tick endpoint requires `Authorization: Bearer <secret>`. Add the same value as a GitHub repository secret so `.github/workflows/schedule.yml` can call your dashboard safely.
 3. Deploy. Bookmark the URL. Optional: `SHORTLIST_GITHUB_REPO` and `SHORTLIST_GITHUB_BRANCH` if the data lives somewhere other than `vikasrkarjigi/job-automation` on `main`.
 4. Optional `CRON_SECRET`: when set, `/api/tick` requires `Authorization: Bearer <secret>`.

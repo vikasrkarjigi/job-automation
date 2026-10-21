@@ -30,7 +30,7 @@ export async function runNow(kind: RunKind, now = new Date()): Promise<Launch> {
   const busy = await activeRun(kind, launches, now);
   if (busy) throw new Error(`A ${LABEL[kind]} is already running. It started ${new Date(busy.at).toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit" })} Pacific`);
   const started = await startRun(kind);
-  const entry: Launch = { kind, trigger: "you", slot: null, at: now.toISOString(), ...started, error: null };
+  const entry: Launch = { kind, trigger: "you", slot: null, at: now.toISOString(), model: started.model ?? null, ...started, error: null };
   await record(entry, `Started a ${LABEL[kind]}`);
   return entry;
 }

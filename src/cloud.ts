@@ -1,9 +1,13 @@
+import { friendlyStartFailure, modelChain, parseCursorError, shouldTryNextModel } from "./agent-models.ts";
 import type { Launch, RunKind } from "./schedule.ts";
 
 /**
  * Starts and watches Cursor cloud agents through the Cloud Agents API. Each
  * run is a fresh VM on the repository's main branch that follows the agent
  * files and pushes its state back to main, the same way the Slack runs do.
+ *
+ * Models (Composer, Grok, Claude, etc.) are selected through Cursor's API
+ * with one CURSOR_API_KEY. They are not separate Anthropic or xAI keys.
  */
 
 const API = "https://api.cursor.com/v1";
@@ -83,15 +87,49 @@ async function call<T>(method: string, route: string, body?: unknown): Promise<T
   return (await res.json()) as T;
 }
 
-export async function startRun(kind: RunKind): Promise<Pick<Launch, "agentId" | "runId" | "url">> {
-  const out = await call<{ agent: { id: string; url: string }; run: { id: string } }>("POST", "/agents", {
+async function createAgent(kind: RunKind, modelId: string): Promise<{ agent: { id: string; url: string }; run: { id: string } }> {
+  const key = cursorKey();
+  if (!key) throw new Error("CURSOR_API_KEY is not set in Vercel, so the dashboard cannot start agents yet");
+  const body: Record<string, unknown> = {
     name: PROMPTS[kind].name,
     prompt: { text: PROMPTS[kind].text },
     repos: [{ url: repoUrl(), startingRef: branch() }],
     workOnCurrentBranch: true,
     autoCreatePR: false,
+  };
+  if (modelId !== "default") body.model = { id: modelId };
+
+  const res = await fetch(`${API}/agents`, {
+    method: "POST",
+    cache: "no-store",
+    headers: {
+      authorization: `Basic ${Buffer.from(`${key}:`).toString("base64")}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(body),
   });
-  return { agentId: out.agent.id, runId: out.run.id, url: out.agent.url };
+  const text = await res.text();
+  if (!res.ok) throw parseCursorError(res.status, text);
+  return JSON.parse(text) as { agent: { id: string; url: string }; run: { id: string } };
+}
+
+export async function startRun(kind: RunKind): Promise<Pick<Launch, "agentId" | "runId" | "url" | "model">> {
+  const chain = modelChain();
+  const failures: { model: string; err: ReturnType<typeof parseCursorError> }[] = [];
+
+  for (let i = 0; i < chain.length; i++) {
+    const modelId = chain[i]!;
+    try {
+      const out = await createAgent(kind, modelId);
+      return { agentId: out.agent.id, runId: out.run.id, url: out.agent.url, model: modelId };
+    } catch (e) {
+      const err = typeof e === "object" && e && "status" in e ? (e as ReturnType<typeof parseCursorError>) : parseCursorError(500, e instanceof Error ? e.message : String(e));
+      failures.push({ model: modelId, err });
+      if (!shouldTryNextModel(err, i, chain.length)) break;
+    }
+  }
+
+  throw new Error(friendlyStartFailure(failures));
 }
 
 export async function runInfo(agentId: string, runId: string): Promise<RunInfo> {
@@ -116,3 +154,5 @@ export async function runInfos(launches: Launch[]): Promise<Map<string, RunInfo>
   );
   return out;
 }
+
+export { modelChain, modelLabel } from "./agent-models.ts";

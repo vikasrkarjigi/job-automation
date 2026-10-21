@@ -6,7 +6,7 @@ import { logout, startAgent } from "@/app/actions";
 import { agentSummaries } from "@/agent-activity";
 import { answerSections, NOT_BLANK } from "@/apply";
 import { authEnabled } from "@/auth";
-import { cursorKey, runInfos } from "@/cloud";
+import { cursorKey, modelChain, runInfos } from "@/cloud";
 import { Agents, KIND_LABEL, at } from "@/components/tracker/agents";
 import { Answers } from "@/components/tracker/answers";
 import { AutoRefresh, SubmitButton } from "@/components/tracker/client";
@@ -207,6 +207,7 @@ async function Desk({ searchParams }: { searchParams: PageProps<"/">["searchPara
             hasKey={!!cursorKey()}
             next={next}
             approvedCount={data.jobs.filter((j) => j.stage === "approved").length}
+            models={modelChain()}
           />
         )}
         {tab === "schedule" && <ScheduleForm schedule={schedule} next={next} hasKey={!!cursorKey()} back={back} />}

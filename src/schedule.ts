@@ -22,6 +22,8 @@ export interface Launch {
   agentId: string | null;
   runId: string | null;
   url: string | null;
+  /** Cursor cloud model id used for this run, when started successfully. */
+  model?: string | null;
   error: string | null;
 }
 
