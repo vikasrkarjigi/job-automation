@@ -322,12 +322,29 @@ export function markBlocked(id: string, reason: string, now = new Date()): JobRo
   return job;
 }
 
-export function markReady(id: string, now = new Date()): JobRow {
+export function saveApplyFlowUrl(id: string, url: string, now = new Date()): JobRow {
+  const data = loadTracker();
+  const job = findJob(data, id);
+  if (!job.applyPacket) throw new Error(`${id} has no apply packet yet`);
+  job.applyPacket = { ...job.applyPacket, applyFlowUrl: url.trim() };
+  addHistory(job, job.stage, `Saved in-progress application URL`, now);
+  saveTracker(data);
+  return job;
+}
+
+export function markReady(id: string, submitPageUrl?: string | null, now = new Date()): JobRow {
   const data = loadTracker();
   const job = findJob(data, id);
   if (!["approved", "apply_blocked"].includes(job.stage)) throw new Error(`${id} is ${job.stage}, it must be approved first`);
   job.reason = null;
-  setStage(job, "ready_to_submit", "every page filled, waiting on your Submit click", now);
+  if (submitPageUrl?.trim() && job.applyPacket) {
+    job.applyPacket = { ...job.applyPacket, submitPageUrl: submitPageUrl.trim() };
+  }
+  const note = submitPageUrl?.trim()
+    ? "every page filled — open the saved application link to press Submit"
+    : "every page filled, waiting on your Submit click";
+  setStage(job, "ready_to_submit", note, now);
+  if (submitPageUrl?.trim()) addHistory(job, "ready_to_submit", `Submit page: ${submitPageUrl.trim()}`, now);
   saveTracker(data);
   return job;
 }

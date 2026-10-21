@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import type { JobRow, Settings } from "@/types";
 import { ago, Score, Sources, statusLine } from "./bits";
 import { ShortlistJobs } from "./shortlist-jobs";
-import { resolveApplicationUrl } from "@/apply-transparency";
+import { applicationLinkMeta } from "@/application-url";
 import { filterJobsBySearch } from "@/job-search";
 import { SearchHint } from "./dashboard-search";
 import { ReadyToSubmitPanel } from "./application-actions";
@@ -145,7 +145,7 @@ export function Today({
         >
           <div className="grid gap-4">
             {ready.map((j) => {
-              const url = resolveApplicationUrl(j);
+              const url = applicationLinkMeta(j)?.url;
               return (
                 <div key={j.id} className="space-y-3">
                   {url ? (

@@ -9,6 +9,7 @@ import {
   confirmKeyword,
   markBlocked,
   markReady,
+  saveApplyFlowUrl,
   markSent,
   markSubmitted,
   recordGmailDraft,
@@ -74,8 +75,32 @@ switch (cmd) {
     break;
   }
   case "ready":
-    need(1, "<jobId>");
-    print({ id: markReady(args[0]).id, stage: "ready_to_submit" });
+    need(1, "<jobId> [submitPageUrl]");
+    print({ id: markReady(args[0], args[1]).id, stage: "ready_to_submit", submitPageUrl: args[1] ?? null });
+    break;
+  case "apply-url":
+    need(2, "<jobId> <inProgressUrl>");
+    print({ id: saveApplyFlowUrl(args[0], args[1]).id, applyFlowUrl: args[1] });
+    break;
+  case "otp-gmail":
+    need(1, "<jobId> [messages.json]");
+    {
+      const job = findJob(loadTracker(), args[0]);
+      const mailbox = "vikasravikarjigi26@gmail.com";
+      if (!args[1]) {
+        print({
+          mailbox,
+          hint: "Search Gmail (MCP search_threads) with a query like:",
+          query: `newer_than:1d (verification OR code OR OTP) (${job.company.split(/\s+/)[0]})`,
+          then: `npm run otp -- ${args[0]} messages.json`,
+        });
+        break;
+      }
+      const messages = JSON.parse(fs.readFileSync(args[1], "utf8")) as MailMessage[];
+      const waitMin = 5;
+      const since = new Date(Date.now() - waitMin * 60_000);
+      print(extractOtp(messages, job.company, since) ?? "NO_CODE");
+    }
     break;
   case "blocked":
     need(2, '<jobId> "<reason>"');

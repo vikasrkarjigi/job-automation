@@ -17,6 +17,8 @@
     "confirm": "tsx src/cli.ts confirm",
     "answer": "tsx src/cli.ts answer",
     "otp": "tsx src/cli.ts otp",
+    "otp-gmail": "tsx src/cli.ts otp-gmail",
+    "apply-url": "tsx src/cli.ts apply-url",
     "ready": "tsx src/cli.ts ready",
     "blocked": "tsx src/cli.ts blocked",
     "submitted": "tsx src/cli.ts submitted",

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { ApplyRunSnapshot } from "@/apply-transparency";
-import { applyStatusLine, jobApplyInsight, resolveApplicationUrl, timelineSteps } from "@/apply-transparency";
+import { applyStatusLine, jobApplyInsight, timelineSteps } from "@/apply-transparency";
+import { applicationLinkMeta } from "@/application-url";
 import type { JobRow } from "@/types";
 import { StageBadge, statusLine } from "./bits";
 import { ApplicationActionCell } from "./application-actions";
@@ -55,7 +56,7 @@ export function ApplicationsList({ rows, applyRun }: { rows: JobRow[]; applyRun:
                   </p>
                   <div className="text-xs">{j.resumePath ? <ResumeRowLinks jobId={j.id} /> : "—"}</div>
                   <div onClick={(e) => e.stopPropagation()} className="flex justify-end">
-                    <ApplicationActionCell job={j} url={resolveApplicationUrl(j)} />
+                    <ApplicationActionCell job={j} />
                   </div>
                 </JobColumnRow>
                 {open && IN_APPLY.has(j.stage) && (
@@ -92,7 +93,7 @@ export function ApplicationsList({ rows, applyRun }: { rows: JobRow[]; applyRun:
                 <ExpandableText text={statusText} max={64} className="mt-2" />
                 <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3" onClick={(e) => e.stopPropagation()}>
                   {j.resumePath && <ResumeRowLinks jobId={j.id} />}
-                  <ApplicationActionCell job={j} url={resolveApplicationUrl(j)} />
+                  <ApplicationActionCell job={j} />
                   {IN_APPLY.has(j.stage) && (
                     <button type="button" className="text-xs font-medium text-primary" onClick={() => toggle(j)}>
                       {open ? "Hide details" : "Details…"}

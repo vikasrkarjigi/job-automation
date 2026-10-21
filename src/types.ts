@@ -65,7 +65,12 @@ export interface Person {
 }
 
 export interface ApplyPacket {
+  /** Job posting URL (where the apply agent starts). */
   url: string;
+  /** Browser URL on the Submit step — saved by the apply agent via `npm run ready`. */
+  submitPageUrl?: string | null;
+  /** In-progress application / review page while the form is being filled. */
+  applyFlowUrl?: string | null;
   ats: "workday" | "greenhouse" | "lever" | "other";
   resumePath: string;
   accountEmail: string;

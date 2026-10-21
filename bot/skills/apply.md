@@ -19,7 +19,6 @@ description: Use in #apply to fill saved answers, launch the form-filling cloud 
    - Fill every page, then STOP on the final review page. Do NOT press Submit.
    - Final message: one fenced JSON block
      `{"id":"<id>","status":"ready"|"blocked","reason":"...","unanswered":["question text"],"desktopUrl":"<link to this agent>"}`.
-4. When it stops: `ready` means `update_application` status `ready` with `submitLink` set to the agent's URL, and tell Vikas
-   to open it and press Submit himself. `blocked` means `update_application` blocked with the reason, and for each
+4. When it stops: `ready` means `update_application` status `ready` with `submitLink` set to the **job board browser URL on the Submit step** (not the Cursor agent URL), and tell Vikas to open it and press Submit himself. While filling, set `applyFlowUrl` to the in-progress application page. For email codes, use Gmail MCP on vikasravikarjigi26@gmail.com and tool `gmail_otp`. `blocked` means `update_application` blocked with the reason, and for each
    unanswered question `answer_question` (adds it to apply.md), then ask Vikas.
 5. When Vikas says he submitted: `update_application` status `submitted`. Confirm the exact resume file recorded.

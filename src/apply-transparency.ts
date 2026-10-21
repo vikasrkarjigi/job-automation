@@ -23,9 +23,9 @@ const STAGE_NOTE: Partial<Record<Stage | HistoryEntry["stage"], string>> = {
   skipped_by_you: "You skipped",
 };
 
-export function resolveApplicationUrl(job: JobRow): string | null {
-  return job.applyPacket?.url ?? job.sources[0]?.url ?? null;
-}
+import { resolveApplicationUrl } from "./application-url.ts";
+
+export { applicationLinkMeta, resolveApplicationUrl, resolvePostingUrl } from "./application-url.ts";
 
 export function lastActivityAt(job: JobRow): string {
   return job.history.at(-1)?.at ?? job.approvedAt ?? job.createdAt;

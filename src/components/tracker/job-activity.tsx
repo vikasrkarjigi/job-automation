@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { resolveApplicationUrl, type JobApplyInsight } from "@/apply-transparency";
+import { type JobApplyInsight } from "@/apply-transparency";
+import { applicationLinkMeta } from "@/application-url";
 import { StageBadge } from "./bits";
 import { ApplicationActionCell } from "./application-actions";
 import type { JobRow } from "@/types";
@@ -12,7 +13,8 @@ import { ApplicationUrlChip, GoSubmitButton, ReadyToSubmitPanel } from "./applic
 import { ExpandableText } from "./expandable-text";
 
 function ApplicationRowCells({ job, statusText }: { job: JobRow; statusText: string }) {
-  const url = resolveApplicationUrl(job);
+  const link = applicationLinkMeta(job);
+  const url = link?.url ?? null;
   return (
     <>
       <TableCell>
@@ -45,7 +47,7 @@ function ApplicationRowCells({ job, statusText }: { job: JobRow; statusText: str
       </TableCell>
       <TableCell className="text-right tabular-nums">{job.people.length}</TableCell>
       <TableCell onClick={(e) => e.stopPropagation()}>
-        <ApplicationActionCell job={job} url={url} />
+        <ApplicationActionCell job={job} />
       </TableCell>
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { confirmSubmitted } from "@/app/actions";
+import { applicationLinkMeta } from "@/application-url";
 import type { JobRow } from "@/types";
 import { cn } from "@/lib/utils";
 import { CopyButton, SubmitButton } from "./client";
@@ -79,7 +80,10 @@ export function ReadyToSubmitPanel({
       <p className="mt-1 font-semibold text-foreground">
         {title} <span className="font-normal text-muted-foreground">at {company}</span>
       </p>
-      <p className="mt-1 text-sm text-muted-foreground">The form is filled. Open the application, review everything, then press Submit on their site.</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        The form is filled. Open the link below (saved application page when the agent finished). Sign in with{" "}
+        {job.applyPacket?.accountEmail ?? "your board email"} if asked, review everything, then press Submit on their site.
+      </p>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <GoSubmitButton url={url} label="Go submit this application →" />
         <form action={confirmSubmitted}>
@@ -97,34 +101,46 @@ export function ReadyToSubmitPanel({
   );
 }
 
-export function ApplicationActionCell({ job, url }: { job: JobRow; url: string | null }) {
-  if (!url) return <span className="text-xs text-muted-foreground">No link yet</span>;
+export function ApplicationActionCell({ job }: { job: JobRow }) {
+  const link = applicationLinkMeta(job);
+  if (!link) return <span className="text-xs text-muted-foreground">No link yet</span>;
 
   if (job.stage === "ready_to_submit") {
-    return <ReadyToSubmitPanel jobId={job.id} url={url} title={job.title} company={job.company} compact />;
+    return <ReadyToSubmitPanel jobId={job.id} url={link.url} title={job.title} company={job.company} compact />;
   }
 
-  if (job.stage === "approved" || job.stage === "apply_blocked") {
+  if (job.stage === "approved" || job.stage === "apply_blocked" || job.stage === "awaiting_approval") {
     return (
       <a
-        href={url}
+        href={link.url}
         target="_blank"
         rel="noreferrer"
         className="text-xs font-medium text-primary underline-offset-2 hover:underline"
         onClick={(e) => e.stopPropagation()}
+        title={job.applyPacket?.accountEmail ? `Sign in with ${job.applyPacket.accountEmail}` : undefined}
       >
-        Open application
+        {link.label}
       </a>
     );
   }
 
   if (job.stage === "submitted") {
     return (
-      <a href={url} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground underline-offset-2 hover:underline" onClick={(e) => e.stopPropagation()}>
-        View posting
+      <a
+        href={link.url}
+        target="_blank"
+        rel="noreferrer"
+        className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {link.label}
       </a>
     );
   }
 
-  return null;
+  return (
+    <a href={link.url} target="_blank" rel="noreferrer" className="text-xs text-primary underline-offset-2 hover:underline" onClick={(e) => e.stopPropagation()}>
+      {link.label}
+    </a>
+  );
 }
