@@ -1,0 +1,6 @@
+{
+  "enabled": true,
+  "timezone": "America/Los_Angeles",
+  "times": ["04:00", "12:00", "20:00"],
+  "days": [0, 1, 2, 3, 4, 5, 6]
+}

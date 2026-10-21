@@ -47,17 +47,22 @@ The web app is the main way to use Shortlist. It reads and saves the same files 
 | Resumes | Every tailored resume with the changes highlighted, and a PDF download |
 | Ignored | Every job that was not applied to, and why |
 | My answers | The application answers the apply agent fills forms with. Blanks are marked. |
-| Runs | What each scheduled run fetched, kept, and dropped |
+| Agents | All six agents side by side, what each one last did, and every cloud run with a link to watch it in Cursor |
+| Schedule | When job searches run automatically (default 4 am, 12 pm, and 8 pm Pacific). You can change times, days, and time zone here |
+| Run log | What each pipeline run fetched, kept, and dropped |
 
-Download Excel in the header exports all of it as one `.xlsx` with All jobs, Applied, Not applied, Outreach, and Runs sheets.
+The header has **Find jobs now**, **Agents**, **Schedule**, and **Download Excel**. Find jobs now starts a Cursor cloud agent that scouts, scores, and tailors in one go. Scheduled searches use the same agent; a GitHub Action calls the dashboard every 30 minutes and starts a search when a slot is due.
 
 ### Put it online with Vercel (free)
 
 1. At vercel.com, choose Add New, then Project, and import `vikasrkarjigi/job-automation`. Keep the detected Next.js settings.
-2. Before deploying, add two Environment Variables:
+2. Before deploying, add these Environment Variables:
    - `SHORTLIST_GITHUB_TOKEN`: a fine grained GitHub token for this repository only, with Contents read and write. The dashboard uses it to read the pipeline and save your clicks as commits.
    - `DASHBOARD_PASSWORD`: the password for the login page.
+   - `CURSOR_API_KEY`: your Cursor API key from cursor.com/dashboard → API Keys. Required for Find jobs now and for the schedule to start agents.
+   - Optional `CRON_SECRET`: if set, the scheduled tick endpoint requires `Authorization: Bearer <secret>`. Add the same value as a GitHub repository secret so `.github/workflows/schedule.yml` can call your dashboard safely.
 3. Deploy. Bookmark the URL. Optional: `SHORTLIST_GITHUB_REPO` and `SHORTLIST_GITHUB_BRANCH` if the data lives somewhere other than `vikasrkarjigi/job-automation` on `main`.
+4. Optional `CRON_SECRET`: when set, `/api/tick` requires `Authorization: Bearer <secret>`. Vercel Cron sends that header automatically if you add the same value in the project. Without it, the tick endpoint is open but only starts a run when a schedule slot is due.
 
 Without `SHORTLIST_GITHUB_TOKEN` the app reads and writes the local checkout instead, and without `DASHBOARD_PASSWORD` it has no login. That is how `npm run dev` works on a laptop.
 

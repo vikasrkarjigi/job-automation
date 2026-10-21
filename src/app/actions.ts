@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { passwordMatches, SESSION_COOKIE, sessionToken, validSession } from "@/auth";
 import { loadAnswers, saveAnswer } from "@/apply";
 import { approve, confirmKeyword, markSent, markSubmitted, runApproved, saveWritten, skip } from "@/orchestrator";
+import { runNow } from "@/launcher";
+import { describeSchedule, saveSchedule, type RunKind } from "@/schedule";
 import { writeState } from "@/store";
 import { loadTracker, writeTrackerMarkdown } from "@/tracker";
 
@@ -20,10 +22,9 @@ function backTo(form: FormData): string {
   return back.startsWith("/") && !back.startsWith("//") ? back : "/";
 }
 
-function withNotice(back: string, key: "done" | "error", message: string): string {
+function withNotice(back: string, key: "done" | "error" | "started", message: string): string {
   const url = new URL(back, "http://local");
-  url.searchParams.delete("done");
-  url.searchParams.delete("error");
+  for (const k of ["done", "error", "started"]) url.searchParams.delete(k);
   url.searchParams.set(key, message);
   return url.pathname + url.search;
 }
@@ -131,6 +132,35 @@ export async function saveAnswers(form: FormData) {
       }
     }
     if (changed && loadTracker().jobs.some((j) => j.stage === "apply_blocked")) runApproved();
+  });
+}
+
+export async function startAgent(form: FormData) {
+  await guard();
+  const kind: RunKind = field(form, "kind") === "apply" ? "apply" : "fetch";
+  let error: string | null = null;
+  try {
+    await runNow(kind);
+  } catch (err) {
+    error = err instanceof Error ? err.message : String(err);
+  }
+  revalidatePath("/", "layout");
+  const said =
+    kind === "fetch"
+      ? "Started a job search. It usually takes 10 to 25 minutes, and new jobs land on Today when it finishes"
+      : "Started filling your approved applications. Each one stops at the Submit button for you";
+  redirect(withNotice("/?tab=agents", error ? "error" : "started", error ?? said));
+}
+
+export async function updateSchedule(form: FormData) {
+  await step(form, "Updated the schedule", () => {
+    const s = saveSchedule({
+      enabled: form.get("enabled") === "on",
+      timezone: field(form, "timezone"),
+      times: form.getAll("time").map(String),
+      days: form.getAll("day").map(Number),
+    });
+    return s.enabled && s.times.length && s.days.length ? `Job searches set for ${describeSchedule(s)}` : "Scheduled job searches turned off";
   });
 }
 
