@@ -6,6 +6,7 @@ import type { JobRow } from "@/types";
 import { ago, when } from "./bits";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { ApplicationUrlChip, GoSubmitButton, ReadyToSubmitPanel } from "./application-actions";
 
 export function ApplicationJobRow({
   job,
@@ -33,7 +34,7 @@ export function ApplicationJobRow({
       </TableRow>
       {open && showDetail && (
         <TableRow className="bg-muted/20 hover:bg-muted/20">
-          <TableCell colSpan={6} className="p-4 sm:p-5">
+          <TableCell colSpan={7} className="p-4 sm:p-5">
             <JobActivityDetail job={job} insight={insight} steps={steps} statusText={statusText} />
           </TableCell>
         </TableRow>
@@ -53,8 +54,18 @@ function JobActivityDetail({
   steps: { at: string; title: string; note: string }[];
   statusText: string;
 }) {
+  const url = insight.applicationUrl;
+
   return (
     <div className="space-y-4 text-sm">
+      {job.stage === "ready_to_submit" && url && (
+        <ReadyToSubmitPanel jobId={job.id} url={url} title={job.title} company={job.company} />
+      )}
+
+      {url && job.stage !== "ready_to_submit" && (
+        <ApplicationUrlChip url={url} onClick={(e) => e.stopPropagation()} />
+      )}
+
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-semibold text-foreground">{insight.summary}</p>
@@ -72,16 +83,8 @@ function JobActivityDetail({
               Watch in Cursor
             </a>
           )}
-          {insight.applicationUrl && (
-            <a
-              href={insight.applicationUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-background"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Open application
-            </a>
+          {url && job.stage !== "ready_to_submit" && (
+            <GoSubmitButton url={url} size="sm" label="Open application" onClick={(e) => e.stopPropagation()} />
           )}
         </div>
       </div>

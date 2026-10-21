@@ -24,6 +24,10 @@ const STAGE_NOTE: Partial<Record<Stage | HistoryEntry["stage"], string>> = {
   skipped_by_you: "You skipped",
 };
 
+export function resolveApplicationUrl(job: JobRow): string | null {
+  return job.applyPacket?.url ?? job.sources[0]?.url ?? null;
+}
+
 export function lastActivityAt(job: JobRow): string {
   return job.history.at(-1)?.at ?? job.approvedAt ?? job.createdAt;
 }
@@ -57,7 +61,7 @@ export interface JobApplyInsight {
 
 export function jobApplyInsight(job: JobRow, applyRun: ApplyRunSnapshot, now = new Date()): JobApplyInsight {
   const packet = job.applyPacket;
-  const applicationUrl = packet?.url ?? job.sources[0]?.url ?? null;
+  const applicationUrl = resolveApplicationUrl(job);
   const answersTotal = packet ? Object.keys(packet.answers).length : 0;
   const answersReady = packet ? Object.values(packet.answers).filter((v) => v.trim()).length : 0;
   const blockedOn = packet?.blockedOn ?? (job.stage === "apply_blocked" ? job.reason : null);

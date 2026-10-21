@@ -1,7 +1,6 @@
 import {
   answerKeyword,
   approveJob,
-  confirmSubmitted,
   skipJob,
 } from "@/app/actions";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import type { JobRow, Settings } from "@/types";
 import { ago, KeywordChips, Score, Sources, statusLine } from "./bits";
+import { resolveApplicationUrl } from "@/apply-transparency";
+import { ReadyToSubmitPanel } from "./application-actions";
 import { SubmitButton } from "./client";
 import { WrittenAnswers } from "./written";
 
@@ -191,41 +192,20 @@ export function Today({
           title="Ready to submit"
           hint="Every page is filled. Open the form, check it, and press Submit yourself."
         >
-          <div className="divide-y rounded-xl border">
-            {ready.map((j) => (
-              <div key={j.id} className="p-4">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <div className="font-medium">{j.title}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {j.company} · uploads the PDF of your tailored resume
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {j.applyPacket && (
-                      <Button
-                        variant="outline"
-                        render={
-                          <a
-                            href={j.applyPacket.url}
-                            target="_blank"
-                            rel="noreferrer"
-                          />
-                        }
-                        nativeButton={false}
-                      >
-                        Open form
-                      </Button>
-                    )}
-                    <form action={confirmSubmitted}>
-                      <input type="hidden" name="jobId" value={j.id} />
-                      <SubmitButton>I pressed Submit</SubmitButton>
-                    </form>
-                  </div>
+          <div className="grid gap-4">
+            {ready.map((j) => {
+              const url = resolveApplicationUrl(j);
+              return (
+                <div key={j.id} className="space-y-3">
+                  {url ? (
+                    <ReadyToSubmitPanel jobId={j.id} url={url} title={j.title} company={j.company} />
+                  ) : (
+                    <div className="rounded-xl border p-4 text-sm text-muted-foreground">Application link not saved yet — check Applications after the apply agent runs.</div>
+                  )}
+                  <WrittenAnswers job={j} />
                 </div>
-                <WrittenAnswers job={j} />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Section>
       )}

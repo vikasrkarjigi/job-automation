@@ -3,7 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { JobRow, RunRecord } from "@/types";
-import { applyRunSnapshot, applyStatusLine, jobApplyInsight, timelineSteps } from "@/apply-transparency";
+import { applyRunSnapshot, applyStatusLine, jobApplyInsight, resolveApplicationUrl, timelineSteps } from "@/apply-transparency";
+import { ApplicationActionCell } from "./application-actions";
 import type { ApplyRunSnapshot } from "@/apply-transparency";
 import type { RunInfo } from "@/cloud";
 import type { Launch } from "@/schedule";
@@ -68,6 +69,7 @@ export function Applications({ jobs, launches, infos }: { jobs: JobRow[]; launch
             <TableHead className="text-right">Score</TableHead>
             <TableHead>Resume</TableHead>
             <TableHead className="text-right">People</TableHead>
+            <TableHead>Submit</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -105,6 +107,9 @@ export function Applications({ jobs, launches, infos }: { jobs: JobRow[]; launch
                   )}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">{j.people.length}</TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <ApplicationActionCell job={j} url={resolveApplicationUrl(j)} />
+                </TableCell>
               </>
             );
             if (!inApply) {
